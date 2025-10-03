@@ -42,7 +42,10 @@ CREATE TABLE IF NOT EXISTS public.custom_advisors (
   personality_description TEXT NOT NULL,
   communication_style TEXT NOT NULL,
   background_context TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  avatar_emoji TEXT DEFAULT '👨‍💼',
+  avatar_image TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS custom_advisors_user_id_idx ON public.custom_advisors(user_id);
@@ -146,6 +149,9 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_conversations_updated_at BEFORE UPDATE ON public.conversations
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_custom_advisors_updated_at BEFORE UPDATE ON public.custom_advisors
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_usage_stats_updated_at BEFORE UPDATE ON public.usage_stats

@@ -1,0 +1,92 @@
+name: Vercel Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: |
+          npm run lint
+          npm run type-check
+          npm test -- --watchAll=false
+
+      - name: Build Project
+        run: npm run build
+        env:
+          CI: false
+          REACT_APP_SUPABASE_URL: ${{ secrets.REACT_APP_SUPABASE_URL }}
+          REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
+          REACT_APP_OPENAI_API_KEY: ${{ secrets.REACT_APP_OPENAI_API_KEY }}
+          REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        id: vercel-deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          github-comment: true
+          alias-domains: |
+            elite-ai-advisory-pr-{{PR_NUMBER}}.vercel.app
+
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deploymentUrl = '${{ steps.vercel-deploy.outputs.preview-url }}';
+            const comment = `## 🚀 Preview Deployment Ready!
+
+            ✅ **Build succeeded**
+            🔗 **Preview URL:** ${deploymentUrl}
+
+            ### Deployment Details
+            - **Environment:** Preview
+            - **Commit:** ${context.sha.substring(0, 7)}
+            - **Branch:** ${context.payload.pull_request.head.ref}
+
+            ### Quick Actions
+            - [View Deployment](${deploymentUrl})
+            - [View Build Logs](https://vercel.com)
+            - [View Deployment on Vercel Dashboard](https://vercel.com)
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Update Deployment Status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            const deploymentUrl = '${{ steps.vercel-deploy.outputs.preview-url }}';
+
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment?.id || 0,
+              state: state,
+              environment_url: deploymentUrl,
+              description: state === 'success' ? 'Preview deployment succeeded' : 'Preview deployment failed'
+            });

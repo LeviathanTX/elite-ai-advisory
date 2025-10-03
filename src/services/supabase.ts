@@ -91,7 +91,10 @@ export interface Database {
           personality_description: string;
           communication_style: string;
           background_context: string;
+          avatar_emoji: string | null;
+          avatar_image: string | null;
           created_at: string;
+          updated_at: string;
         };
       };
       conversations: {

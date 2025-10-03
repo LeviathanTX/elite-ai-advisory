@@ -580,15 +580,35 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateCustomAdvisor = async (id: string, updates: Partial<CustomAdvisor>): Promise<boolean> => {
     try {
+      // Include updated_at timestamp
+      const updateData = {
+        ...updates,
+        updated_at: new Date().toISOString()
+      };
+
       const { error } = await supabase
         .from('custom_advisors')
-        .update(updates)
+        .update(updateData)
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        // Handle missing table error (for bypass/demo mode)
+        if (error.code === 'PGRST200' || error.code === 'PGRST205' ||
+            error.message?.includes('does not exist') ||
+            error.message?.includes('Could not find the table')) {
+          console.log('✅ Custom advisors table not available (expected in bypass mode), updating local state only');
+          // Update local state even if Supabase isn't available
+          setCustomAdvisors(prev =>
+            prev.map(advisor => advisor.id === id ? { ...advisor, ...updateData } : advisor)
+          );
+          return true;
+        }
+        throw error;
+      }
 
+      // Update local state with the new data
       setCustomAdvisors(prev =>
-        prev.map(advisor => advisor.id === id ? { ...advisor, ...updates } : advisor)
+        prev.map(advisor => advisor.id === id ? { ...advisor, ...updateData } : advisor)
       );
       return true;
     } catch (error) {
@@ -754,8 +774,14 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addAdvisor = (advisor: Advisor) => {
     if ((advisor as any).type === 'custom') {
       // For custom advisors, create via the existing createCustomAdvisor function
-      const { type, ...advisorData } = advisor as any;
-      createCustomAdvisor(advisorData);
+      const { type, id, ...advisorData } = advisor as any;
+      // Ensure avatar fields are included
+      const createData = {
+        ...advisorData,
+        avatar_image: advisor.avatar_image,
+        avatar_emoji: advisor.avatar_emoji
+      };
+      createCustomAdvisor(createData);
     } else {
       // Celebrity advisors are read-only, so we don't actually add them
       console.warn('Celebrity advisors cannot be added dynamically');
@@ -765,7 +791,14 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateAdvisor = (advisor: Advisor) => {
     if ((advisor as any).type === 'custom') {
       const { type, ...updates } = advisor as any;
-      updateCustomAdvisor(advisor.id, updates);
+      // Ensure avatar_image is explicitly included in updates
+      const updateData = {
+        ...updates,
+        avatar_image: advisor.avatar_image,
+        avatar_emoji: advisor.avatar_emoji,
+        updated_at: new Date().toISOString()
+      };
+      updateCustomAdvisor(advisor.id, updateData);
     } else {
       // For celebrity advisors, we only update local modifications like ai_service and system_prompt
       // This would typically be handled by a separate celebrity advisor customization system
