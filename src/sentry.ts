@@ -14,12 +14,6 @@ export const initSentry = () => {
     dsn,
     integrations: [
       new BrowserTracing(),
-      new Sentry.Replay({
-        // Capture 10% of all sessions
-        sessionSampleRate: 0.1,
-        // Capture 100% of sessions with errors
-        errorSampleRate: 1.0,
-      }),
     ],
 
     // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
@@ -33,10 +27,6 @@ export const initSentry = () => {
       /^https:\/\/.*\.supabase\.co/,
     ],
 
-    // Capture Replay for 10% of all sessions,
-    // plus 100% of sessions with an error
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
 
     environment: process.env.NODE_ENV || 'development',
 
