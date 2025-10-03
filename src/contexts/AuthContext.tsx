@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase, signIn, signUp, signOut, getCurrentUser } from '../services/supabase';
 import { User } from '../types';
+import { setUser as setSentryUser } from '../sentry';
 
 interface AuthContextType {
   user: User | null;
@@ -37,6 +38,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   } : null);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(bypassAuth ? false : true);
+
+  // Update Sentry user context whenever user changes
+  useEffect(() => {
+    if (user) {
+      setSentryUser({
+        id: user.id,
+        email: user.email,
+        username: user.full_name || undefined,
+      });
+    } else {
+      setSentryUser(null);
+    }
+  }, [user]);
 
   useEffect(() => {
     // Skip auth initialization if bypass is enabled
