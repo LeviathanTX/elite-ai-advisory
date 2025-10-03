@@ -1,0 +1,45 @@
+name: Security Review
+on:
+  push:
+    branches:
+      - '**'  # Run on all branches
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/package.json'
+      - '**/package-lock.json'
+  pull_request:
+    paths:
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/package.json'
+      - '**/package-lock.json'
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Claude Security Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            /security-review
+
+            Perform a comprehensive security review of this PR. Check for:
+            - SQL injection vulnerabilities
+            - XSS vulnerabilities
+            - Authentication/authorization issues
+            - Sensitive data exposure
+            - Dependency vulnerabilities
+            - CORS misconfigurations
+            - Rate limiting issues
+
+            If you find any security issues, create comments on the specific lines.

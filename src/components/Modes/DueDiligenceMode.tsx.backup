@@ -1,0 +1,1006 @@
+import React, { useState } from 'react';
+import { useAdvisor } from '../../contexts/AdvisorContext';
+import { useSettings } from '../../contexts/SettingsContext';
+import { createAdvisorAI } from '../../services/advisorAI';
+import { cn } from '../../utils';
+
+interface DueDiligenceModeProps {
+  onBack: () => void;
+}
+
+export const DueDiligenceMode: React.FC<DueDiligenceModeProps> = ({ onBack }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [analysisType, setAnalysisType] = useState('');
+  const [selectedAdvisors, setSelectedAdvisors] = useState<string[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [showDiscussion, setShowDiscussion] = useState(false);
+  const [discussionMessages, setDiscussionMessages] = useState<any[]>([]);
+  const [userQuestion, setUserQuestion] = useState('');
+  const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
+  const [discussionSettings, setDiscussionSettings] = useState({
+    enableDebate: true,
+    enableConsensusBuilding: true,
+    discussionRounds: 2,
+    currentRound: 1
+  });
+  const { celebrityAdvisors, getCelebrityAdvisor } = useAdvisor();
+  const { settings, getAIService, isConfigured } = useSettings();
+
+  const toggleAdvisor = (advisorId: string) => {
+    setSelectedAdvisors(prev => 
+      prev.includes(advisorId) 
+        ? prev.filter(id => id !== advisorId)
+        : [...prev, advisorId]
+    );
+  };
+
+  const analysisTypes = [
+    { id: 'pitch_deck', name: 'Pitch Deck Analysis', description: 'Comprehensive review of your pitch presentation' },
+    { id: 'financial', name: 'Financial Review', description: 'Analysis of financial statements and projections' },
+    { id: 'business_plan', name: 'Business Plan Review', description: 'Strategic analysis of your business plan' },
+    { id: 'market_research', name: 'Market Research', description: 'Market analysis and competitive landscape' }
+  ];
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    console.log('File selected:', file);
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+      
+      if (!allowedTypes.includes(fileExtension)) {
+        alert(`File type not supported. Please upload one of: ${allowedTypes.join(', ')}`);
+        return;
+      }
+      
+      // Validate file size (max 50MB)
+      const maxSizeInMB = 50;
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+      if (file.size > maxSizeInBytes) {
+        alert(`File size too large. Maximum size is ${maxSizeInMB}MB.`);
+        return;
+      }
+      
+      console.log('File validation passed, setting selectedFile');
+      setSelectedFile(file);
+    }
+  };
+
+  const analyzeDocument = async () => {
+    if (!selectedFile || !analysisType || selectedAdvisors.length === 0) return;
+
+    setIsAnalyzing(true);
+    
+    // Simulate analysis
+    setTimeout(() => {
+      const selectedAdvisorObjects = selectedAdvisors.map(id => getCelebrityAdvisor(id)).filter(Boolean);
+      
+      const mockAnalysis = {
+        fileName: selectedFile.name,
+        analysisType: analysisTypes.find(t => t.id === analysisType)?.name,
+        advisors: selectedAdvisorObjects.map(advisor => advisor?.name).join(', '),
+        advisorCount: selectedAdvisors.length,
+        overallScore: Math.floor(Math.random() * 20) + 75, // 75-95
+        recommendation: Math.random() > 0.3 ? 'INVEST' : 'PASS',
+        summary: generateMultiAdvisorSummary(selectedAdvisorObjects, analysisType),
+        keyFindings: [
+          'Strong product-market fit demonstrated through early traction',
+          'Experienced founding team with relevant industry background',
+          'Large addressable market with clear growth trajectory',
+          'Competitive landscape is intensifying rapidly'
+        ],
+        riskFactors: [
+          'High customer acquisition costs in current market',
+          'Dependency on key partnerships for distribution',
+          'Limited runway with current burn rate',
+          'Regulatory changes could impact business model'
+        ],
+        financialMetrics: {
+          revenue: '$2.4M ARR',
+          growth: '180% YoY',
+          burnRate: '$85K/month',
+          runway: '18 months',
+          grossMargin: '75%'
+        },
+        recommendations: generateMultiAdvisorRecommendations(selectedAdvisorObjects, analysisType),
+        advisorInsights: generateAdvisorSpecificInsights(selectedAdvisorObjects, analysisType)
+      };
+      
+      setAnalysis(mockAnalysis);
+      setIsAnalyzing(false);
+    }, 3000);
+  };
+
+  const generateMultiAdvisorSummary = (advisors: any[], analysisType: string) => {
+    const summaries = {
+      pitch_deck: `After thorough review by your advisory board (${advisors.map(a => a?.name).join(', ')}), this pitch deck shows strong potential with clear market opportunity and passionate founding team. The presentation effectively communicates the value proposition, though some areas need refinement for investor readiness.`,
+      financial: `Your selected advisory panel has conducted a comprehensive financial analysis. The numbers show encouraging growth trends and solid unit economics, with some concerns around burn rate and runway that require immediate attention.`,
+      business_plan: `The business plan has been evaluated by experienced advisors who see significant market opportunity and sound strategic thinking. Execution capabilities and go-to-market strategy are strong, with recommendations for competitive positioning.`,
+      market_research: `Market analysis reviewed by your advisory board reveals compelling opportunity size and favorable dynamics. Customer validation is solid, though competitive landscape analysis could be strengthened.`
+    };
+    
+    return summaries[analysisType as keyof typeof summaries] || summaries.pitch_deck;
+  };
+
+  const generateMultiAdvisorRecommendations = (advisors: any[], analysisType: string) => {
+    const baseRecommendations = [
+      'Focus on improving unit economics before scaling',
+      'Diversify customer acquisition channels',
+      'Build stronger competitive moats',
+      'Consider raising Series A within 6 months'
+    ];
+
+    // Add advisor-specific recommendations
+    const advisorSpecific = advisors.map(advisor => {
+      const recommendations = {
+        'mark-cuban': 'Validate all assumptions with real customer data before scaling',
+        'reid-hoffman': 'Build network effects into your product strategy',
+        'barbara-corcoran': 'Develop a systematic approach to sales and customer acquisition',
+        'jason-calacanis': 'Focus on product-market fit before worrying about competition',
+        'daymond-john': 'Strengthen brand positioning and community building',
+        'sheryl-sandberg': 'Implement robust analytics and data-driven decision making'
+      };
+      return recommendations[advisor?.id as keyof typeof recommendations] || 'Continue executing on current strategy';
+    });
+
+    return [...baseRecommendations, ...advisorSpecific];
+  };
+
+  const generateAdvisorSpecificInsights = (advisors: any[], analysisType: string) => {
+    return advisors.map(advisor => {
+      const insights = {
+        'mark-cuban': {
+          pitch_deck: "The numbers look good, but I want to see more proof of customer demand. Show me your conversion rates and customer acquisition costs.",
+          financial: "Cash flow is king. Your burn rate needs attention, and I'd like to see a clearer path to profitability.",
+          business_plan: "Solid strategy, but execution is everything. How are you measuring success and adapting when things don't go as planned?",
+          market_research: "Market size is compelling, but who's your real competition? Don't just look at direct competitors."
+        },
+        'reid-hoffman': {
+          pitch_deck: "Think bigger picture - how does this become a platform? What are the network effects that will make you defensible?",
+          financial: "The financial model is sound, but consider how you can build increasing returns to scale into your business.",
+          business_plan: "Strong plan, but how does this connect to building something that becomes more valuable as it grows?",
+          market_research: "Good market analysis. Now think about how you can create a moat that gets stronger with each customer."
+        },
+        'barbara-corcoran': {
+          pitch_deck: "Great energy in the presentation! But let's talk about your sales strategy - how are you going to win customers?",
+          financial: "The numbers tell a story, but what's your plan for accelerating growth? How will you scale your sales team?",
+          business_plan: "I love the passion, but success comes down to execution. Tell me about your team and how you'll build it.",
+          market_research: "Market opportunity is clear. What's your competitive advantage and how will customers choose you?"
+        }
+      };
+      
+      const advisorInsights = insights[advisor?.id as keyof typeof insights];
+      const insight = advisorInsights ? advisorInsights[analysisType as keyof typeof advisorInsights] : "Solid analysis with good potential for growth.";
+      
+      return {
+        advisor: advisor?.name,
+        insight: insight
+      };
+    });
+  };
+
+  const startDiscussion = () => {
+    setShowDiscussion(true);
+    // Initialize discussion with advisor introductions
+    const selectedAdvisorObjects = selectedAdvisors.map(id => getCelebrityAdvisor(id)).filter(Boolean);
+    const introMessages = [
+      {
+        id: 'system-intro',
+        type: 'system',
+        content: `Investment Committee Discussion: ${analysis.analysisType} • ${analysis.fileName}`,
+        timestamp: new Date().toISOString()
+      },
+      ...selectedAdvisorObjects.map((advisor, index) => ({
+        id: `intro-${advisor?.id}`,
+        type: 'advisor',
+        advisor: advisor?.name,
+        content: getAdvisorIntroduction(advisor!, analysisType),
+        timestamp: new Date(Date.now() + index * 1000).toISOString()
+      }))
+    ];
+    setDiscussionMessages(introMessages);
+  };
+
+  const getAdvisorIntroduction = (advisor: any, analysisType: string) => {
+    const intros = {
+      'mark-cuban': {
+        pitch_deck: "Alright, let's dive into this pitch deck. I want to see if the numbers add up and if this team can actually execute.",
+        financial: "Show me the money. What's the burn rate, runway, and path to profitability? That's what matters.",
+        business_plan: "Good business plans are simple and executable. Let's see if this one passes the reality test.",
+        market_research: "Market size means nothing without customer validation. Let's dig into the real demand."
+      },
+      'reid-hoffman': {
+        pitch_deck: "I'm looking for network effects and platform potential. How does this scale beyond just adding users?",
+        financial: "Financial models should reflect the underlying business dynamics. What drives sustainable growth here?",
+        business_plan: "The best business plans adapt to reality. How flexible is this strategy as markets evolve?",
+        market_research: "Market research should reveal not just size, but timing and competitive dynamics."
+      },
+      'barbara-corcoran': {
+        pitch_deck: "I invest in people first, ideas second. Tell me about this team and their track record.",
+        financial: "Numbers tell a story, but execution tells the real story. Can this team deliver these projections?",
+        business_plan: "Great plans are worthless without great execution. How will they make this happen?",
+        market_research: "Understanding customers is everything. Do they really know who they're selling to?"
+      }
+    };
+
+    const advisorIntros = intros[advisor.id as keyof typeof intros];
+    if (advisorIntros) {
+      return advisorIntros[analysisType as keyof typeof advisorIntros] || 
+             "This looks interesting. Let me review the details and share my thoughts.";
+    }
+    return "Looking forward to discussing this investment opportunity with the committee.";
+  };
+
+  const askQuestion = async () => {
+    if (!userQuestion.trim() || isGeneratingResponse) return;
+
+    const newUserMessage = {
+      id: `user-${Date.now()}`,
+      type: 'user',
+      content: userQuestion,
+      timestamp: new Date().toISOString()
+    };
+
+    setDiscussionMessages(prev => [...prev, newUserMessage]);
+    setUserQuestion('');
+    setIsGeneratingResponse(true);
+
+    try {
+      const selectedAdvisorObjects = selectedAdvisors.map(id => getCelebrityAdvisor(id)).filter(Boolean);
+      
+      // Generate responses from advisors with debate dynamics
+      const responses = await generateAdvisorDiscussion(selectedAdvisorObjects, userQuestion, discussionMessages);
+      
+      // Add responses with slight delays to simulate real conversation
+      for (let i = 0; i < responses.length; i++) {
+        setTimeout(() => {
+          setDiscussionMessages(prev => [...prev, responses[i]]);
+          if (i === responses.length - 1) {
+            setIsGeneratingResponse(false);
+          }
+        }, (i + 1) * 2000);
+      }
+    } catch (error) {
+      console.error('Error generating discussion:', error);
+      setIsGeneratingResponse(false);
+    }
+  };
+
+  const initiateDebateRound = async () => {
+    if (isGeneratingResponse) return;
+    
+    setIsGeneratingResponse(true);
+    const selectedAdvisorObjects = selectedAdvisors.map(id => getCelebrityAdvisor(id)).filter(Boolean);
+    
+    // Add round announcement
+    const roundMessage = {
+      id: `round-${Date.now()}`,
+      type: 'system',
+      content: `🎯 Debate Round ${discussionSettings.currentRound}: Focus on areas of disagreement and find common ground`,
+      timestamp: new Date().toISOString()
+    };
+    
+    setDiscussionMessages(prev => [...prev, roundMessage]);
+    
+    // Generate debate responses with controversial prompts
+    const debateQuestion = discussionSettings.currentRound === 1 
+      ? "What are the biggest risks and opportunities you see? Where do you disagree with each other?"
+      : "Can we reach consensus on the investment decision? What would it take to change your mind?";
+    
+    try {
+      const responses = await generateAdvisorDiscussion(selectedAdvisorObjects, debateQuestion, discussionMessages);
+      
+      for (let i = 0; i < responses.length; i++) {
+        setTimeout(() => {
+          setDiscussionMessages(prev => [...prev, responses[i]]);
+          if (i === responses.length - 1) {
+            setIsGeneratingResponse(false);
+            setDiscussionSettings(prev => ({ 
+              ...prev, 
+              currentRound: prev.currentRound + 1 
+            }));
+          }
+        }, (i + 1) * 2500);
+      }
+    } catch (error) {
+      console.error('Error generating debate:', error);
+      setIsGeneratingResponse(false);
+    }
+  };
+
+  const buildConsensus = async () => {
+    if (isGeneratingResponse) return;
+    
+    setIsGeneratingResponse(true);
+    const selectedAdvisorObjects = selectedAdvisors.map(id => getCelebrityAdvisor(id)).filter(Boolean);
+    
+    const consensusMessage = {
+      id: `consensus-${Date.now()}`,
+      type: 'system',
+      content: `🤝 Consensus Building: Let's find areas of agreement and make a final recommendation`,
+      timestamp: new Date().toISOString()
+    };
+    
+    setDiscussionMessages(prev => [...prev, consensusMessage]);
+    
+    const consensusQuestion = "Based on our discussion, what's your final recommendation? Can we reach consensus on this investment?";
+    
+    try {
+      const responses = await generateAdvisorDiscussion(selectedAdvisorObjects, consensusQuestion, discussionMessages);
+      
+      for (let i = 0; i < responses.length; i++) {
+        setTimeout(() => {
+          setDiscussionMessages(prev => [...prev, responses[i]]);
+          if (i === responses.length - 1) {
+            setIsGeneratingResponse(false);
+            // Add final consensus summary
+            setTimeout(() => {
+              const summaryMessage = {
+                id: `summary-${Date.now()}`,
+                type: 'system',
+                content: `📊 Committee Decision: Based on the discussion, the investment committee has provided their final recommendations.`,
+                timestamp: new Date().toISOString()
+              };
+              setDiscussionMessages(prev => [...prev, summaryMessage]);
+            }, 1000);
+          }
+        }, (i + 1) * 2500);
+      }
+    } catch (error) {
+      console.error('Error building consensus:', error);
+      setIsGeneratingResponse(false);
+    }
+  };
+
+  const generateAdvisorDiscussion = async (advisors: any[], question: string, context: any[]) => {
+    const responses = [];
+    const conversationContext = context.slice(-10).map(msg => 
+      `${msg.advisor || 'User'}: ${msg.content}`
+    ).join('\n');
+
+    // Enhanced debate dynamics - advisors respond in order but can reference each other
+    for (let i = 0; i < advisors.length; i++) {
+      const advisor = advisors[i];
+      const otherAdvisors = advisors.filter((_, index) => index !== i).map(a => a.name);
+      const previousResponses = responses.map(r => `${r.advisor}: ${r.content}`).join('\n');
+      
+      try {
+        if (isConfigured) {
+          const aiService = getAIService(advisor?.aiService || settings.defaultAIService!);
+          if (aiService) {
+            const advisorAI = createAdvisorAI(aiService);
+            
+            // Enhanced system prompt with debate dynamics
+            const systemPrompt = `You are ${advisor.name} in an investment committee meeting discussing the due diligence analysis of ${analysis.fileName} (${analysis.analysisType}).
+
+INVESTMENT CONTEXT:
+- Overall Score: ${analysis.overallScore}/100
+- Recommendation: ${analysis.recommendation}
+- Analysis Summary: ${analysis.summary}
+- Key Findings: ${analysis.keyFindings.join(', ')}
+- Risk Factors: ${analysis.riskFactors.join(', ')}
+
+COMMITTEE DYNAMICS:
+- Other advisors present: ${otherAdvisors.join(', ')}
+- Your role: Provide your unique perspective based on your expertise
+- Meeting stage: ${responses.length === 0 ? 'Initial responses' : 'Debate/discussion phase'}
+
+RECENT CONVERSATION:
+${conversationContext}
+
+${previousResponses ? `ADVISOR RESPONSES SO FAR:\n${previousResponses}\n` : ''}
+
+CURRENT QUESTION: ${question}
+
+INSTRUCTIONS:
+- Respond as ${advisor.name} would in a real investment committee meeting
+- Reference specific aspects of the analysis and use concrete examples
+- ${responses.length > 0 ? 'Build on or challenge other advisors\' points where appropriate' : 'Give your initial assessment'}
+- Be direct and actionable - this is a real investment decision
+- Keep response to 2-3 sentences maximum
+- ${advisor.name === 'Mark Cuban' ? 'Focus on execution, numbers, and market validation' : 
+   advisor.name === 'Reid Hoffman' ? 'Think about network effects, scale, and platform potential' :
+   advisor.name === 'Barbara Corcoran' ? 'Emphasize team, sales execution, and gut instincts' :
+   'Provide insights based on your expertise'}`;
+
+            const response = await advisorAI.generateStrategicResponse(
+              advisor,
+              'due_diligence',
+              systemPrompt
+            );
+
+            responses.push({
+              id: `${advisor.id}-${Date.now()}-${responses.length}`,
+              type: 'advisor',
+              advisor: advisor.name,
+              content: response,
+              timestamp: new Date(Date.now() + responses.length * 1000).toISOString()
+            });
+          }
+        } else {
+          // Enhanced mock responses with debate dynamics
+          const mockResponse = generateMockAdvisorResponse(advisor, question, responses);
+          responses.push({
+            id: `${advisor.id}-${Date.now()}-${responses.length}`,
+            type: 'advisor',
+            advisor: advisor.name,
+            content: mockResponse,
+            timestamp: new Date(Date.now() + responses.length * 1000).toISOString()
+          });
+        }
+      } catch (error) {
+        console.error(`Error generating response for ${advisor.name}:`, error);
+      }
+    }
+
+    // Add a consensus check if multiple advisors disagree
+    if (responses.length > 1 && Math.random() > 0.7) {
+      const consensusResponse = {
+        id: `consensus-${Date.now()}`,
+        type: 'system',
+        content: `💭 Committee Discussion: ${responses.length} advisors have weighed in. Are there areas of consensus or key disagreements to explore further?`,
+        timestamp: new Date(Date.now() + responses.length * 1000).toISOString()
+      };
+      responses.push(consensusResponse);
+    }
+
+    return responses;
+  };
+
+  const generateMockAdvisorResponse = (advisor: any, question: string, previousResponses: any[] = []) => {
+    // Base responses for each advisor
+    const baseResponses = {
+      'mark-cuban': [
+        "The numbers need to be validated with real customer data. I want to see proof of demand.",
+        "Execution risk is my biggest concern here. Do they have the right team to pull this off?",
+        "Cash flow is king. How long until they're cash flow positive?",
+        "I disagree with the optimistic projections - show me conservative estimates.",
+        "The burn rate is too high for this stage. They need to get to profitability faster."
+      ],
+      'reid-hoffman': [
+        "Think about the network effects potential. How does this become more valuable as it scales?",
+        "The competitive moat needs strengthening. What prevents copycats from entering this market?",
+        "Long-term platform strategy is key. Where do they see this in 5 years?",
+        "I see the defensibility issues Mark mentioned, but the upside potential is massive.",
+        "Building on Barbara's point about the team - do they have the technical depth to execute at scale?"
+      ],
+      'barbara-corcoran': [
+        "It comes down to the people. Can this team execute under pressure?",
+        "Sales strategy needs work. How exactly will they acquire customers?",
+        "Trust your gut on this one. What does your instinct tell you?",
+        "Reid makes a good point about scale, but they need to nail the basics first.",
+        "I'm seeing red flags in the sales projections. The customer acquisition model isn't proven."
+      ]
+    };
+
+    // Debate responses when multiple advisors are present
+    const debateResponses = {
+      'mark-cuban': [
+        "Hold on - I'm not buying the rosy picture. The unit economics don't add up.",
+        "That's wishful thinking. I need hard data, not optimistic projections.",
+        "I hear what you're saying, but the execution risk is still too high for me."
+      ],
+      'reid-hoffman': [
+        "I respectfully disagree - sometimes you have to invest in potential, not just current metrics.",
+        "Mark's being too conservative. The network effects here could be transformational.",
+        "Barbara's right about the team, but great platforms are built by learning and iterating."
+      ],
+      'barbara-corcoran': [
+        "You're both missing the point - it's about the people and their passion.",
+        "Numbers matter, but I invest in entrepreneurs who can pivot and adapt.",
+        "Reid, platforms are great but they still need to sell something to real customers."
+      ]
+    };
+
+    const advisorId = advisor.id as keyof typeof baseResponses;
+    
+    // Use debate responses if other advisors have already responded
+    if (previousResponses.length > 0 && Math.random() > 0.4) {
+      const debatePool = debateResponses[advisorId] || baseResponses[advisorId] || [];
+      return debatePool[Math.floor(Math.random() * debatePool.length)];
+    }
+    
+    // Use base responses for initial responses
+    const responsePool = baseResponses[advisorId] || [
+      "That's a great question. Let me think about the implications for this investment."
+    ];
+    
+    return responsePool[Math.floor(Math.random() * responsePool.length)];
+  };
+
+  if (analysis) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+        {/* Development Mode Banner */}
+        {(process.env.NODE_ENV === 'development' || !isConfigured) && (
+          <div className="bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium">
+            🔧 DEVELOPMENT MODE - Using simulated AI responses to avoid CORS issues. Real AI integration requires backend server.
+          </div>
+        )}
+        
+        <div className="p-6">
+          <div className="max-w-4xl mx-auto">
+            <button
+            onClick={() => setAnalysis(null)}
+            className="mb-6 text-green-600 hover:text-green-700 font-medium"
+          >
+            ← Analyze Another Document
+          </button>
+          
+          <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Due Diligence Report</h1>
+              <p className="text-gray-600">{analysis.analysisType} • {analysis.fileName}</p>
+              <p className="text-sm text-gray-500 mt-1">Analyzed by {analysis.advisorCount} advisor{analysis.advisorCount > 1 ? 's' : ''}: {analysis.advisors}</p>
+            </div>
+
+            {/* Overall Assessment */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className={cn(
+                  "inline-flex items-center justify-center w-20 h-20 rounded-full text-white text-xl font-bold mb-2",
+                  analysis.overallScore >= 85 ? "bg-green-500" : 
+                  analysis.overallScore >= 75 ? "bg-yellow-500" : "bg-red-500"
+                )}>
+                  {analysis.overallScore}
+                </div>
+                <p className="font-semibold text-gray-900">Overall Score</p>
+              </div>
+              
+              <div className="text-center">
+                <div className={cn(
+                  "inline-flex items-center justify-center w-20 h-20 rounded-full text-white text-sm font-bold mb-2",
+                  analysis.recommendation === 'INVEST' ? "bg-green-500" : "bg-red-500"
+                )}>
+                  {analysis.recommendation}
+                </div>
+                <p className="font-semibold text-gray-900">Recommendation</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-500 rounded-full text-white text-sm font-bold mb-2">
+                  VC
+                  <br />
+                  READY
+                </div>
+                <p className="font-semibold text-gray-900">Investment Grade</p>
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="mb-8 p-6 bg-gray-50 rounded-xl">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Executive Summary</h3>
+              <p className="text-gray-700">{analysis.summary}</p>
+            </div>
+
+            {/* Financial Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+              {Object.entries(analysis.financialMetrics).map(([key, value]) => (
+                <div key={key} className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-lg font-bold text-green-600">{String(value)}</div>
+                  <div className="text-sm text-gray-600 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Key Findings & Risks */}
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">🎯 Key Findings</h3>
+                <ul className="space-y-2">
+                  {analysis.keyFindings.map((finding: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-green-500 mr-2 mt-1">✓</span>
+                      <span className="text-gray-700 text-sm">{finding}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Risk Factors</h3>
+                <ul className="space-y-2">
+                  {analysis.riskFactors.map((risk: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-red-500 mr-2 mt-1">!</span>
+                      <span className="text-gray-700 text-sm">{risk}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Advisor-Specific Insights */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">🎯 Advisor Insights</h3>
+              <div className="space-y-4">
+                {analysis.advisorInsights.map((insight: any, index: number) => (
+                  <div key={index} className="p-4 bg-white rounded-lg border-l-4 border-green-500 shadow-sm">
+                    <h4 className="font-semibold text-green-700 mb-2">{insight.advisor}</h4>
+                    <p className="text-gray-700 text-sm">{insight.insight}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            <div className="p-6 bg-blue-50 rounded-xl mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 Investment Committee Recommendations</h3>
+              <ul className="space-y-2">
+                {analysis.recommendations.map((rec: string, index: number) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-blue-500 mr-2 mt-1">→</span>
+                    <span className="text-gray-700 text-sm">{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={onBack}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors mr-4"
+              >
+                Back to Dashboard
+              </button>
+              <button
+                onClick={startDiscussion}
+                className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors mr-4"
+              >
+                🗣️ Start Committee Discussion
+              </button>
+              <button
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Generate VC Memo
+              </button>
+            </div>
+
+            {/* Interactive Discussion Panel */}
+            {showDiscussion && (
+              <div className="mt-8 bg-white rounded-2xl shadow-lg border-2 border-purple-200">
+                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-2xl">
+                  <h3 className="text-xl font-bold">Investment Committee Discussion</h3>
+                  <p className="text-purple-100 mt-1">Ask questions and hear the debate between your advisors</p>
+                </div>
+
+                {/* Discussion Messages */}
+                <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50">
+                  {discussionMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={cn(
+                        "flex",
+                        message.type === 'user' ? 'justify-end' : 'justify-start'
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "max-w-xs lg:max-w-md px-4 py-3 rounded-lg",
+                          message.type === 'user'
+                            ? 'bg-blue-600 text-white'
+                            : message.type === 'system'
+                            ? 'bg-purple-100 text-purple-800 w-full text-center font-medium'
+                            : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                        )}
+                      >
+                        {message.advisor && (
+                          <div className="font-semibold text-purple-700 text-sm mb-1">
+                            {message.advisor}
+                          </div>
+                        )}
+                        <div className={cn(
+                          "text-sm",
+                          message.type === 'system' ? 'text-center' : ''
+                        )}>
+                          {message.content}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {new Date(message.timestamp).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {isGeneratingResponse && (
+                    <div className="flex justify-start">
+                      <div className="bg-gray-200 text-gray-600 px-4 py-3 rounded-lg">
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
+                          Investment committee is discussing...
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Enhanced Meeting Controls */}
+                <div className="p-4 border-t bg-gray-50">
+                  <div className="flex flex-wrap gap-2 justify-center mb-4">
+                    {discussionSettings.enableDebate && discussionSettings.currentRound <= discussionSettings.discussionRounds && (
+                      <button
+                        onClick={initiateDebateRound}
+                        disabled={isGeneratingResponse}
+                        className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 disabled:bg-gray-400 transition-colors font-medium text-sm"
+                      >
+                        🎯 Start Debate Round {discussionSettings.currentRound}
+                      </button>
+                    )}
+                    
+                    {discussionSettings.enableConsensusBuilding && (
+                      <button
+                        onClick={buildConsensus}
+                        disabled={isGeneratingResponse}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors font-medium text-sm"
+                      >
+                        🤝 Build Consensus
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        setDiscussionMessages([]);
+                        setDiscussionSettings(prev => ({ ...prev, currentRound: 1 }));
+                        startDiscussion();
+                      }}
+                      disabled={isGeneratingResponse}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors font-medium text-sm"
+                    >
+                      🔄 Restart Discussion
+                    </button>
+                  </div>
+                  
+                  <div className="text-center text-xs text-gray-500 mb-3">
+                    Round {discussionSettings.currentRound} of {discussionSettings.discussionRounds} • 
+                    {discussionSettings.enableDebate ? ' Debate Mode' : ''} • 
+                    {discussionSettings.enableConsensusBuilding ? ' Consensus Building' : ''}
+                  </div>
+                </div>
+
+                {/* Question Input */}
+                <div className="p-6 border-t bg-white rounded-b-2xl">
+                  <div className="flex space-x-3">
+                    <input
+                      type="text"
+                      value={userQuestion}
+                      onChange={(e) => setUserQuestion(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && !isGeneratingResponse && askQuestion()}
+                      placeholder="Ask the investment committee a question..."
+                      className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      disabled={isGeneratingResponse}
+                    />
+                    <button
+                      onClick={askQuestion}
+                      disabled={!userQuestion.trim() || isGeneratingResponse}
+                      className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors font-medium"
+                    >
+                      Ask
+                    </button>
+                  </div>
+                  <div className="mt-3 text-center">
+                    <button
+                      onClick={() => setShowDiscussion(false)}
+                      className="text-gray-500 hover:text-gray-700 text-sm"
+                    >
+                      Close Discussion
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+      {/* Development Mode Banner */}
+      {(process.env.NODE_ENV === 'development' || !isConfigured) && (
+        <div className="bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium">
+          🔧 DEVELOPMENT MODE - Using simulated AI responses to avoid CORS issues. Real AI integration requires backend server.
+        </div>
+      )}
+      
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={onBack}
+            className="mb-6 text-green-600 hover:text-green-700 font-medium"
+          >
+            ← Back to Dashboard
+          </button>
+          
+          <div className="bg-white rounded-2xl p-8 shadow-lg">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">📊 Due Diligence Analysis</h1>
+              <p className="text-gray-600">Upload documents for investment-grade analysis and VC memo generation</p>
+            </div>
+
+          {/* Advisor Selection */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Choose Your Investment Committee ({selectedAdvisors.length} selected)</h2>
+            <p className="text-sm text-gray-600 mb-4">Select advisors who will review and analyze your document</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {celebrityAdvisors.map((advisor) => {
+                const isSelected = selectedAdvisors.includes(advisor.id);
+                return (
+                  <button
+                    key={advisor.id}
+                    onClick={() => toggleAdvisor(advisor.id)}
+                    className={cn(
+                      "p-4 border-2 rounded-xl text-left transition-all relative",
+                      isSelected
+                        ? "border-green-500 bg-green-50"
+                        : "border-gray-200 hover:border-green-300"
+                    )}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm">✓</span>
+                      </div>
+                    )}
+                    <div className="font-semibold text-gray-900">{advisor.name}</div>
+                    <div className="text-sm text-gray-600">{advisor.title}</div>
+                    <div className="text-sm text-gray-500 mt-1">{advisor.company}</div>
+                  </button>
+                );
+              })}
+            </div>
+            {selectedAdvisors.length > 0 && (
+              <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                <p className="text-sm text-green-700">
+                  Selected investment committee: {selectedAdvisors.map(id => celebrityAdvisors.find(a => a.id === id)?.name).join(', ')}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Analysis Type Selection */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Choose Analysis Type</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {analysisTypes.map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setAnalysisType(type.id)}
+                  className={cn(
+                    "p-4 border-2 rounded-xl text-left transition-all",
+                    analysisType === type.id
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-200 hover:border-green-300"
+                  )}
+                >
+                  <h3 className="font-semibold text-gray-900">{type.name}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{type.description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* File Upload */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload Document</h2>
+            <div className={cn(
+              "border-2 border-dashed rounded-xl p-8 text-center transition-all",
+              selectedFile 
+                ? "border-green-500 bg-green-50" 
+                : "border-gray-300 hover:border-gray-400"
+            )}>
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                className="hidden"
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer"
+              >
+                {selectedFile ? (
+                  <>
+                    <div className="text-green-600 mb-4">
+                      <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-green-700 font-medium">
+                      ✓ {selectedFile.name}
+                    </p>
+                    <p className="text-sm text-green-600 mt-1">
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Click to change file
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-gray-400 mb-4">
+                      <svg className="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-600">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (max 50MB)
+                    </p>
+                  </>
+                )}
+              </label>
+            </div>
+            
+            {/* Remove file button */}
+            {selectedFile && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => {
+                    setSelectedFile(null);
+                    // Reset the file input
+                    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                    if (fileInput) {
+                      fileInput.value = '';
+                    }
+                  }}
+                  className="text-red-600 hover:text-red-700 text-sm font-medium"
+                >
+                  Remove file
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Action Button */}
+          <div className="text-center">
+            <button
+              onClick={analyzeDocument}
+              disabled={!selectedFile || !analysisType || selectedAdvisors.length === 0 || isAnalyzing}
+              className={cn(
+                "px-8 py-4 rounded-xl font-semibold text-white transition-all",
+                (!selectedFile || !analysisType || selectedAdvisors.length === 0) 
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : isAnalyzing
+                  ? "bg-green-400 cursor-wait"
+                  : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              )}
+            >
+              {isAnalyzing ? (
+                <span className="flex items-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Analyzing Document...
+                </span>
+              ) : (
+                'Start Due Diligence Analysis'
+              )}
+            </button>
+          </div>
+
+          {/* Features */}
+          <div className="mt-8 grid md:grid-cols-3 gap-6 text-center">
+            <div className="p-4">
+              <div className="text-green-600 text-2xl mb-2">🔍</div>
+              <h3 className="font-semibold text-gray-900">Deep Analysis</h3>
+              <p className="text-sm text-gray-600">AI-powered comprehensive review</p>
+            </div>
+            <div className="p-4">
+              <div className="text-green-600 text-2xl mb-2">📈</div>
+              <h3 className="font-semibold text-gray-900">Investment Grade</h3>
+              <p className="text-sm text-gray-600">VC-quality analysis and scoring</p>
+            </div>
+            <div className="p-4">
+              <div className="text-green-600 text-2xl mb-2">📋</div>
+              <h3 className="font-semibold text-gray-900">VC Memo</h3>
+              <p className="text-sm text-gray-600">Ready-to-share investment memo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

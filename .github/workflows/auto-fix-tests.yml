@@ -1,0 +1,81 @@
+name: Auto-Fix Failed Tests
+on:
+  push:
+    branches:
+      - '**'  # Run on all branches
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  test-and-fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Test Suite
+        id: test-run
+        continue-on-error: true
+        run: |
+          set +e
+          npm test 2>&1 | tee test-results.log
+          TEST_EXIT=$?
+          echo "test_exit=$TEST_EXIT" >> $GITHUB_OUTPUT
+
+          npm run lint 2>&1 | tee -a test-results.log
+          LINT_EXIT=$?
+          echo "lint_exit=$LINT_EXIT" >> $GITHUB_OUTPUT
+
+          npm run type-check 2>&1 | tee -a test-results.log
+          TYPE_EXIT=$?
+          echo "type_exit=$TYPE_EXIT" >> $GITHUB_OUTPUT
+
+          if [ $TEST_EXIT -ne 0 ] || [ $LINT_EXIT -ne 0 ] || [ $TYPE_EXIT -ne 0 ]; then
+            echo "has_failures=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_failures=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Auto-Fix with Claude
+        if: steps.test-run.outputs.has_failures == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            The automated tests have failed. Here are the results:
+
+            Test Exit Code: ${{ steps.test-run.outputs.test_exit }}
+            Lint Exit Code: ${{ steps.test-run.outputs.lint_exit }}
+            Type Check Exit Code: ${{ steps.test-run.outputs.type_exit }}
+
+            Full output:
+            ```
+            $(cat test-results.log)
+            ```
+
+            Please fix ALL the issues found above. Make sure to:
+            1. Fix any failing tests
+            2. Resolve all linting errors
+            3. Fix any TypeScript type errors
+            4. Run the tests yourself to verify they pass
+            5. Commit the fixes with a clear message explaining what was fixed
+
+      - name: Verify Fix
+        if: steps.test-run.outputs.has_failures == 'true'
+        run: |
+          echo "Verifying Claude's fixes..."
+          npm test
+          npm run lint
+          npm run type-check
+          echo "✅ All tests passing after Claude's fixes!"

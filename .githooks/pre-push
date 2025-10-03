@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "Running pre-push validation..."
+
+# Run tests
+npm test > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "❌ Tests are failing. Asking Claude to fix them..."
+  claude -p "Tests are failing on pre-push. Fix them before pushing." --no-confirm
+  npm test
+  if [ $? -ne 0 ]; then
+    echo "❌ Tests still failing after Claude's attempt. Push blocked."
+    exit 1
+  fi
+fi
+
+echo "✅ All tests passing"
