@@ -64,7 +64,9 @@
       "react-app/jest",
       "prettier"
     ],
-    "plugins": ["prettier"],
+    "plugins": [
+      "prettier"
+    ],
     "rules": {
       "prettier/prettier": "warn"
     }
@@ -85,6 +87,7 @@
     "@playwright/test": "^1.56.1",
     "@types/uuid": "^9.0.0",
     "autoprefixer": "^10.4.21",
+    "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
     "envalid": "^8.1.1",
     "eslint-config-prettier": "^10.1.8",
