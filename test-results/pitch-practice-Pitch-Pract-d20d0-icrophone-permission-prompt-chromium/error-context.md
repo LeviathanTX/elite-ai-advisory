@@ -1,0 +1,124 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - heading "Bearable Advisors" [level=1] [ref=e8]
+      - generic [ref=e9]:
+        - generic [ref=e10]: Welcome, Jeff (Demo Mode)
+        - generic [ref=e11]: Founder Plan
+        - button "Manage Advisors" [ref=e12] [cursor=pointer]
+        - button "Quick Start" [ref=e13] [cursor=pointer]:
+          - img [ref=e14]
+          - text: Quick Start
+        - button "Help" [ref=e17] [cursor=pointer]
+        - button "Settings" [ref=e18] [cursor=pointer]
+        - button "Sign Out" [ref=e19] [cursor=pointer]
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - heading "AI Advisor Hours" [level=3] [ref=e23]
+        - generic [ref=e24]: 0 / 20
+      - generic [ref=e26]:
+        - heading "Document Analyses" [level=3] [ref=e27]
+        - generic [ref=e28]: 0 / 10
+      - generic [ref=e30]:
+        - heading "Pitch Sessions" [level=3] [ref=e31]
+        - generic [ref=e32]: 0 / 50
+      - generic [ref=e34]:
+        - heading "Custom Advisors" [level=3] [ref=e35]
+        - generic [ref=e36]: 0 / 3
+    - generic [ref=e38]:
+      - heading "Choose Your Advisory Mode" [level=2] [ref=e39]
+      - generic [ref=e40]:
+        - button "🎤 Pitch Practice AI-powered pitch analysis with real-time feedback and voice recording" [ref=e41] [cursor=pointer]:
+          - generic [ref=e43]: 🎤
+          - heading "Pitch Practice" [level=3] [ref=e44]
+          - paragraph [ref=e45]: AI-powered pitch analysis with real-time feedback and voice recording
+        - button "💼 Advisory Board Strategic planning, due diligence, consultations & document analysis" [ref=e46] [cursor=pointer]:
+          - generic [ref=e48]: 💼
+          - heading "Advisory Board" [level=3] [ref=e49]
+          - paragraph [ref=e50]: Strategic planning, due diligence, consultations & document analysis
+        - button "📄 🧪 Test Document Features Test the new document management and MCP folder features" [ref=e51] [cursor=pointer]:
+          - generic [ref=e53]: 📄
+          - heading "🧪 Test Document Features" [level=3] [ref=e54]
+          - paragraph [ref=e55]: Test the new document management and MCP folder features
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - heading "Recent Conversations" [level=3] [ref=e58]
+        - paragraph [ref=e59]: No conversations yet. Start by selecting a mode above!
+      - generic [ref=e60]:
+        - heading "Available Advisors" [level=3] [ref=e61]
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e65]: J
+            - generic [ref=e66]:
+              - paragraph [ref=e67]: Jeff
+              - paragraph [ref=e68]: The Host - AI Advisory Platform Guide
+            - generic [ref=e69]: Celebrity
+          - generic [ref=e70]:
+            - generic [ref=e72]: G
+            - generic [ref=e73]:
+              - paragraph [ref=e74]: Gordon Daugherty
+              - paragraph [ref=e75]: Startup Advisor & Angel Investor
+            - generic [ref=e76]: Celebrity
+          - generic [ref=e77]:
+            - generic [ref=e79]: M
+            - generic [ref=e80]:
+              - paragraph [ref=e81]: Mark Cuban
+              - paragraph [ref=e82]: Entrepreneur & Investor
+            - generic [ref=e83]: Celebrity
+          - generic [ref=e84]:
+            - generic [ref=e86]: R
+            - generic [ref=e87]:
+              - paragraph [ref=e88]: Reid Hoffman
+              - paragraph [ref=e89]: Co-founder
+            - generic [ref=e90]: Celebrity
+          - generic [ref=e91]:
+            - generic [ref=e93]: J
+            - generic [ref=e94]:
+              - paragraph [ref=e95]: Jason Calacanis
+              - paragraph [ref=e96]: Angel Investor
+            - generic [ref=e97]: Celebrity
+          - generic [ref=e98]:
+            - generic [ref=e100]: B
+            - generic [ref=e101]:
+              - paragraph [ref=e102]: Barbara Corcoran
+              - paragraph [ref=e103]: Real Estate Mogul
+            - generic [ref=e104]: Celebrity
+  - generic [ref=e107]:
+    - generic [ref=e109]:
+      - generic [ref=e110]:
+        - generic [ref=e112]: 🚀
+        - generic [ref=e113]:
+          - heading "Elite AI Advisory" [level=1] [ref=e114]
+          - paragraph [ref=e115]: Step 1 of 7
+      - button "×" [ref=e116] [cursor=pointer]
+    - generic [ref=e119]:
+      - generic [ref=e120]:
+        - heading "Welcome to Elite AI Advisory!" [level=2] [ref=e121]
+        - paragraph [ref=e122]: Let's personalize your experience
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: 🎯
+            - heading "Strategic Advice" [level=3] [ref=e127]
+            - paragraph [ref=e128]: World-class insights
+          - generic [ref=e129]:
+            - generic [ref=e130]: 🎤
+            - heading "Pitch Practice" [level=3] [ref=e131]
+            - paragraph [ref=e132]: AI-powered feedback
+          - generic [ref=e133]:
+            - generic [ref=e134]: 📊
+            - heading "Document Analysis" [level=3] [ref=e135]
+            - paragraph [ref=e136]: Expert evaluation
+          - generic [ref=e137]:
+            - generic [ref=e138]: 👥
+            - heading "Custom Advisors" [level=3] [ref=e139]
+            - paragraph [ref=e140]: Personalized team
+        - paragraph [ref=e141]: This quick setup takes 2 minutes and helps us customize your experience for maximum impact.
+        - button "Let's Get Started" [ref=e142] [cursor=pointer]:
+          - text: Let's Get Started
+          - img [ref=e143]
+```
