@@ -45,9 +45,7 @@ export function ConversationHeader({
           <div className="flex items-center space-x-3">
             <span className="text-2xl">{selectedMode.icon}</span>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">
-                {selectedMode.name}
-              </h1>
+              <h1 className="text-xl font-semibold text-gray-900">{selectedMode.name}</h1>
               <p className="text-sm text-gray-500">{selectedMode.description}</p>
             </div>
           </div>
@@ -57,13 +55,13 @@ export function ConversationHeader({
           {/* Mode Selector */}
           <select
             value={selectedMode.id}
-            onChange={(e) => {
+            onChange={e => {
               const mode = modes.find(m => m.id === e.target.value);
               if (mode) onModeChange(mode);
             }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            {modes.map((mode) => (
+            {modes.map(mode => (
               <option key={mode.id} value={mode.id}>
                 {mode.icon} {mode.name}
               </option>

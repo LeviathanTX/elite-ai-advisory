@@ -18,14 +18,14 @@ interface LiveCoachingChartProps {
 export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
   data,
   isRecording,
-  duration
+  duration,
 }) => {
   // Calculate chart dimensions
   const chartWidth = 600;
   const chartHeight = 200;
   const padding = 40;
-  const innerWidth = chartWidth - (padding * 2);
-  const innerHeight = chartHeight - (padding * 2);
+  const innerWidth = chartWidth - padding * 2;
+  const innerHeight = chartHeight - padding * 2;
 
   // Create time scale (x-axis)
   const maxTime = Math.max(duration, 30); // At least 30 seconds
@@ -60,9 +60,7 @@ export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
   return (
     <div className="bg-white rounded-lg border p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          📈 Voice Performance Timeline
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900">📈 Voice Performance Timeline</h3>
         {isRecording && (
           <div className="flex items-center text-red-600">
             <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse mr-2"></div>
@@ -90,7 +88,7 @@ export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
                   className="h-1 rounded-full transition-all duration-300"
                   style={{
                     width: `${Math.min(100, currentValue)}%`,
-                    backgroundColor: color
+                    backgroundColor: color,
                   }}
                 ></div>
               </div>
@@ -105,7 +103,7 @@ export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
           {/* Grid lines */}
           <defs>
             <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-              <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#E5E7EB" strokeWidth="0.5"/>
+              <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#E5E7EB" strokeWidth="0.5" />
             </pattern>
           </defs>
           <rect width={chartWidth} height={chartHeight} fill="url(#grid)" />
@@ -187,10 +185,7 @@ export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
         <div className="flex flex-wrap gap-4 mt-2">
           {metrics.map(({ key, label, color }) => (
             <div key={key} className="flex items-center">
-              <div
-                className="w-3 h-0.5 mr-2"
-                style={{ backgroundColor: color }}
-              ></div>
+              <div className="w-3 h-0.5 mr-2" style={{ backgroundColor: color }}></div>
               <span className="text-xs text-gray-600">{label}</span>
             </div>
           ))}
@@ -202,7 +197,9 @@ export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
         <div className="mt-4 text-sm">
           {currentValues.confidence < 60 && (
             <div className="bg-orange-50 border border-orange-200 rounded p-2 mb-2">
-              <span className="text-orange-700">💪 Speak with more confidence - project your voice</span>
+              <span className="text-orange-700">
+                💪 Speak with more confidence - project your voice
+              </span>
             </div>
           )}
           {currentValues.pace > 90 && (
@@ -212,12 +209,16 @@ export const LiveCoachingChart: React.FC<LiveCoachingChartProps> = ({
           )}
           {currentValues.pace < 50 && (
             <div className="bg-green-50 border border-green-200 rounded p-2 mb-2">
-              <span className="text-green-700">⚡ Increase your speaking pace to maintain engagement</span>
+              <span className="text-green-700">
+                ⚡ Increase your speaking pace to maintain engagement
+              </span>
             </div>
           )}
           {currentValues.energy < 50 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-2">
-              <span className="text-yellow-700">🔥 Add more energy and enthusiasm to your delivery</span>
+              <span className="text-yellow-700">
+                🔥 Add more energy and enthusiasm to your delivery
+              </span>
             </div>
           )}
         </div>

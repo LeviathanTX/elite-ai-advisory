@@ -28,8 +28,9 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
 
   const filteredAdvisors = allAdvisors.filter(advisor => {
     // Search filter
-    const matchesSearch = advisor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (advisor.expertise || []).some(exp => exp.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch =
+      advisor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (advisor.expertise || []).some(exp => exp.toLowerCase().includes(searchQuery.toLowerCase()));
 
     // Type filter
     const matchesFilter = (() => {
@@ -74,12 +75,18 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
 
   const getAIServiceIcon = (service: string) => {
     switch (service) {
-      case 'claude': return '🤖';
-      case 'chatgpt': return '🧠';
-      case 'gemini': return '💎';
-      case 'deepseek': return '🔮';
-      case 'groq': return '⚡';
-      default: return '🤖';
+      case 'claude':
+        return '🤖';
+      case 'chatgpt':
+        return '🧠';
+      case 'gemini':
+        return '💎';
+      case 'deepseek':
+        return '🔮';
+      case 'groq':
+        return '⚡';
+      default:
+        return '🤖';
     }
   };
 
@@ -94,10 +101,7 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <button
-                onClick={onBack}
-                className="text-gray-500 hover:text-gray-700 font-medium"
-              >
+              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
                 ← Back to Dashboard
               </button>
               <div className="h-6 border-l border-gray-300"></div>
@@ -181,25 +185,27 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
                   type="text"
                   placeholder="Search advisors by name or expertise..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
             </div>
             <div className="flex space-x-2">
-              {(['all', 'celebrity', 'custom', 'active', 'available'] as FilterType[]).map(filter => (
-                <button
-                  key={filter}
-                  onClick={() => setFilterType(filter)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === filter
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                </button>
-              ))}
+              {(['all', 'celebrity', 'custom', 'active', 'available'] as FilterType[]).map(
+                filter => (
+                  <button
+                    key={filter}
+                    onClick={() => setFilterType(filter)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      filterType === filter
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                  </button>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -212,12 +218,15 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
             const aiServiceStatus = getAIServiceStatus(advisor.ai_service || 'claude');
 
             return (
-              <div key={advisor.id} className={cn(
-                "rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow",
-                isHost
-                  ? "bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-300 shadow-lg ring-2 ring-amber-200"
-                  : "bg-white"
-              )}>
+              <div
+                key={advisor.id}
+                className={cn(
+                  'rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow',
+                  isHost
+                    ? 'bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-300 shadow-lg ring-2 ring-amber-200'
+                    : 'bg-white'
+                )}
+              >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
@@ -228,14 +237,14 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
                       size="lg"
                     />
                     <div>
-                      <h3 className={cn(
-                        "font-semibold",
-                        isHost ? "text-amber-900" : "text-gray-900"
-                      )}>{advisor.name}</h3>
-                      <p className={cn(
-                        "text-sm",
-                        isHost ? "text-amber-700" : "text-gray-600"
-                      )}>{advisor.role}</p>
+                      <h3
+                        className={cn('font-semibold', isHost ? 'text-amber-900' : 'text-gray-900')}
+                      >
+                        {advisor.name}
+                      </h3>
+                      <p className={cn('text-sm', isHost ? 'text-amber-700' : 'text-gray-600')}>
+                        {advisor.role}
+                      </p>
                     </div>
                   </div>
                   <div className="flex space-x-1">
@@ -244,11 +253,11 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
                         HOST
                       </span>
                     )}
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      isCelebrity
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-purple-100 text-purple-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        isCelebrity ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                      }`}
+                    >
                       {isCelebrity ? 'Celebrity' : 'Custom'}
                     </span>
                   </div>
@@ -259,7 +268,10 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
                   <p className="text-xs font-medium text-gray-500 mb-2">EXPERTISE</p>
                   <div className="flex flex-wrap gap-1">
                     {(advisor.expertise || []).slice(0, 3).map(exp => (
-                      <span key={exp} className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                      <span
+                        key={exp}
+                        className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                      >
                         {exp}
                       </span>
                     ))}
@@ -277,12 +289,15 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
                     <div className="flex items-center space-x-2">
                       <span>{getAIServiceIcon(advisor.ai_service || 'claude')}</span>
                       <span className="text-sm text-gray-600">
-                        {(advisor.ai_service || 'claude').charAt(0).toUpperCase() + (advisor.ai_service || 'claude').slice(1)}
+                        {(advisor.ai_service || 'claude').charAt(0).toUpperCase() +
+                          (advisor.ai_service || 'claude').slice(1)}
                       </span>
                     </div>
-                    <div className={`w-2 h-2 rounded-full ${
-                      aiServiceStatus === 'configured' ? 'bg-green-500' : 'bg-yellow-500'
-                    }`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        aiServiceStatus === 'configured' ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}
+                    ></div>
                   </div>
                   {aiServiceStatus === 'needs-key' && (
                     <p className="text-xs text-yellow-600 mt-1">⚠️ API key required</p>
@@ -321,12 +336,11 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No advisors found</h3>
             <p className="text-gray-600 mb-6">
-              {searchQuery || filterType !== 'all' 
+              {searchQuery || filterType !== 'all'
                 ? 'Try adjusting your search or filters'
-                : 'Create your first custom advisor to get started'
-              }
+                : 'Create your first custom advisor to get started'}
             </p>
-            {(!searchQuery && filterType === 'all') && (
+            {!searchQuery && filterType === 'all' && (
               <button
                 onClick={handleCreateAdvisor}
                 className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 flex items-center space-x-2 mx-auto"
@@ -355,7 +369,11 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
         }}
         onConfirm={confirmDelete}
         title="Delete Advisor"
-        message={advisorToDelete ? `Are you sure you want to delete ${advisorToDelete.name}? This action cannot be undone.` : 'Are you sure you want to delete this advisor?'}
+        message={
+          advisorToDelete
+            ? `Are you sure you want to delete ${advisorToDelete.name}? This action cannot be undone.`
+            : 'Are you sure you want to delete this advisor?'
+        }
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

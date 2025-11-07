@@ -112,16 +112,16 @@ COMPREHENSIVE DUE DILIGENCE METHODOLOGY (McKinsey/Goldman Sachs Model):
       'What operational improvements could drive material value creation?',
       'What regulatory, competitive, or technology disruption risks exist?',
       'How defensible is the competitive position over 3-5 years?',
-      'What scenarios could cause 25%+ value destruction?'
+      'What scenarios could cause 25%+ value destruction?',
     ],
     analysisFramework: [
       'SWOT Analysis with quantified impact assessment',
-      'Porter\'s Five Forces for competitive dynamics',
+      "Porter's Five Forces for competitive dynamics",
       'BCG Growth-Share Matrix for portfolio analysis',
       'McKinsey 7S Framework for organizational assessment',
       'Real Options Valuation for strategic flexibility',
-      'Monte Carlo simulation for risk modeling'
-    ]
+      'Monte Carlo simulation for risk modeling',
+    ],
   },
 
   'Financial Architecture Advisor': {
@@ -160,7 +160,7 @@ FINANCIAL ARCHITECTURE & VALUATION METHODOLOGY:
       'What financing alternatives exist and at what cost?',
       'How does leverage impact returns under different scenarios?',
       'What financial risks require active management or hedging?',
-      'What are the key financial covenants and headroom?'
+      'What are the key financial covenants and headroom?',
     ],
     analysisFramework: [
       'DCF with Monte Carlo simulation for uncertainty',
@@ -168,8 +168,8 @@ FINANCIAL ARCHITECTURE & VALUATION METHODOLOGY:
       'Credit rating methodology and covenant analysis',
       'Capital structure optimization models',
       'Real options valuation for strategic flexibility',
-      'Sensitivity and scenario analysis'
-    ]
+      'Sensitivity and scenario analysis',
+    ],
   },
 
   'Executive Meeting Facilitator & Behavioral Economics Expert': {
@@ -219,17 +219,17 @@ BEHAVIORAL ECONOMICS MEETING FACILITATION FRAMEWORK (Based on Kahneman, Thaler, 
       'How can we design this decision process to lead to the best long-term outcomes?',
       'What would need to be true for this solution to succeed beyond our expectations?',
       'How might we be unconsciously limiting our options or thinking too narrowly?',
-      'What systematic approach would help us make the most informed decision?'
+      'What systematic approach would help us make the most informed decision?',
     ],
     analysisFramework: [
       'Behavioral Economics Decision Architecture',
       'Cognitive Bias Identification and Mitigation',
-      'Structured Facilitation Techniques (Robert\'s Rules + Modern Methods)',
+      "Structured Facilitation Techniques (Robert's Rules + Modern Methods)",
       'Psychological Safety and Inclusion Assessment',
       'Group Dynamics and Participation Optimization',
       'Interest-Based Conflict Resolution',
-      'Commitment Psychology and Follow-Through Design'
-    ]
+      'Commitment Psychology and Follow-Through Design',
+    ],
   },
 
   'Chief Strategy Advisor': {
@@ -267,17 +267,17 @@ STRATEGIC THINKING & PLANNING METHODOLOGY (Porter/BCG Model):
       'How do we build dynamic capabilities for future competition?',
       'What ecosystem partnerships could accelerate growth?',
       'How do we balance core business optimization with transformation?',
-      'What strategic uncertainties require real options thinking?'
+      'What strategic uncertainties require real options thinking?',
     ],
     analysisFramework: [
-      'Porter\'s Five Forces with profit pool analysis',
+      "Porter's Five Forces with profit pool analysis",
       'BCG Growth-Share Matrix with strategic options',
       'Blue Ocean Strategy canvas for differentiation',
       'Real Options framework for uncertainty',
       'Dynamic capabilities assessment',
-      'Strategic group mapping and mobility analysis'
-    ]
-  }
+      'Strategic group mapping and mobility analysis',
+    ],
+  },
 };
 
 // Strategic Thinking Prompts by Business Context
@@ -288,9 +288,15 @@ export const STRATEGIC_THINKING_PROMPTS = {
       'How do we achieve sustainable unit economics and scalability?',
       'What defensible moats can we build before competitors respond?',
       'How do we sequence market expansion and capital raising?',
-      'What strategic partnerships could accelerate growth?'
+      'What strategic partnerships could accelerate growth?',
     ],
-    frameworks: ['Lean Startup', 'Product-Market Fit', 'Unit Economics', 'Network Effects', 'Platform Strategy']
+    frameworks: [
+      'Lean Startup',
+      'Product-Market Fit',
+      'Unit Economics',
+      'Network Effects',
+      'Platform Strategy',
+    ],
   },
 
   growth: {
@@ -299,9 +305,15 @@ export const STRATEGIC_THINKING_PROMPTS = {
       'What new markets/segments offer the highest growth potential?',
       'How do we balance organic growth with strategic acquisitions?',
       'What operational leverage can we create through technology?',
-      'How do we build sustainable competitive advantages?'
+      'How do we build sustainable competitive advantages?',
     ],
-    frameworks: ['Scale-Up Framework', 'Market Expansion', 'Operational Excellence', 'Technology Scaling', 'M&A Strategy']
+    frameworks: [
+      'Scale-Up Framework',
+      'Market Expansion',
+      'Operational Excellence',
+      'Technology Scaling',
+      'M&A Strategy',
+    ],
   },
 
   mature: {
@@ -310,10 +322,16 @@ export const STRATEGIC_THINKING_PROMPTS = {
       'What adjacent markets or business models should we explore?',
       'How do we optimize costs while investing in transformation?',
       'What disruptive threats require strategic response?',
-      'How do we unlock value through portfolio optimization?'
+      'How do we unlock value through portfolio optimization?',
     ],
-    frameworks: ['Portfolio Strategy', 'Core/Adjacent/Transformational', 'Digital Transformation', 'Cost Optimization', 'Business Model Innovation']
-  }
+    frameworks: [
+      'Portfolio Strategy',
+      'Core/Adjacent/Transformational',
+      'Digital Transformation',
+      'Cost Optimization',
+      'Business Model Innovation',
+    ],
+  },
 };
 
 // Enhanced prompt generation for due diligence and strategic thinking
@@ -342,7 +360,9 @@ ${framework.analysisFramework.map(f => `• ${f}`).join('\n')}
 BUSINESS CONTEXT:
 ${businessContext}
 
-${documentContext ? `
+${
+  documentContext
+    ? `
 DOCUMENT ANALYSIS:
 Analyze the following documents/information systematically:
 ${documentContext}
@@ -352,7 +372,9 @@ For each piece of information, assess:
 2. Implications for investment thesis
 3. Red flags or areas requiring deeper investigation
 4. Supporting evidence needed for validation
-` : ''}
+`
+    : ''
+}
 
 DELIVERABLE FORMAT:
 Provide your analysis in this structure:
@@ -387,11 +409,15 @@ ${prompt.keyQuestions.map(q => `• ${q}`).join('\n')}
 RELEVANT FRAMEWORKS:
 ${prompt.frameworks.map(f => `• ${f}`).join('\n')}
 
-${documentContext ? `
+${
+  documentContext
+    ? `
 CONTEXT ANALYSIS:
 Analyze the following information to inform strategic recommendations:
 ${documentContext}
-` : ''}
+`
+    : ''
+}
 
 STRATEGIC ANALYSIS APPROACH:
 1. Situation Analysis: Current position, competitive dynamics, market trends
@@ -422,10 +448,14 @@ You are providing expert due diligence analysis from the perspective of a ${advi
 BUSINESS CONTEXT:
 ${businessContext}
 
-${documentContext ? `
+${
+  documentContext
+    ? `
 DOCUMENT ANALYSIS:
 ${documentContext}
-` : ''}
+`
+    : ''
+}
 
 Apply systematic due diligence methodology relevant to your expertise:
 1. Identify key value drivers and risks
@@ -440,12 +470,14 @@ Maintain professional skepticism and analytical rigor throughout your analysis.
 
 export function getDueDiligenceQuestions(advisorRole: AdvisorRole): string[] {
   const framework = DUE_DILIGENCE_FRAMEWORKS[advisorRole as keyof typeof DUE_DILIGENCE_FRAMEWORKS];
-  return framework?.keyQuestions || [
-    'What are the key value drivers for this business?',
-    'What are the most significant risks to consider?',
-    'How does this opportunity compare to similar investments?',
-    'What additional information is needed for decision-making?'
-  ];
+  return (
+    framework?.keyQuestions || [
+      'What are the key value drivers for this business?',
+      'What are the most significant risks to consider?',
+      'How does this opportunity compare to similar investments?',
+      'What additional information is needed for decision-making?',
+    ]
+  );
 }
 
 export function getStrategicFrameworks(businessStage: 'startup' | 'growth' | 'mature'): string[] {

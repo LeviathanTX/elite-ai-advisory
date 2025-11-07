@@ -29,53 +29,55 @@ function MessageItem({ message, onCopy, onRate }: MessageItemProps) {
       <div className={`flex max-w-4xl ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         {/* Avatar */}
         <div className={`flex-shrink-0 ${isUser ? 'ml-3' : 'mr-3'}`}>
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-            isUser
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700'
-          }`}>
-            {isUser ? (
-              <User className="w-5 h-5" />
-            ) : (
-              <Bot className="w-5 h-5" />
-            )}
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              isUser ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            {isUser ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
           </div>
         </div>
 
         {/* Message Content */}
         <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
           {/* Message Header */}
-          <div className={`flex items-center space-x-2 mb-1 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
+          <div
+            className={`flex items-center space-x-2 mb-1 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}
+          >
             <span className="text-sm font-medium text-gray-900">
-              {isUser ? 'You' : (message.advisorName || 'AI Advisor')}
+              {isUser ? 'You' : message.advisorName || 'AI Advisor'}
             </span>
             <span className="text-xs text-gray-500">
               {message.timestamp.toLocaleTimeString([], {
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
               })}
             </span>
           </div>
 
           {/* Message Bubble */}
-          <div className={`relative px-4 py-3 rounded-lg ${
-            isUser
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-900 border border-gray-200'
-          }`}>
+          <div
+            className={`relative px-4 py-3 rounded-lg ${
+              isUser ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900 border border-gray-200'
+            }`}
+          >
             {message.isLoading ? (
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.1s' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></div>
                 </div>
                 <span className="text-sm text-gray-500">Thinking...</span>
               </div>
             ) : (
-              <div className="whitespace-pre-wrap break-words">
-                {message.content}
-              </div>
+              <div className="whitespace-pre-wrap break-words">{message.content}</div>
             )}
           </div>
 
@@ -130,26 +132,21 @@ export function MessageList({
   }, [messages, isGeneratingResponse]);
 
   // Memoize visible messages to prevent unnecessary re-renders
-  const visibleMessages = useMemo(() =>
-    messages.filter(msg => msg.role !== 'system'),
-    [messages]
-  );
+  const visibleMessages = useMemo(() => messages.filter(msg => msg.role !== 'system'), [messages]);
 
   if (visibleMessages.length === 0 && !isGeneratingResponse) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center max-w-md">
           <Bot className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Start Your Advisory Session
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Start Your Advisory Session</h3>
           <p className="text-gray-500 mb-4">
             Ask questions, share documents, or begin a strategic discussion with your AI advisors.
           </p>
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">
-              <strong>Pro tip:</strong> Select specific advisors and upload relevant documents
-              to get more targeted insights.
+              <strong>Pro tip:</strong> Select specific advisors and upload relevant documents to
+              get more targeted insights.
             </p>
           </div>
         </div>
@@ -160,12 +157,12 @@ export function MessageList({
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="max-w-6xl mx-auto px-6 py-4">
-        {visibleMessages.map((message) => (
+        {visibleMessages.map(message => (
           <MessageItem
             key={message.id}
             message={message}
             onCopy={onCopyMessage}
-            onRate={onRateMessage ? (rating) => onRateMessage(message.id, rating) : undefined}
+            onRate={onRateMessage ? rating => onRateMessage(message.id, rating) : undefined}
           />
         ))}
 

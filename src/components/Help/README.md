@@ -7,12 +7,14 @@ A comprehensive help and support system designed to guide users through the Elit
 ### Core Components
 
 #### 1. **HelpModal** (`HelpModal.tsx`)
+
 - Comprehensive FAQ system with categorized content
 - Search functionality across all help topics
 - Expandable/collapsible FAQ items
 - Six main categories: Getting Started, AI Advisors, Document Analysis, Pitch Practice, Troubleshooting, Billing
 
 #### 2. **DemoTour** (`DemoTour.tsx`)
+
 - Interactive guided tour with step-by-step walkthrough
 - Highlights key dashboard elements with overlay tooltips
 - Auto-play functionality with manual controls
@@ -20,6 +22,7 @@ A comprehensive help and support system designed to guide users through the Elit
 - Customizable positioning (top, bottom, left, right, center)
 
 #### 3. **OnboardingFlow** (`OnboardingFlow.tsx`)
+
 - Multi-step user onboarding for new users
 - Collects user preferences and business goals
 - Personalizes dashboard experience
@@ -27,6 +30,7 @@ A comprehensive help and support system designed to guide users through the Elit
 - Progressive step validation
 
 #### 4. **QuickStartGuide** (`QuickStartGuide.tsx`)
+
 - Task-based getting started guide
 - Achievement badges and progress tracking
 - Quick action buttons for common tasks
@@ -34,6 +38,7 @@ A comprehensive help and support system designed to guide users through the Elit
 - Progress persistence across sessions
 
 #### 5. **HelpContext** (`../contexts/HelpContext.tsx`)
+
 - Centralized state management for help system
 - localStorage persistence for user progress
 - Modal visibility controls
@@ -42,24 +47,28 @@ A comprehensive help and support system designed to guide users through the Elit
 ## 🎯 Key Features
 
 ### Smart Help System
+
 - **Contextual Help**: Help content can be opened to specific sections
 - **Search Functionality**: Full-text search across all FAQ content
 - **Tag-based Organization**: Each FAQ item includes relevant tags
 - **Progressive Disclosure**: Expandable content to avoid overwhelming users
 
 ### Interactive Guided Tours
+
 - **Step-by-step Walkthrough**: 7-step demo tour covering all major features
 - **Element Highlighting**: CSS-based highlighting with custom overlays
 - **Auto-play Mode**: Automatic progression with pause/play controls
 - **Smart Navigation**: Previous/next controls with step validation
 
 ### Personalized Onboarding
+
 - **Goal-based Setup**: Users select business goals and stage
 - **Industry Focus**: Up to 3 industry specializations
 - **Advisor Preferences**: Celebrity advisor selection
 - **Feature Prioritization**: Users choose most interesting features
 
 ### Achievement System
+
 - **Progress Tracking**: Visual progress bars and completion indicators
 - **Badge System**: Unlockable achievements for completing tasks
 - **Persistent Progress**: LocalStorage-based progress tracking
@@ -128,6 +137,7 @@ A comprehensive help and support system designed to guide users through the Elit
 ## 🔧 Technical Implementation
 
 ### State Management
+
 ```typescript
 interface HelpContextType {
   isFirstVisit: boolean;
@@ -142,12 +152,14 @@ interface HelpContextType {
 ```
 
 ### Data Persistence
+
 - **LocalStorage Keys**:
   - `elite-ai-help-state`: Core help system state
   - `elite-ai-onboarding-preferences`: User onboarding choices
   - `elite-ai-quick-start-progress`: Quick start completion status
 
 ### Styling & UI
+
 - **Tailwind CSS**: Responsive design with utility classes
 - **Lucide Icons**: Consistent iconography throughout
 - **Gradient Backgrounds**: Professional visual design
@@ -155,6 +167,7 @@ interface HelpContextType {
 - **Responsive Design**: Mobile-first approach
 
 ### Tour Element Targeting
+
 ```css
 /* CSS selectors for tour highlighting */
 .dashboard-main          /* Main dashboard container */
@@ -168,58 +181,55 @@ interface HelpContextType {
 ## 🚀 Integration Guide
 
 ### 1. Add HelpProvider to App
+
 ```tsx
 import { HelpProvider } from './contexts/HelpContext';
 
 function App() {
-  return (
-    <HelpProvider>
-      {/* Your app components */}
-    </HelpProvider>
-  );
+  return <HelpProvider>{/* Your app components */}</HelpProvider>;
 }
 ```
 
 ### 2. Use Help Context in Components
+
 ```tsx
 import { useHelp } from '../contexts/HelpContext';
 
 function YourComponent() {
   const { setShowHelpModal, setShowDemoTour } = useHelp();
 
-  return (
-    <button onClick={() => setShowHelpModal(true, 'billing')}>
-      Get Help with Billing
-    </button>
-  );
+  return <button onClick={() => setShowHelpModal(true, 'billing')}>Get Help with Billing</button>;
 }
 ```
 
 ### 3. Add Tour Data Attributes
+
 ```tsx
-<button data-tour="important-feature">
-  Important Feature
-</button>
+<button data-tour="important-feature">Important Feature</button>
 ```
 
 ## 🎨 Customization Options
 
 ### FAQ Content
+
 - Edit `HELP_SECTIONS` array in `HelpModal.tsx`
 - Add new categories with icons and colors
 - Extend FAQ items with questions, answers, and tags
 
 ### Tour Steps
+
 - Modify `TOUR_STEPS` array in `DemoTour.tsx`
 - Add new highlights with CSS selectors
 - Customize step content and positioning
 
 ### Onboarding Flow
+
 - Update step components in `OnboardingFlow.tsx`
 - Modify business goals, stages, and options
 - Add new preference collection steps
 
 ### Achievement System
+
 - Extend `ACHIEVEMENT_BADGES` in `QuickStartGuide.tsx`
 - Add new completion criteria
 - Create custom badge designs
@@ -241,16 +251,19 @@ function YourComponent() {
 ## 🔧 Maintenance & Updates
 
 ### Adding New FAQ Items
+
 1. Locate the appropriate category in `HELP_SECTIONS`
 2. Add new item with unique ID, question, answer, and tags
 3. Test search functionality with new content
 
 ### Updating Tour Steps
+
 1. Modify `TOUR_STEPS` array with new step data
 2. Add CSS selectors for new elements to highlight
 3. Test tour flow and element positioning
 
 ### Extending Onboarding
+
 1. Add new step components following existing patterns
 2. Update preference interface types
 3. Modify completion handler to save new data
@@ -258,6 +271,7 @@ function YourComponent() {
 ## 📈 Analytics & Metrics
 
 ### Trackable Events
+
 - Onboarding completion rates
 - FAQ section popularity
 - Demo tour completion
@@ -265,6 +279,7 @@ function YourComponent() {
 - Help modal usage patterns
 
 ### LocalStorage Monitoring
+
 - User progress persistence
 - Feature discovery rates
 - Help system engagement

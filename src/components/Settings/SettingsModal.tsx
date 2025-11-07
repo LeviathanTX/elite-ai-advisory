@@ -15,36 +15,36 @@ const AI_SERVICE_OPTIONS = [
     name: 'Claude (Anthropic)',
     baseUrl: 'https://api.anthropic.com',
     model: 'claude-3-5-sonnet-20241022',
-    placeholder: 'sk-ant-api03-...'
+    placeholder: 'sk-ant-api03-...',
   },
   {
     id: 'gemini' as AIService,
     name: 'Gemini (Google)',
     baseUrl: 'https://generativelanguage.googleapis.com',
     model: 'gemini-1.5-pro',
-    placeholder: 'AIza...'
+    placeholder: 'AIza...',
   },
   {
     id: 'chatgpt' as AIService,
     name: 'ChatGPT (OpenAI)',
     baseUrl: 'https://api.openai.com',
     model: 'gpt-4',
-    placeholder: 'sk-...'
+    placeholder: 'sk-...',
   },
   {
     id: 'deepseek' as AIService,
     name: 'DeepSeek',
     baseUrl: 'https://api.deepseek.com',
     model: 'deepseek-chat',
-    placeholder: 'sk-...'
+    placeholder: 'sk-...',
   },
   {
     id: 'groq' as AIService,
     name: 'Groq',
     baseUrl: 'https://api.groq.com',
     model: 'llama3-70b-8192',
-    placeholder: 'gsk_...'
-  }
+    placeholder: 'gsk_...',
+  },
 ];
 
 type ServiceStatus = 'checking' | 'connected' | 'error' | 'unchecked';
@@ -58,7 +58,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     name: '',
     apiKey: '',
     baseUrl: '',
-    model: ''
+    model: '',
   });
 
   // Initialize service statuses when modal opens
@@ -87,9 +87,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
 
       // Simulate success/failure based on API key format
-      const isValid = service.apiKey.startsWith('sk-') ||
-                     service.apiKey.startsWith('AIza') ||
-                     service.apiKey.includes('demo');
+      const isValid =
+        service.apiKey.startsWith('sk-') ||
+        service.apiKey.startsWith('AIza') ||
+        service.apiKey.includes('demo');
 
       if (isValid) {
         setServiceStatuses(prev => ({ ...prev, [serviceId]: 'connected' }));
@@ -148,7 +149,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         name: serviceTemplate.name,
         apiKey: newService.apiKey.trim(),
         baseUrl: serviceTemplate.baseUrl,
-        model: serviceTemplate.model
+        model: serviceTemplate.model,
       };
       addAIService(serviceConfig);
       setNewService({
@@ -156,7 +157,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         name: '',
         apiKey: '',
         baseUrl: '',
-        model: ''
+        model: '',
       });
     }
   };
@@ -164,7 +165,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const handleSetDefault = (serviceId: AIService) => {
     updateSettings({
       ...settings,
-      defaultAIService: serviceId
+      defaultAIService: serviceId,
     });
   };
 
@@ -174,10 +175,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
               ×
             </button>
           </div>
@@ -187,7 +185,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">AI Service Configuration</h3>
             <p className="text-gray-600 mb-6">
-              Configure API keys for AI services. If multiple services are configured, you can assign specific services to individual advisors.
+              Configure API keys for AI services. If multiple services are configured, you can
+              assign specific services to individual advisors.
             </p>
 
             {/* Current Services */}
@@ -213,7 +212,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {Object.values(settings.aiServices).map((service) => (
+                  {Object.values(settings.aiServices).map(service => (
                     <div key={service.id} className="p-4 border border-gray-200 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -265,15 +264,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               <h4 className="text-lg font-medium text-gray-900 mb-3">Add AI Service</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    AI Service
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">AI Service</label>
                   <select
                     value={newService.id}
-                    onChange={(e) => setNewService({ ...newService, id: e.target.value as AIService })}
+                    onChange={e =>
+                      setNewService({ ...newService, id: e.target.value as AIService })
+                    }
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    {AI_SERVICE_OPTIONS.map((option) => (
+                    {AI_SERVICE_OPTIONS.map(option => (
                       <option key={option.id} value={option.id}>
                         {option.name}
                       </option>
@@ -281,13 +280,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    API Key
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">API Key</label>
                   <input
                     type="password"
                     value={newService.apiKey}
-                    onChange={(e) => setNewService({ ...newService, apiKey: e.target.value })}
+                    onChange={e => setNewService({ ...newService, apiKey: e.target.value })}
                     placeholder={AI_SERVICE_OPTIONS.find(s => s.id === newService.id)?.placeholder}
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -298,10 +295,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   onClick={handleAddService}
                   disabled={!newService.apiKey.trim()}
                   className={cn(
-                    "px-4 py-2 rounded-lg font-medium",
+                    'px-4 py-2 rounded-lg font-medium',
                     newService.apiKey.trim()
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   )}
                 >
                   Add Service
@@ -314,7 +311,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               <h4 className="text-sm font-medium text-blue-900 mb-2">Configuration Notes</h4>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• If only one service is configured, it will be used for all advisors</li>
-                <li>• With multiple services, you can assign specific services to advisors in the advisor settings</li>
+                <li>
+                  • With multiple services, you can assign specific services to advisors in the
+                  advisor settings
+                </li>
                 <li>• The default service is used when no specific assignment is made</li>
                 <li>• API keys are stored locally in your browser and never sent to our servers</li>
               </ul>
@@ -326,7 +326,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
               <h4 className="text-sm font-medium text-yellow-900 mb-2">🚀 Demo Mode</h4>
               <p className="text-sm text-yellow-800">
-                You're in demo mode. A default Claude API key has been pre-configured for testing. 
+                You're in demo mode. A default Claude API key has been pre-configured for testing.
                 In production, you would need to provide your own API keys.
               </p>
             </div>

@@ -35,10 +35,10 @@ export const DocumentDebugger: React.FC = () => {
       advisorDocuments: advisorDocs,
       advisorId,
       documentContext: contextResult,
-      storageKeys: Object.keys(localStorage).filter(key =>
-        key.includes('document') || key.includes('advisor')
+      storageKeys: Object.keys(localStorage).filter(
+        key => key.includes('document') || key.includes('advisor')
       ),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   };
 
@@ -47,13 +47,11 @@ export const DocumentDebugger: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4">🔍 Document Integration Debugger</h2>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Advisor ID to test:
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Advisor ID to test:</label>
         <input
           type="text"
           value={advisorId}
-          onChange={(e) => setAdvisorId(e.target.value)}
+          onChange={e => setAdvisorId(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
           placeholder="test-advisor-1"
         />
@@ -78,7 +76,8 @@ export const DocumentDebugger: React.FC = () => {
                 <strong>Advisor Documents:</strong> {debugInfo.advisorDocuments.length}
               </div>
               <div>
-                <strong>Document Context Success:</strong> {debugInfo.documentContext ? '✅ Yes' : '❌ No'}
+                <strong>Document Context Success:</strong>{' '}
+                {debugInfo.documentContext ? '✅ Yes' : '❌ No'}
               </div>
               <div>
                 <strong>Storage Keys:</strong> {debugInfo.storageKeys.length}

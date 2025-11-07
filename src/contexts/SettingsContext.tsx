@@ -20,38 +20,38 @@ const DEFAULT_SETTINGS: AppSettings = {
       name: 'Claude (Anthropic)',
       apiKey: process.env.REACT_APP_CLAUDE_API_KEY || '',
       baseUrl: 'https://api.anthropic.com',
-      model: 'claude-3-5-sonnet-20241022'
+      model: 'claude-3-5-sonnet-20241022',
     },
     gemini: {
       id: 'gemini',
       name: 'Gemini (Google)',
       apiKey: '',
       baseUrl: 'https://generativelanguage.googleapis.com',
-      model: 'gemini-pro'
+      model: 'gemini-pro',
     },
     chatgpt: {
       id: 'chatgpt',
       name: 'ChatGPT (OpenAI)',
       apiKey: '',
       baseUrl: 'https://api.openai.com',
-      model: 'gpt-4'
+      model: 'gpt-4',
     },
     deepseek: {
       id: 'deepseek',
       name: 'DeepSeek',
       apiKey: '',
       baseUrl: 'https://api.deepseek.com',
-      model: 'deepseek-chat'
+      model: 'deepseek-chat',
     },
     groq: {
       id: 'groq',
       name: 'Groq',
       apiKey: '',
       baseUrl: 'https://api.groq.com',
-      model: 'llama3-70b-8192'
-    }
+      model: 'llama3-70b-8192',
+    },
   },
-  defaultAIService: 'claude'
+  defaultAIService: 'claude',
 };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -85,9 +85,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ...settings,
       aiServices: {
         ...settings.aiServices,
-        [service.id]: service
+        [service.id]: service,
       },
-      defaultAIService: Object.keys(settings.aiServices).length === 0 ? service.id : settings.defaultAIService
+      defaultAIService:
+        Object.keys(settings.aiServices).length === 0 ? service.id : settings.defaultAIService,
     };
     saveSettings(newSettings);
   };
@@ -98,9 +99,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const newSettings: AppSettings = {
       ...settings,
       aiServices: newServices as Record<AIService, AIServiceConfig>,
-      defaultAIService: settings.defaultAIService === serviceId 
-        ? (remainingServices.length > 0 ? remainingServices[0] : undefined)
-        : settings.defaultAIService
+      defaultAIService:
+        settings.defaultAIService === serviceId
+          ? remainingServices.length > 0
+            ? remainingServices[0]
+            : undefined
+          : settings.defaultAIService,
     };
     saveSettings(newSettings);
   };
@@ -112,9 +116,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ...settings.aiServices,
         [serviceId]: {
           ...settings.aiServices[serviceId],
-          ...updates
-        }
-      }
+          ...updates,
+        },
+      },
     };
     saveSettings(newSettings);
   };
@@ -123,19 +127,22 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return settings.aiServices[serviceId];
   };
 
-  const isConfigured = Object.keys(settings.aiServices).length > 0 && 
+  const isConfigured =
+    Object.keys(settings.aiServices).length > 0 &&
     Object.values(settings.aiServices).some(service => service.apiKey.trim().length > 0);
 
   return (
-    <SettingsContext.Provider value={{
-      settings,
-      updateSettings,
-      addAIService,
-      removeAIService,
-      updateAIService,
-      getAIService,
-      isConfigured
-    }}>
+    <SettingsContext.Provider
+      value={{
+        settings,
+        updateSettings,
+        addAIService,
+        removeAIService,
+        updateAIService,
+        getAIService,
+        isConfigured,
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );

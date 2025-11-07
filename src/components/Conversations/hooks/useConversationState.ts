@@ -61,33 +61,33 @@ const CONVERSATION_MODES: ConversationMode[] = [
     id: 'advisory_conversation',
     name: 'General Advisory',
     description: 'Strategic business consultation and advice',
-    icon: '💼'
+    icon: '💼',
   },
   {
     id: 'due_diligence',
     name: 'Due Diligence',
     description: 'Investment analysis and risk assessment',
-    icon: '🔍'
+    icon: '🔍',
   },
   {
     id: 'strategic_planning',
     name: 'Strategic Planning',
     description: 'Long-term strategy and planning',
-    icon: '🎯'
+    icon: '🎯',
   },
   {
     id: 'pitch_practice',
     name: 'Pitch Practice',
     description: 'Practice and refine your pitch',
-    icon: '🎤'
-  }
+    icon: '🎤',
+  },
 ];
 
 export function useConversationState(initialMode: ApplicationMode = 'advisory_conversation') {
   // Core state
   const [messages, setMessages] = useState<ConversationMessage[]>([]);
-  const [selectedMode, setSelectedMode] = useState<ConversationMode>(() =>
-    CONVERSATION_MODES.find(mode => mode.id === initialMode) || CONVERSATION_MODES[0]
+  const [selectedMode, setSelectedMode] = useState<ConversationMode>(
+    () => CONVERSATION_MODES.find(mode => mode.id === initialMode) || CONVERSATION_MODES[0]
   );
   const [isTyping, setIsTyping] = useState(false);
 
@@ -115,9 +115,7 @@ export function useConversationState(initialMode: ApplicationMode = 'advisory_co
   }, []);
 
   const updateMessage = useCallback((id: string, updates: Partial<ConversationMessage>) => {
-    setMessages(prev => prev.map(msg =>
-      msg.id === id ? { ...msg, ...updates } : msg
-    ));
+    setMessages(prev => prev.map(msg => (msg.id === id ? { ...msg, ...updates } : msg)));
   }, []);
 
   const removeMessage = useCallback((id: string) => {
@@ -145,51 +143,57 @@ export function useConversationState(initialMode: ApplicationMode = 'advisory_co
   }, []);
 
   // Computed values
-  const state = useMemo<ConversationState>(() => ({
-    messages,
-    selectedMode,
-    isTyping,
-    showSettings,
-    showAdvisorSelector,
-    showDocumentUpload,
-    settings,
-    isGeneratingResponse,
-    isProcessingDocument,
-  }), [
-    messages,
-    selectedMode,
-    isTyping,
-    showSettings,
-    showAdvisorSelector,
-    showDocumentUpload,
-    settings,
-    isGeneratingResponse,
-    isProcessingDocument,
-  ]);
+  const state = useMemo<ConversationState>(
+    () => ({
+      messages,
+      selectedMode,
+      isTyping,
+      showSettings,
+      showAdvisorSelector,
+      showDocumentUpload,
+      settings,
+      isGeneratingResponse,
+      isProcessingDocument,
+    }),
+    [
+      messages,
+      selectedMode,
+      isTyping,
+      showSettings,
+      showAdvisorSelector,
+      showDocumentUpload,
+      settings,
+      isGeneratingResponse,
+      isProcessingDocument,
+    ]
+  );
 
-  const actions = useMemo(() => ({
-    addMessage,
-    updateMessage,
-    removeMessage,
-    clearMessages,
-    updateSettings,
-    setSelectedMode,
-    setIsTyping,
-    setIsGeneratingResponse,
-    setIsProcessingDocument,
-    toggleSettings,
-    toggleAdvisorSelector,
-    toggleDocumentUpload,
-  }), [
-    addMessage,
-    updateMessage,
-    removeMessage,
-    clearMessages,
-    updateSettings,
-    toggleSettings,
-    toggleAdvisorSelector,
-    toggleDocumentUpload,
-  ]);
+  const actions = useMemo(
+    () => ({
+      addMessage,
+      updateMessage,
+      removeMessage,
+      clearMessages,
+      updateSettings,
+      setSelectedMode,
+      setIsTyping,
+      setIsGeneratingResponse,
+      setIsProcessingDocument,
+      toggleSettings,
+      toggleAdvisorSelector,
+      toggleDocumentUpload,
+    }),
+    [
+      addMessage,
+      updateMessage,
+      removeMessage,
+      clearMessages,
+      updateSettings,
+      toggleSettings,
+      toggleAdvisorSelector,
+      toggleDocumentUpload,
+    ]
+  );
 
   return {
     state,

@@ -55,7 +55,7 @@ const TOUR_STEPS: TourStep[] = [
         </ul>
         <p className="text-sm text-gray-500">This tour takes about 2 minutes to complete.</p>
       </div>
-    )
+    ),
   },
   {
     id: 'dashboard-overview',
@@ -67,9 +67,7 @@ const TOUR_STEPS: TourStep[] = [
     content: (
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">Your Advisory Dashboard</h3>
-        <p className="text-gray-600 mb-4">
-          This is your command center. From here you can:
-        </p>
+        <p className="text-gray-600 mb-4">This is your command center. From here you can:</p>
         <ul className="text-gray-700 space-y-2">
           <li>• View your usage statistics and subscription limits</li>
           <li>• Access different advisory modes</li>
@@ -77,7 +75,7 @@ const TOUR_STEPS: TourStep[] = [
           <li>• Manage your advisor team</li>
         </ul>
       </div>
-    )
+    ),
   },
   {
     id: 'usage-stats',
@@ -90,20 +88,26 @@ const TOUR_STEPS: TourStep[] = [
     content: (
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">Monitor Your Usage</h3>
-        <p className="text-gray-600 mb-4">
-          Keep track of your monthly consumption:
-        </p>
+        <p className="text-gray-600 mb-4">Keep track of your monthly consumption:</p>
         <ul className="text-gray-700 space-y-2">
-          <li>• <strong>AI Advisor Hours:</strong> Time spent in advisory conversations</li>
-          <li>• <strong>Document Analyses:</strong> Number of documents processed</li>
-          <li>• <strong>Pitch Sessions:</strong> Practice sessions completed</li>
-          <li>• <strong>Custom Advisors:</strong> Your personalized advisor count</li>
+          <li>
+            • <strong>AI Advisor Hours:</strong> Time spent in advisory conversations
+          </li>
+          <li>
+            • <strong>Document Analyses:</strong> Number of documents processed
+          </li>
+          <li>
+            • <strong>Pitch Sessions:</strong> Practice sessions completed
+          </li>
+          <li>
+            • <strong>Custom Advisors:</strong> Your personalized advisor count
+          </li>
         </ul>
         <p className="text-sm text-blue-600 mt-3">
           💡 Tip: Enterprise users get unlimited access to most features!
         </p>
       </div>
-    )
+    ),
   },
   {
     id: 'advisory-modes',
@@ -122,18 +126,22 @@ const TOUR_STEPS: TourStep[] = [
               <span className="text-lg mr-2">🎤</span>
               <strong className="text-purple-700">Pitch Practice</strong>
             </div>
-            <p className="text-sm text-purple-600">Record, analyze, and improve your pitches with AI feedback</p>
+            <p className="text-sm text-purple-600">
+              Record, analyze, and improve your pitches with AI feedback
+            </p>
           </div>
           <div className="p-3 bg-blue-50 rounded-lg">
             <div className="flex items-center mb-2">
               <span className="text-lg mr-2">💼</span>
               <strong className="text-blue-700">Advisory Board</strong>
             </div>
-            <p className="text-sm text-blue-600">Strategic planning, due diligence, and document analysis</p>
+            <p className="text-sm text-blue-600">
+              Strategic planning, due diligence, and document analysis
+            </p>
           </div>
         </div>
       </div>
-    )
+    ),
   },
   {
     id: 'celebrity-advisors',
@@ -171,7 +179,7 @@ const TOUR_STEPS: TourStep[] = [
           💡 Each advisor has their unique personality and expertise!
         </p>
       </div>
-    )
+    ),
   },
   {
     id: 'advisor-management',
@@ -184,9 +192,7 @@ const TOUR_STEPS: TourStep[] = [
     content: (
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">Manage Your Advisors</h3>
-        <p className="text-gray-600 mb-4">
-          Click here to:
-        </p>
+        <p className="text-gray-600 mb-4">Click here to:</p>
         <ul className="text-gray-700 space-y-2">
           <li>• Create custom advisors with specific expertise</li>
           <li>• Customize celebrity advisor personalities</li>
@@ -195,7 +201,7 @@ const TOUR_STEPS: TourStep[] = [
           <li>• Set up advisor-specific document folders</li>
         </ul>
       </div>
-    )
+    ),
   },
   {
     id: 'settings',
@@ -208,9 +214,7 @@ const TOUR_STEPS: TourStep[] = [
     content: (
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">Platform Settings</h3>
-        <p className="text-gray-600 mb-4">
-          Configure your platform:
-        </p>
+        <p className="text-gray-600 mb-4">Configure your platform:</p>
         <ul className="text-gray-700 space-y-2">
           <li>• Add API keys for Claude, GPT, Gemini, and more</li>
           <li>• Set default AI services</li>
@@ -221,7 +225,7 @@ const TOUR_STEPS: TourStep[] = [
           ✅ Demo mode includes pre-configured services for testing!
         </p>
       </div>
-    )
+    ),
   },
   {
     id: 'start-conversation',
@@ -240,23 +244,29 @@ const TOUR_STEPS: TourStep[] = [
         <div className="space-y-3 mb-4">
           <div className="p-3 bg-blue-50 rounded-lg">
             <strong className="text-blue-700">1. Start an Advisory Conversation</strong>
-            <p className="text-sm text-blue-600">Click "Advisory Board" and ask Mark Cuban about scaling your business</p>
+            <p className="text-sm text-blue-600">
+              Click "Advisory Board" and ask Mark Cuban about scaling your business
+            </p>
           </div>
           <div className="p-3 bg-purple-50 rounded-lg">
             <strong className="text-purple-700">2. Practice Your Pitch</strong>
-            <p className="text-sm text-purple-600">Record a 60-second pitch and get detailed AI feedback</p>
+            <p className="text-sm text-purple-600">
+              Record a 60-second pitch and get detailed AI feedback
+            </p>
           </div>
           <div className="p-3 bg-green-50 rounded-lg">
             <strong className="text-green-700">3. Upload a Document</strong>
-            <p className="text-sm text-green-600">Get expert analysis on your business plan or financial model</p>
+            <p className="text-sm text-green-600">
+              Get expert analysis on your business plan or financial model
+            </p>
           </div>
         </div>
         <p className="text-sm text-gray-500">
           Remember: You can access this tour anytime from the Help menu!
         </p>
       </div>
-    )
-  }
+    ),
+  },
 ];
 
 export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete }) => {
@@ -362,7 +372,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
       {/* Tooltip */}
       <div
         className={cn(
-          "absolute z-52 w-96 max-w-sm",
+          'absolute z-52 w-96 max-w-sm',
           step.position === 'center' ? 'fixed' : 'absolute',
           getTooltipPosition()
         )}
@@ -372,7 +382,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <span className="text-sm opacity-90">Step {currentStep + 1} of {TOUR_STEPS.length}</span>
+                <span className="text-sm opacity-90">
+                  Step {currentStep + 1} of {TOUR_STEPS.length}
+                </span>
                 <button
                   onClick={toggleAutoPlay}
                   className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
@@ -400,9 +412,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
           </div>
 
           {/* Content */}
-          <div className="p-6">
-            {step.content}
-          </div>
+          <div className="p-6">{step.content}</div>
 
           {/* Footer */}
           <div className="bg-gray-50 px-6 py-4 flex items-center justify-between">
@@ -419,12 +429,12 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
                   <div
                     key={index}
                     className={cn(
-                      "w-2 h-2 rounded-full",
+                      'w-2 h-2 rounded-full',
                       index === currentStep
-                        ? "bg-blue-500"
+                        ? 'bg-blue-500'
                         : completedSteps.has(index)
-                        ? "bg-green-500"
-                        : "bg-gray-300"
+                          ? 'bg-green-500'
+                          : 'bg-gray-300'
                     )}
                   />
                 ))}
@@ -462,11 +472,15 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
         {step.position !== 'center' && (
           <div
             className={cn(
-              "absolute w-3 h-3 bg-white border transform rotate-45",
-              step.position === 'top' && "top-full -mt-2 left-1/2 -translate-x-1/2 border-r-0 border-b-0",
-              step.position === 'bottom' && "bottom-full -mb-2 left-1/2 -translate-x-1/2 border-l-0 border-t-0",
-              step.position === 'left' && "left-full -ml-2 top-1/2 -translate-y-1/2 border-l-0 border-b-0",
-              step.position === 'right' && "right-full -mr-2 top-1/2 -translate-y-1/2 border-r-0 border-t-0"
+              'absolute w-3 h-3 bg-white border transform rotate-45',
+              step.position === 'top' &&
+                'top-full -mt-2 left-1/2 -translate-x-1/2 border-r-0 border-b-0',
+              step.position === 'bottom' &&
+                'bottom-full -mb-2 left-1/2 -translate-x-1/2 border-l-0 border-t-0',
+              step.position === 'left' &&
+                'left-full -ml-2 top-1/2 -translate-y-1/2 border-l-0 border-b-0',
+              step.position === 'right' &&
+                'right-full -mr-2 top-1/2 -translate-y-1/2 border-r-0 border-t-0'
             )}
           />
         )}

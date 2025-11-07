@@ -25,10 +25,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 /**
  * Custom hook for throttled callbacks
  */
-export function useThrottle<T extends (...args: any[]) => any>(
-  callback: T,
-  delay: number
-): T {
+export function useThrottle<T extends (...args: any[]) => any>(callback: T, delay: number): T {
   const callbackRef = useRef(callback);
   const lastCallTimeRef = useRef<number>(0);
 
@@ -140,7 +137,7 @@ export class PerformanceMonitor {
       median: sorted[Math.floor(sorted.length / 2)],
       min: sorted[0],
       max: sorted[sorted.length - 1],
-      p95: sorted[Math.floor(sorted.length * 0.95)]
+      p95: sorted[Math.floor(sorted.length * 0.95)],
     };
   }
 }
@@ -220,25 +217,29 @@ export function analyzeBundleSize() {
   const scripts = document.querySelectorAll('script[src]');
   let totalSize = 0;
 
-  const sizes = Array.from(scripts).map(script => {
-    const src = script.getAttribute('src');
-    if (src && src.includes('/static/js/')) {
-      // Estimate size based on compressed typical ratios
-      // This is rough estimation - use webpack-bundle-analyzer for accurate data
-      const isMainBundle = src.includes('main.');
-      const isChunk = src.includes('chunk.');
+  const sizes = Array.from(scripts)
+    .map(script => {
+      const src = script.getAttribute('src');
+      if (src && src.includes('/static/js/')) {
+        // Estimate size based on compressed typical ratios
+        // This is rough estimation - use webpack-bundle-analyzer for accurate data
+        const isMainBundle = src.includes('main.');
+        const isChunk = src.includes('chunk.');
 
-      let estimatedSize = 0;
-      if (isMainBundle) estimatedSize = 500; // KB
-      else if (isChunk) estimatedSize = 100; // KB
-      else estimatedSize = 50; // KB
+        let estimatedSize = 0;
+        if (isMainBundle)
+          estimatedSize = 500; // KB
+        else if (isChunk)
+          estimatedSize = 100; // KB
+        else estimatedSize = 50; // KB
 
-      totalSize += estimatedSize;
+        totalSize += estimatedSize;
 
-      return { src, estimatedSize };
-    }
-    return null;
-  }).filter(Boolean);
+        return { src, estimatedSize };
+      }
+      return null;
+    })
+    .filter(Boolean);
 
   return { totalSize, scripts: sizes };
 }

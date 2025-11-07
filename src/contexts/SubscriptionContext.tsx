@@ -10,7 +10,7 @@ const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
     pitch_practice_sessions: 50,
     custom_advisors: 3,
     api_access: false,
-    white_label: false
+    white_label: false,
   },
   'scale-up': {
     ai_advisor_hours: 50,
@@ -18,7 +18,7 @@ const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
     pitch_practice_sessions: -1, // unlimited
     custom_advisors: 10,
     api_access: true,
-    white_label: false
+    white_label: false,
   },
   enterprise: {
     ai_advisor_hours: 150,
@@ -26,14 +26,14 @@ const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
     pitch_practice_sessions: -1, // unlimited
     custom_advisors: -1, // unlimited
     api_access: true,
-    white_label: true
-  }
+    white_label: true,
+  },
 };
 
 const SUBSCRIPTION_PRICING = {
   founder: { monthly: 97, yearly: 970 },
   'scale-up': { monthly: 247, yearly: 2470 },
-  enterprise: { monthly: 497, yearly: 4970 }
+  enterprise: { monthly: 497, yearly: 4970 },
 };
 
 interface SubscriptionContextType {
@@ -42,18 +42,21 @@ interface SubscriptionContextType {
   usage: UsageStats;
   pricing: typeof SUBSCRIPTION_PRICING;
   loading: boolean;
-  
+
   // Usage tracking
   incrementUsage: (type: keyof UsageStats, amount?: number) => Promise<boolean>;
   resetUsage: () => Promise<boolean>;
-  
+
   // Subscription management
   canUseFeature: (feature: keyof SubscriptionLimits) => boolean;
   getRemainingUsage: (feature: keyof UsageStats) => number;
   upgradeTier: (newTier: SubscriptionTier) => Promise<boolean>;
-  
+
   // Billing
-  createCheckoutSession: (tier: SubscriptionTier, interval: 'monthly' | 'yearly') => Promise<string | null>;
+  createCheckoutSession: (
+    tier: SubscriptionTier,
+    interval: 'monthly' | 'yearly'
+  ) => Promise<string | null>;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -72,7 +75,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     ai_advisor_hours_used: 0,
     document_analyses_used: 0,
     pitch_practice_sessions_used: 0,
-    custom_advisors_created: 0
+    custom_advisors_created: 0,
   });
   const [loading, setLoading] = useState(false);
 
@@ -101,10 +104,12 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (error.code === 'PGRST116') {
           const { data: newStats, error: createError } = await supabase
             .from('usage_stats')
-            .insert([{ 
-              user_id: user.id,
-              ...usage
-            }])
+            .insert([
+              {
+                user_id: user.id,
+                ...usage,
+              },
+            ])
             .select()
             .single();
 
@@ -128,11 +133,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     try {
       const newUsage = { ...usage, [type]: usage[type] + amount };
-      
-      const { error } = await supabase
-        .from('usage_stats')
-        .update(newUsage)
-        .eq('user_id', user.id);
+
+      const { error } = await supabase.from('usage_stats').update(newUsage).eq('user_id', user.id);
 
       if (error) throw error;
 
@@ -152,7 +154,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
         ai_advisor_hours_used: 0,
         document_analyses_used: 0,
         pitch_practice_sessions_used: 0,
-        custom_advisors_created: 0
+        custom_advisors_created: 0,
       };
 
       const { error } = await supabase
@@ -172,11 +174,11 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const canUseFeature = (feature: keyof SubscriptionLimits): boolean => {
     const limit = limits[feature];
-    
+
     if (typeof limit === 'boolean') {
       return limit;
     }
-    
+
     if (limit === -1) {
       return true; // unlimited
     }
@@ -186,7 +188,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       ai_advisor_hours: 'ai_advisor_hours_used',
       document_analyses: 'document_analyses_used',
       pitch_practice_sessions: 'pitch_practice_sessions_used',
-      custom_advisors: 'custom_advisors_created'
+      custom_advisors: 'custom_advisors_created',
     };
 
     const usageKey = usageMap[feature];
@@ -200,7 +202,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       ai_advisor_hours_used: 'ai_advisor_hours',
       document_analyses_used: 'document_analyses',
       pitch_practice_sessions_used: 'pitch_practice_sessions',
-      custom_advisors_created: 'custom_advisors'
+      custom_advisors_created: 'custom_advisors',
     };
 
     const limitKey = limitMap[feature];
@@ -233,7 +235,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const createCheckoutSession = async (
-    tier: SubscriptionTier, 
+    tier: SubscriptionTier,
     interval: 'monthly' | 'yearly'
   ): Promise<string | null> => {
     if (!user) return null;
@@ -243,7 +245,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       // For now, return a mock URL
       const price = SUBSCRIPTION_PRICING[tier][interval];
       const mockCheckoutUrl = `https://checkout.stripe.com/mock?tier=${tier}&interval=${interval}&price=${price}&user=${user.id}`;
-      
+
       console.log(`Creating checkout session for ${tier} ${interval} - $${price}`);
       return mockCheckoutUrl;
     } catch (error) {
@@ -263,12 +265,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     canUseFeature,
     getRemainingUsage,
     upgradeTier,
-    createCheckoutSession
+    createCheckoutSession,
   };
 
-  return (
-    <SubscriptionContext.Provider value={value}>
-      {children}
-    </SubscriptionContext.Provider>
-  );
+  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 };

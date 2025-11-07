@@ -38,7 +38,7 @@ export function formatRelativeTime(date: string | Date): string {
   if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
   if (diffInHours < 24) return `${diffInHours}h ago`;
   if (diffInDays < 7) return `${diffInDays}d ago`;
-  
+
   return formatDate(date);
 }
 
@@ -62,11 +62,11 @@ export function generateId(): string {
 // Format file size
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
@@ -82,7 +82,7 @@ export function debounce<T extends (...args: any[]) => void>(
   delay: number
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
@@ -104,7 +104,7 @@ export const storage = {
       return defaultValue;
     }
   },
-  
+
   set: <T>(key: string, value: T): void => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -112,14 +112,14 @@ export const storage = {
       console.error('Error saving to localStorage:', error);
     }
   },
-  
+
   remove: (key: string): void => {
     try {
       localStorage.removeItem(key);
     } catch (error) {
       console.error('Error removing from localStorage:', error);
     }
-  }
+  },
 };
 
 // Copy to clipboard

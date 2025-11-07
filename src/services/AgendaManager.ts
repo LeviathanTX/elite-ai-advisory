@@ -37,7 +37,12 @@ export interface MeetingAgenda {
 }
 
 export interface FacilitationInsight {
-  type: 'bias_alert' | 'participation_balance' | 'energy_check' | 'time_management' | 'decision_point';
+  type:
+    | 'bias_alert'
+    | 'participation_balance'
+    | 'energy_check'
+    | 'time_management'
+    | 'decision_point';
   message: string;
   suggestion: string;
   priority: 'low' | 'medium' | 'high';
@@ -77,7 +82,7 @@ export class AgendaManager {
       facilitationNotes: this.generateFacilitationNotes(objective, participants.length),
       behavioralConsiderations: this.generateBehavioralConsiderations(participants.length),
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.agendas.set(agenda.id, agenda);
@@ -92,10 +97,13 @@ export class AgendaManager {
 
     // Extract title and objective
     const title = lines[0]?.trim() || 'Meeting Agenda';
-    const objective = lines.find(line =>
-      line.toLowerCase().includes('objective') ||
-      line.toLowerCase().includes('purpose')
-    )?.replace(/^.*?(objective|purpose):\s*/i, '') || 'Productive discussion and decision-making';
+    const objective =
+      lines
+        .find(
+          line => line.toLowerCase().includes('objective') || line.toLowerCase().includes('purpose')
+        )
+        ?.replace(/^.*?(objective|purpose):\s*/i, '') ||
+      'Productive discussion and decision-making';
 
     const agenda = this.createAgenda(title, objective, defaultDuration);
 
@@ -186,10 +194,10 @@ export class AgendaManager {
     if (elapsedTime > plannedTime * 1.2) {
       insights.push({
         type: 'time_management',
-        message: 'We\'re running behind schedule',
+        message: "We're running behind schedule",
         suggestion: 'Consider summarizing key points and moving to decision or next item',
         priority: 'high',
-        timing: 'immediate'
+        timing: 'immediate',
       });
     }
 
@@ -197,10 +205,10 @@ export class AgendaManager {
     if (messageCount > 10 && participantCount > 2) {
       insights.push({
         type: 'participation_balance',
-        message: 'Let\'s ensure we\'re hearing from everyone',
+        message: "Let's ensure we're hearing from everyone",
         suggestion: 'Use round-robin or direct invitation to less active participants',
         priority: 'medium',
-        timing: 'next_transition'
+        timing: 'next_transition',
       });
     }
 
@@ -211,7 +219,7 @@ export class AgendaManager {
         message: 'This seems like a good time to crystallize our decision',
         suggestion: 'Summarize options discussed and guide toward specific commitment',
         priority: 'high',
-        timing: 'immediate'
+        timing: 'immediate',
       });
     }
 
@@ -220,9 +228,9 @@ export class AgendaManager {
       insights.push({
         type: 'bias_alert',
         message: 'Watch for anchoring bias in this discussion',
-        suggestion: 'Consider alternatives to first ideas presented, use devil\'s advocate',
+        suggestion: "Consider alternatives to first ideas presented, use devil's advocate",
         priority: 'medium',
-        timing: 'immediate'
+        timing: 'immediate',
       });
     }
 
@@ -232,10 +240,7 @@ export class AgendaManager {
   /**
    * Generate Host facilitation response
    */
-  generateHostResponse(
-    currentContext: string,
-    insights: FacilitationInsight[]
-  ): string {
+  generateHostResponse(currentContext: string, insights: FacilitationInsight[]): string {
     const currentItem = this.getCurrentItem();
     const agenda = this.getActiveAgenda();
 
@@ -276,10 +281,12 @@ export class AgendaManager {
   }
 
   private isAgendaItemLine(line: string): boolean {
-    return /^\s*[\d\-*•]\s*/.test(line) ||
-           line.toLowerCase().includes('discuss') ||
-           line.toLowerCase().includes('review') ||
-           line.toLowerCase().includes('decide');
+    return (
+      /^\s*[\d\-*•]\s*/.test(line) ||
+      line.toLowerCase().includes('discuss') ||
+      line.toLowerCase().includes('review') ||
+      line.toLowerCase().includes('decide')
+    );
   }
 
   private parseAgendaItem(line: string, index: number): AgendaItem | null {
@@ -292,7 +299,10 @@ export class AgendaManager {
 
     // Determine item type based on keywords
     let type: AgendaItemType = 'discussion';
-    if (cleanLine.toLowerCase().includes('decision') || cleanLine.toLowerCase().includes('decide')) {
+    if (
+      cleanLine.toLowerCase().includes('decision') ||
+      cleanLine.toLowerCase().includes('decide')
+    ) {
       type = 'decision';
     } else if (cleanLine.toLowerCase().includes('brainstorm')) {
       type = 'brainstorming';
@@ -309,7 +319,7 @@ export class AgendaManager {
       timeAllocation,
       type,
       outcomes: [],
-      status: index === 0 ? 'in_progress' : 'pending'
+      status: index === 0 ? 'in_progress' : 'pending',
     };
   }
 
@@ -322,7 +332,7 @@ export class AgendaManager {
         timeAllocation: 5,
         type: 'check_in',
         outcomes: ['Aligned expectations', 'Psychological safety established'],
-        status: 'in_progress'
+        status: 'in_progress',
       },
       {
         id: 'main_discussion',
@@ -331,7 +341,7 @@ export class AgendaManager {
         timeAllocation: 40,
         type: 'discussion',
         outcomes: ['Shared understanding', 'Key insights identified'],
-        status: 'pending'
+        status: 'pending',
       },
       {
         id: 'action_items',
@@ -340,7 +350,7 @@ export class AgendaManager {
         timeAllocation: 10,
         type: 'planning',
         outcomes: ['Clear action items', 'Accountability established'],
-        status: 'pending'
+        status: 'pending',
       },
       {
         id: 'closing',
@@ -349,8 +359,8 @@ export class AgendaManager {
         timeAllocation: 5,
         type: 'review',
         outcomes: ['Meeting summary', 'Feedback gathered'],
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     ];
   }
 
@@ -359,8 +369,8 @@ export class AgendaManager {
       'FACILITATION APPROACH:',
       '• Start with psychological safety check-in',
       '• Use structured turn-taking for balanced participation',
-      '• Apply devil\'s advocate technique to test assumptions',
-      '• Watch for groupthink and anchoring bias'
+      "• Apply devil's advocate technique to test assumptions",
+      '• Watch for groupthink and anchoring bias',
     ];
 
     if (participantCount > 5) {
@@ -380,7 +390,7 @@ export class AgendaManager {
       'Monitor for confirmation bias - actively seek disconfirming evidence',
       'Use pre-mortem analysis: "What could go wrong with this decision?"',
       'Apply prospect theory: frame gains and losses appropriately',
-      'Watch for social proof cascades in group agreement'
+      'Watch for social proof cascades in group agreement',
     ];
 
     if (participantCount > 3) {
@@ -393,14 +403,22 @@ export class AgendaManager {
 
   private getBehavioralGuidance(itemType: AgendaItemType): string | null {
     const guidance: Record<AgendaItemType, string> = {
-      'decision': 'Use structured decision-making: 1) Define criteria, 2) Generate options, 3) Evaluate systematically, 4) Test with pre-mortem analysis',
-      'brainstorming': 'Divergent thinking first (no judgment), then convergent (evaluation). Use "Yes, and..." rather than "Yes, but..." language',
-      'discussion': 'Encourage diverse perspectives. Use the "steel man" approach - strengthen others\' arguments before responding',
-      'problem_solving': 'Define problem clearly before jumping to solutions. Use root cause analysis and systems thinking',
-      'information_sharing': 'Structure information to avoid cognitive overload. Chunk complex information and check for understanding',
-      'planning': 'Use backward planning from desired outcomes. Consider multiple scenarios and contingency plans',
-      'review': 'Focus on learning rather than blame. What worked well? What could be improved? What should we do differently?',
-      'check_in': 'Create psychological safety. Use inclusive language and ensure everyone feels heard'
+      decision:
+        'Use structured decision-making: 1) Define criteria, 2) Generate options, 3) Evaluate systematically, 4) Test with pre-mortem analysis',
+      brainstorming:
+        'Divergent thinking first (no judgment), then convergent (evaluation). Use "Yes, and..." rather than "Yes, but..." language',
+      discussion:
+        'Encourage diverse perspectives. Use the "steel man" approach - strengthen others\' arguments before responding',
+      problem_solving:
+        'Define problem clearly before jumping to solutions. Use root cause analysis and systems thinking',
+      information_sharing:
+        'Structure information to avoid cognitive overload. Chunk complex information and check for understanding',
+      planning:
+        'Use backward planning from desired outcomes. Consider multiple scenarios and contingency plans',
+      review:
+        'Focus on learning rather than blame. What worked well? What could be improved? What should we do differently?',
+      check_in:
+        'Create psychological safety. Use inclusive language and ensure everyone feels heard',
     };
 
     return guidance[itemType] || null;
@@ -430,7 +448,7 @@ export class AgendaManager {
     return {
       completed,
       total: agenda.items.length,
-      current: currentItem?.title || ''
+      current: currentItem?.title || '',
     };
   }
 }

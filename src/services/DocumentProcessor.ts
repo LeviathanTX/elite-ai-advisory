@@ -31,7 +31,7 @@ export class DocumentProcessor {
     let metadata: ProcessedDocument['metadata'] = {
       size: file.size,
       type,
-      wordCount: 0
+      wordCount: 0,
     };
 
     try {
@@ -81,7 +81,7 @@ export class DocumentProcessor {
       return {
         text,
         metadata,
-        chunks
+        chunks,
       };
     } catch (error) {
       console.error('Error processing file:', error);
@@ -103,15 +103,13 @@ export class DocumentProcessor {
     for (let i = 1; i <= totalPages; i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
+      const pageText = textContent.items.map((item: any) => item.str).join(' ');
       fullText += pageText + '\n\n';
     }
 
     return {
       text: fullText.trim(),
-      pages: totalPages
+      pages: totalPages,
     };
   }
 
@@ -126,7 +124,7 @@ export class DocumentProcessor {
       if (file.name.toLowerCase().endsWith('.ppt')) {
         return {
           text: `[Legacy PPT file: ${file.name}] - Legacy PowerPoint files (.ppt) are not supported in browser environments. Please convert to .pptx format for text extraction.`,
-          slides: 1
+          slides: 1,
         };
       }
 
@@ -135,8 +133,8 @@ export class DocumentProcessor {
       let slideCount = 0;
 
       // Extract text from slides
-      const slideFiles = Object.keys(zip.files).filter(name =>
-        name.startsWith('ppt/slides/slide') && name.endsWith('.xml')
+      const slideFiles = Object.keys(zip.files).filter(
+        name => name.startsWith('ppt/slides/slide') && name.endsWith('.xml')
       );
 
       slideCount = slideFiles.length;
@@ -150,8 +148,8 @@ export class DocumentProcessor {
       }
 
       // Extract speaker notes
-      const notesFiles = Object.keys(zip.files).filter(name =>
-        name.startsWith('ppt/notesSlides/notesSlide') && name.endsWith('.xml')
+      const notesFiles = Object.keys(zip.files).filter(
+        name => name.startsWith('ppt/notesSlides/notesSlide') && name.endsWith('.xml')
       );
 
       for (const notesFile of notesFiles) {
@@ -164,11 +162,15 @@ export class DocumentProcessor {
       }
 
       return {
-        text: extractedText.trim() || `[PowerPoint file: ${file.name}] - No text content could be extracted from slides.`,
-        slides: slideCount
+        text:
+          extractedText.trim() ||
+          `[PowerPoint file: ${file.name}] - No text content could be extracted from slides.`,
+        slides: slideCount,
       };
     } catch (error) {
-      throw new Error(`Failed to extract text from PowerPoint: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to extract text from PowerPoint: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -191,22 +193,18 @@ export class DocumentProcessor {
 
       // Extract text from common PowerPoint XML text elements
       const textElements = [
-        'a\\:t',  // Office Open XML text runs
-        't',      // Simple text elements
-        'text',   // Generic text elements
-        'p',      // Paragraph elements
-        'r'       // Run elements
+        'a\\:t', // Office Open XML text runs
+        't', // Simple text elements
+        'text', // Generic text elements
+        'p', // Paragraph elements
+        'r', // Run elements
       ];
 
       // Get all text nodes from the document
-      const walker = document.createTreeWalker(
-        xmlDoc,
-        NodeFilter.SHOW_TEXT,
-        null
-      );
+      const walker = document.createTreeWalker(xmlDoc, NodeFilter.SHOW_TEXT, null);
 
       let node;
-      while (node = walker.nextNode()) {
+      while ((node = walker.nextNode())) {
         const text = node.textContent?.trim();
         if (text && text.length > 0) {
           extractedText += text + ' ';
@@ -266,7 +264,7 @@ export class DocumentProcessor {
   private async extractPlainText(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onload = e => resolve(e.target?.result as string);
       reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsText(file);
     });
@@ -321,13 +319,22 @@ export class DocumentProcessor {
     if (mimeType === 'application/pdf' || extension === 'pdf') {
       return 'pdf';
     }
-    if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || extension === 'docx') {
+    if (
+      mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      extension === 'docx'
+    ) {
       return 'docx';
     }
-    if (mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || extension === 'xlsx') {
+    if (
+      mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      extension === 'xlsx'
+    ) {
       return 'xlsx';
     }
-    if (mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || extension === 'pptx') {
+    if (
+      mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+      extension === 'pptx'
+    ) {
       return 'pptx';
     }
     if (mimeType === 'application/vnd.ms-powerpoint' || extension === 'ppt') {
@@ -353,7 +360,7 @@ export class DocumentProcessor {
     if (file.size > maxSize) {
       return {
         isValid: false,
-        error: `File size exceeds 50MB limit (${(file.size / 1024 / 1024).toFixed(1)}MB)`
+        error: `File size exceeds 50MB limit (${(file.size / 1024 / 1024).toFixed(1)}MB)`,
       };
     }
 
@@ -362,13 +369,13 @@ export class DocumentProcessor {
       if (!allowedTypes.includes(type)) {
         return {
           isValid: false,
-          error: `File type not supported: ${type}`
+          error: `File type not supported: ${type}`,
         };
       }
     } catch (error) {
       return {
         isValid: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
 
@@ -397,7 +404,7 @@ export class DocumentProcessor {
       pptx: '📊',
       ppt: '📊',
       txt: '📄',
-      md: '📋'
+      md: '📋',
     };
     return icons[type] || '📄';
   }

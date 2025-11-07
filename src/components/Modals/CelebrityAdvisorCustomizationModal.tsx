@@ -11,11 +11,11 @@ interface CelebrityAdvisorCustomizationModalProps {
   onSave?: (advisor: Advisor) => void;
 }
 
-export function CelebrityAdvisorCustomizationModal({ 
-  advisor, 
-  isOpen, 
-  onClose, 
-  onSave 
+export function CelebrityAdvisorCustomizationModal({
+  advisor,
+  isOpen,
+  onClose,
+  onSave,
 }: CelebrityAdvisorCustomizationModalProps) {
   const { updateAdvisor } = useAdvisor();
   const { settings } = useSettings();
@@ -33,7 +33,7 @@ export function CelebrityAdvisorCustomizationModal({
 
   const generateDefaultPrompt = (advisor: Advisor) => {
     if (!advisor) return '';
-    
+
     return `You are ${advisor.name}, the renowned ${advisor.role || advisor.title} at ${advisor.company || 'your company'}.
 
 Background: ${advisor.background || `You are known for your expertise in ${(advisor.expertise || []).join(', ')} and your unique approach to business challenges.`}
@@ -64,11 +64,11 @@ Always provide specific, actionable advice that reflects your unique perspective
       ...advisor,
       ai_service: aiService as any,
       system_prompt: systemPrompt,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     updateAdvisor(updatedAdvisor);
-    
+
     if (onSave) {
       onSave(updatedAdvisor);
     }
@@ -86,12 +86,18 @@ Always provide specific, actionable advice that reflects your unique perspective
 
   const getAIServiceIcon = (service: string) => {
     switch (service) {
-      case 'claude': return '🤖';
-      case 'chatgpt': return '🧠';
-      case 'gemini': return '💎';
-      case 'deepseek': return '🔮';
-      case 'groq': return '⚡';
-      default: return '🤖';
+      case 'claude':
+        return '🤖';
+      case 'chatgpt':
+        return '🧠';
+      case 'gemini':
+        return '💎';
+      case 'deepseek':
+        return '🔮';
+      case 'groq':
+        return '⚡';
+      default:
+        return '🤖';
     }
   };
 
@@ -137,13 +143,16 @@ Always provide specific, actionable advice that reflects your unique perspective
                 <p className="text-sm text-gray-500">{advisor.company}</p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h4 className="font-medium text-gray-900 mb-2">Expertise Areas</h4>
                 <div className="flex flex-wrap gap-1">
                   {(advisor.expertise || []).map(exp => (
-                    <span key={exp} className="inline-block px-2 py-1 bg-white text-gray-700 text-xs rounded border">
+                    <span
+                      key={exp}
+                      className="inline-block px-2 py-1 bg-white text-gray-700 text-xs rounded border"
+                    >
                       {exp}
                     </span>
                   ))}
@@ -151,14 +160,17 @@ Always provide specific, actionable advice that reflects your unique perspective
               </div>
               <div>
                 <h4 className="font-medium text-gray-900 mb-2">Communication Style</h4>
-                <p className="text-sm text-gray-600">{advisor.personality || 'Professional and insightful'}</p>
+                <p className="text-sm text-gray-600">
+                  {advisor.personality || 'Professional and insightful'}
+                </p>
               </div>
             </div>
 
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-sm text-yellow-800">
                 <Star className="w-4 h-4 inline mr-1" />
-                Celebrity advisor details are read-only. You can only customize the AI service and conversation prompts.
+                Celebrity advisor details are read-only. You can only customize the AI service and
+                conversation prompts.
               </p>
             </div>
           </div>
@@ -169,19 +181,19 @@ Always provide specific, actionable advice that reflects your unique perspective
               <Bot className="w-5 h-5 mr-2" />
               AI Service Configuration
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(settings.aiServices).map(([service, config]) => {
                 const isSelected = aiService === service;
                 const status = getAIServiceStatus(service);
-                
+
                 return (
                   <button
                     key={service}
                     onClick={() => handleAiServiceChange(service)}
                     className={`p-4 rounded-lg border-2 text-left transition-all ${
-                      isSelected 
-                        ? 'border-purple-500 bg-purple-50' 
+                      isSelected
+                        ? 'border-purple-500 bg-purple-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -190,9 +202,11 @@ Always provide specific, actionable advice that reflects your unique perspective
                         <span className="text-xl">{getAIServiceIcon(service)}</span>
                         <span className="font-medium text-gray-900 capitalize">{service}</span>
                       </div>
-                      <div className={`w-2 h-2 rounded-full ${
-                        status === 'configured' ? 'bg-green-500' : 'bg-yellow-500'
-                      }`}></div>
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          status === 'configured' ? 'bg-green-500' : 'bg-yellow-500'
+                        }`}
+                      ></div>
                     </div>
                     <p className="text-sm text-gray-600">
                       {status === 'configured' ? '✅ Ready to use' : '⚠️ API key required'}
@@ -218,25 +232,25 @@ Always provide specific, actionable advice that reflects your unique perspective
                 <span>Reset to Default</span>
               </button>
             </div>
-            
+
             <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Custom Instructions for {advisor.name}
               </label>
               <p className="text-xs text-gray-500 mb-2">
-                These instructions will guide how {advisor.name} responds in conversations. 
-                Be specific about their expertise, communication style, and approach to advice.
+                These instructions will guide how {advisor.name} responds in conversations. Be
+                specific about their expertise, communication style, and approach to advice.
               </p>
             </div>
-            
+
             <textarea
               value={systemPrompt}
-              onChange={(e) => handlePromptChange(e.target.value)}
+              onChange={e => handlePromptChange(e.target.value)}
               rows={12}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-mono"
               placeholder="Enter custom instructions for how this advisor should behave..."
             />
-            
+
             <div className="mt-2 flex justify-between text-xs text-gray-500">
               <span>Characters: {systemPrompt.length}</span>
               <span>Recommended: 500-1500 characters for best results</span>
@@ -247,8 +261,10 @@ Always provide specific, actionable advice that reflects your unique perspective
           <div className="bg-blue-50 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">Preview</h4>
             <p className="text-sm text-blue-800">
-              {advisor.name} will use <strong>{aiService.charAt(0).toUpperCase() + aiService.slice(1)}</strong> AI 
-              service with your custom instructions to provide advice that matches their real-world expertise and personality.
+              {advisor.name} will use{' '}
+              <strong>{aiService.charAt(0).toUpperCase() + aiService.slice(1)}</strong> AI service
+              with your custom instructions to provide advice that matches their real-world
+              expertise and personality.
             </p>
           </div>
         </div>
@@ -256,11 +272,9 @@ Always provide specific, actionable advice that reflects your unique perspective
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <div className="text-sm text-gray-600">
-            {isModified && (
-              <span className="text-orange-600">• Unsaved changes</span>
-            )}
+            {isModified && <span className="text-orange-600">• Unsaved changes</span>}
           </div>
-          
+
           <div className="flex space-x-3">
             <button
               onClick={onClose}

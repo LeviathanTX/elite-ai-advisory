@@ -18,7 +18,7 @@ export function MessageInput({
   onSendMessage,
   isGeneratingResponse,
   disabled = false,
-  placeholder = "Ask your advisory team anything...",
+  placeholder = 'Ask your advisory team anything...',
   supportVoice = false,
   supportAttachments = false,
   maxLength = 2000,
@@ -36,11 +36,14 @@ export function MessageInput({
     }
   }, []);
 
-  const handleInputChange = useCallback((value: string) => {
-    if (value.length <= maxLength) {
-      setInput(value);
-    }
-  }, [maxLength]);
+  const handleInputChange = useCallback(
+    (value: string) => {
+      if (value.length <= maxLength) {
+        setInput(value);
+      }
+    },
+    [maxLength]
+  );
 
   const handleSend = useCallback(() => {
     const trimmedInput = input.trim();
@@ -55,12 +58,15 @@ export function MessageInput({
     }
   }, [input, isGeneratingResponse, disabled, onSendMessage]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }, [handleSend]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    },
+    [handleSend]
+  );
 
   const handleVoiceToggle = useCallback(() => {
     if (!supportVoice) return;
@@ -101,7 +107,7 @@ export function MessageInput({
               <textarea
                 ref={textareaRef}
                 value={input}
-                onChange={(e) => {
+                onChange={e => {
                   handleInputChange(e.target.value);
                   adjustTextareaHeight();
                 }}
@@ -133,11 +139,7 @@ export function MessageInput({
                 }`}
                 title={isRecording ? 'Stop recording' : 'Start voice input'}
               >
-                {isRecording ? (
-                  <MicOff className="w-5 h-5" />
-                ) : (
-                  <Mic className="w-5 h-5" />
-                )}
+                {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
             )}
 
@@ -146,9 +148,7 @@ export function MessageInput({
               onClick={handleSend}
               disabled={!canSend}
               className={`p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                canSend
-                  ? 'text-white bg-blue-600 hover:bg-blue-700'
-                  : 'text-gray-400 bg-gray-100'
+                canSend ? 'text-white bg-blue-600 hover:bg-blue-700' : 'text-gray-400 bg-gray-100'
               }`}
               title="Send message"
             >
@@ -161,8 +161,14 @@ export function MessageInput({
             <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
               <div className="flex space-x-1">
                 <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></div>
-                <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                <div
+                  className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"
+                  style={{ animationDelay: '0.2s' }}
+                ></div>
+                <div
+                  className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"
+                  style={{ animationDelay: '0.4s' }}
+                ></div>
               </div>
               <span>Your advisors are thinking...</span>
             </div>
@@ -173,9 +179,7 @@ export function MessageInput({
         <div className="mt-3 flex items-center justify-between text-sm text-gray-500">
           <div className="flex items-center space-x-4">
             <span>Press Enter to send, Shift+Enter for new line</span>
-            {supportVoice && (
-              <span>• Voice input supported</span>
-            )}
+            {supportVoice && <span>• Voice input supported</span>}
           </div>
 
           {input.length === 0 && (

@@ -49,7 +49,6 @@ export class SecureAIServiceClient {
     };
     this.baseUrl = environment.getApiBaseUrl();
     this.timeout = 30000; // 30 seconds default timeout
-
   }
 
   async generateResponse(
@@ -63,7 +62,7 @@ export class SecureAIServiceClient {
         service: this.config.id,
         messageCount: messages.length,
         options,
-        useMock: environment.shouldUseMockAI()
+        useMock: environment.shouldUseMockAI(),
       });
     }
 
@@ -122,13 +121,13 @@ export class SecureAIServiceClient {
       model: this.config.model,
       messages: messages.map(msg => ({
         role: msg.role,
-        content: this.sanitizeContent(msg.content)
+        content: this.sanitizeContent(msg.content),
       })),
       options: {
         temperature: options.temperature ?? 0.7,
         maxTokens: options.maxTokens ?? 2000,
-        timeout: options.timeout ?? this.timeout
-      }
+        timeout: options.timeout ?? this.timeout,
+      },
     };
 
     try {
@@ -140,10 +139,10 @@ export class SecureAIServiceClient {
         headers: {
           'Content-Type': 'application/json',
           'X-Request-ID': this.generateRequestId(),
-          'X-Client-Version': '1.0.0'
+          'X-Client-Version': '1.0.0',
         },
         body: JSON.stringify(requestPayload),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -155,7 +154,6 @@ export class SecureAIServiceClient {
 
       const data = await response.json();
       return this.validateAndSanitizeResponse(data);
-
     } catch (error) {
       // Detailed error logging for debugging
       console.error('API Call Details:', {
@@ -163,7 +161,7 @@ export class SecureAIServiceClient {
         endpoint: `${this.baseUrl}/api/generate`,
         error: error instanceof Error ? error.message : error,
         stack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       if (error instanceof Error) {
@@ -217,23 +215,27 @@ export class SecureAIServiceClient {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': this.config.apiKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model: this.config.model,
         max_tokens: options.maxTokens ?? 2000,
         temperature: options.temperature ?? 0.7,
-        messages: messages.filter(m => m.role !== 'system').map(msg => ({
-          role: msg.role,
-          content: msg.content
-        })),
-        system: messages.find(m => m.role === 'system')?.content
-      })
+        messages: messages
+          .filter(m => m.role !== 'system')
+          .map(msg => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+        system: messages.find(m => m.role === 'system')?.content,
+      }),
     });
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: { message: 'Unknown error' } }));
-      throw new Error(`Claude API Error ${response.status}: ${error.error?.message || 'Request failed'}`);
+      throw new Error(
+        `Claude API Error ${response.status}: ${error.error?.message || 'Request failed'}`
+      );
     }
 
     const data = await response.json();
@@ -242,13 +244,13 @@ export class SecureAIServiceClient {
       usage: {
         prompt_tokens: data.usage.input_tokens,
         completion_tokens: data.usage.output_tokens,
-        total_tokens: data.usage.input_tokens + data.usage.output_tokens
+        total_tokens: data.usage.input_tokens + data.usage.output_tokens,
       },
       metadata: {
         model: data.model,
         service: 'claude',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
@@ -260,22 +262,24 @@ export class SecureAIServiceClient {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.config.apiKey}`
+        Authorization: `Bearer ${this.config.apiKey}`,
       },
       body: JSON.stringify({
         model: this.config.model,
         messages: messages.map(msg => ({
           role: msg.role,
-          content: msg.content
+          content: msg.content,
         })),
         max_tokens: options.maxTokens ?? 2000,
-        temperature: options.temperature ?? 0.7
-      })
+        temperature: options.temperature ?? 0.7,
+      }),
     });
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: { message: 'Unknown error' } }));
-      throw new Error(`OpenAI API Error ${response.status}: ${error.error?.message || 'Request failed'}`);
+      throw new Error(
+        `OpenAI API Error ${response.status}: ${error.error?.message || 'Request failed'}`
+      );
     }
 
     const data = await response.json();
@@ -284,13 +288,13 @@ export class SecureAIServiceClient {
       usage: {
         prompt_tokens: data.usage.prompt_tokens,
         completion_tokens: data.usage.completion_tokens,
-        total_tokens: data.usage.total_tokens
+        total_tokens: data.usage.total_tokens,
       },
       metadata: {
         model: data.model,
         service: 'openai',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
@@ -312,13 +316,13 @@ export class SecureAIServiceClient {
       usage: {
         prompt_tokens: Math.floor(lastMessage.length / 4) + 50,
         completion_tokens: Math.floor(content.length / 4) + 25,
-        total_tokens: Math.floor((lastMessage.length + content.length) / 4) + 75
+        total_tokens: Math.floor((lastMessage.length + content.length) / 4) + 75,
       },
       metadata: {
         model: this.config.model || 'mock-model',
         service: this.config.id,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 
@@ -328,14 +332,20 @@ export class SecureAIServiceClient {
     const advisorName = advisorMatch?.[1] || 'AI Advisor';
 
     // Check for document context in system message
-    const hasDocumentContext = systemMessage.includes('Document Content:') || systemMessage.includes('### Document Analysis');
+    const hasDocumentContext =
+      systemMessage.includes('Document Content:') ||
+      systemMessage.includes('### Document Analysis');
 
     if (hasDocumentContext) {
       return this.generateDocumentAwareMockResponse(userMessage, systemMessage, advisorName);
     }
 
     // Special handling for Host advisor
-    if (advisorName.includes('Dr. Sarah Chen') || systemMessage.includes('meeting facilitator') || systemMessage.includes('behavioral economics')) {
+    if (
+      advisorName.includes('Dr. Sarah Chen') ||
+      systemMessage.includes('meeting facilitator') ||
+      systemMessage.includes('behavioral economics')
+    ) {
       return this.generateHostFacilitationResponse(userMessage, systemMessage);
     }
 
@@ -358,15 +368,24 @@ export class SecureAIServiceClient {
 
       "Let me pause us here for a process check. We've been discussing for a while - are we making progress toward a decision, or do we need to reframe the problem? Sometimes taking a step back actually accelerates our progress forward.",
 
-      "Based on what I'm hearing, it sounds like we have different underlying interests at play. This is actually positive - it means we have rich information to work with. Let me suggest we identify our core interests before jumping to positions or solutions."
+      "Based on what I'm hearing, it sounds like we have different underlying interests at play. This is actually positive - it means we have rich information to work with. Let me suggest we identify our core interests before jumping to positions or solutions.",
     ];
 
     // Context-aware selection based on user message
-    if (userMessage.toLowerCase().includes('decision') || userMessage.toLowerCase().includes('choose')) {
+    if (
+      userMessage.toLowerCase().includes('decision') ||
+      userMessage.toLowerCase().includes('choose')
+    ) {
       return facilitationResponses[0]; // Decision structure response
-    } else if (userMessage.toLowerCase().includes('conflict') || userMessage.toLowerCase().includes('disagree')) {
+    } else if (
+      userMessage.toLowerCase().includes('conflict') ||
+      userMessage.toLowerCase().includes('disagree')
+    ) {
       return facilitationResponses[6]; // Interest-based response
-    } else if (userMessage.toLowerCase().includes('stuck') || userMessage.toLowerCase().includes('help')) {
+    } else if (
+      userMessage.toLowerCase().includes('stuck') ||
+      userMessage.toLowerCase().includes('help')
+    ) {
       return facilitationResponses[1]; // Structured approach response
     } else {
       return facilitationResponses[Math.floor(Math.random() * facilitationResponses.length)];
@@ -380,23 +399,23 @@ export class SecureAIServiceClient {
       financial: [
         `Based on my analysis of the financial data, I see several key areas that require attention. The revenue trajectory shows promise, but we need to examine the underlying unit economics more closely.`,
         `From a financial perspective, the fundamentals appear solid, though I'd recommend stress-testing the projections against various market scenarios to ensure robustness.`,
-        `The financial metrics indicate strong potential, but sustainable growth will depend on maintaining healthy cash flow management and optimizing the capital structure.`
+        `The financial metrics indicate strong potential, but sustainable growth will depend on maintaining healthy cash flow management and optimizing the capital structure.`,
       ],
       strategic: [
         `This presents an interesting strategic opportunity. The key will be executing on the core value proposition while building defensible competitive moats.`,
         `From a strategic standpoint, I see significant potential if we can address the market positioning challenges and strengthen the go-to-market approach.`,
-        `The strategic landscape is complex here. Success will require careful navigation of competitive dynamics and clear prioritization of growth initiatives.`
+        `The strategic landscape is complex here. Success will require careful navigation of competitive dynamics and clear prioritization of growth initiatives.`,
       ],
       risk: [
         `I've identified several risk factors that warrant careful consideration. The most critical areas involve market timing and execution capability.`,
         `The risk profile shows both upside potential and downside protection concerns. We'll need to implement robust mitigation strategies for the key vulnerabilities.`,
-        `Risk assessment reveals manageable exposure levels, though continuous monitoring will be essential as market conditions evolve.`
+        `Risk assessment reveals manageable exposure levels, though continuous monitoring will be essential as market conditions evolve.`,
       ],
       general: [
         `This is a compelling opportunity that aligns well with current market trends. The execution strategy will be critical for realizing the full potential.`,
         `I see strong fundamentals here, though success will depend on the team's ability to navigate the competitive landscape and scale effectively.`,
-        `The opportunity merits serious consideration. With proper execution and strategic positioning, this could deliver significant value.`
-      ]
+        `The opportunity merits serious consideration. With proper execution and strategic positioning, this could deliver significant value.`,
+      ],
     };
 
     return responseTemplates[messageType] || responseTemplates.general;
@@ -405,31 +424,48 @@ export class SecureAIServiceClient {
   private categorizeMessage(message: string): string {
     const lowerMessage = message.toLowerCase();
 
-    if (lowerMessage.includes('financial') || lowerMessage.includes('revenue') ||
-        lowerMessage.includes('profit') || lowerMessage.includes('cash')) {
+    if (
+      lowerMessage.includes('financial') ||
+      lowerMessage.includes('revenue') ||
+      lowerMessage.includes('profit') ||
+      lowerMessage.includes('cash')
+    ) {
       return 'financial';
     }
 
-    if (lowerMessage.includes('strategy') || lowerMessage.includes('market') ||
-        lowerMessage.includes('competitive') || lowerMessage.includes('growth')) {
+    if (
+      lowerMessage.includes('strategy') ||
+      lowerMessage.includes('market') ||
+      lowerMessage.includes('competitive') ||
+      lowerMessage.includes('growth')
+    ) {
       return 'strategic';
     }
 
-    if (lowerMessage.includes('risk') || lowerMessage.includes('concern') ||
-        lowerMessage.includes('threat') || lowerMessage.includes('challenge')) {
+    if (
+      lowerMessage.includes('risk') ||
+      lowerMessage.includes('concern') ||
+      lowerMessage.includes('threat') ||
+      lowerMessage.includes('challenge')
+    ) {
       return 'risk';
     }
 
     return 'general';
   }
 
-  private generateDocumentAwareMockResponse(userMessage: string, systemMessage: string, advisorName: string): string {
+  private generateDocumentAwareMockResponse(
+    userMessage: string,
+    systemMessage: string,
+    advisorName: string
+  ): string {
     // Extract document content from system message
     const documentMatch = systemMessage.match(/Document Content:(.*?)(?=\n\n|\n###|$)/s);
     const documentContent = documentMatch?.[1]?.trim() || '';
 
     // Extract key phrases from document content (first 200 characters for context)
-    const documentPreview = documentContent.slice(0, 200) + (documentContent.length > 200 ? '...' : '');
+    const documentPreview =
+      documentContent.slice(0, 200) + (documentContent.length > 200 ? '...' : '');
 
     // Extract key terms from user question
     const questionLower = userMessage.toLowerCase();
@@ -437,16 +473,20 @@ export class SecureAIServiceClient {
 
     // Find relevant content based on user question
     let relevantContent = '';
-    if (questionLower.includes('summary') || questionLower.includes('main') || questionLower.includes('key')) {
+    if (
+      questionLower.includes('summary') ||
+      questionLower.includes('main') ||
+      questionLower.includes('key')
+    ) {
       relevantContent = documentPreview;
     } else {
       // Find sentences in document that might relate to user question
       const sentences = documentContent.split(/[.!?]+/).filter(s => s.trim().length > 10);
       const relevantSentences = sentences.filter(sentence => {
         const sentenceLower = sentence.toLowerCase();
-        return questionLower.split(' ').some(word =>
-          word.length > 3 && sentenceLower.includes(word)
-        );
+        return questionLower
+          .split(' ')
+          .some(word => word.length > 3 && sentenceLower.includes(word));
       });
       relevantContent = relevantSentences.slice(0, 2).join('. ') || documentPreview;
     }
@@ -456,15 +496,27 @@ export class SecureAIServiceClient {
       return `Based on my analysis of the document, here are the key points: ${relevantContent}. The document appears to focus on ${this.extractDocumentTopic(documentContent)}. I'd be happy to dive deeper into any specific aspects that interest you.`;
     }
 
-    if (questionLower.includes('recommend') || questionLower.includes('suggest') || questionLower.includes('advice')) {
+    if (
+      questionLower.includes('recommend') ||
+      questionLower.includes('suggest') ||
+      questionLower.includes('advice')
+    ) {
       return `Having reviewed the document content, I can see this relates to ${this.extractDocumentTopic(documentContent)}. Based on the information presented: "${relevantContent}", my recommendation would be to focus on the core insights and consider how they apply to your specific situation. What particular aspect would you like me to elaborate on?`;
     }
 
-    if (questionLower.includes('question') || questionLower.includes('unclear') || questionLower.includes('explain')) {
+    if (
+      questionLower.includes('question') ||
+      questionLower.includes('unclear') ||
+      questionLower.includes('explain')
+    ) {
       return `Looking at the document, I can see the relevant section: "${relevantContent}". This appears to address ${this.extractDocumentTopic(documentContent)}. Let me clarify this for you - the key insight here is that the document provides specific information that directly relates to your question. Would you like me to expand on any particular element?`;
     }
 
-    if (questionLower.includes('risk') || questionLower.includes('concern') || questionLower.includes('problem')) {
+    if (
+      questionLower.includes('risk') ||
+      questionLower.includes('concern') ||
+      questionLower.includes('problem')
+    ) {
       return `From my analysis of the document, I notice: "${relevantContent}". When considering risks related to ${this.extractDocumentTopic(documentContent)}, it's important to evaluate both the opportunities and potential challenges outlined. The document provides good context for understanding the landscape. What specific risk factors are you most concerned about?`;
     }
 
@@ -475,9 +527,25 @@ export class SecureAIServiceClient {
   private extractDocumentTopic(content: string): string {
     const words = content.toLowerCase().split(/\s+/);
     const commonTopics = [
-      'business', 'strategy', 'financial', 'market', 'product', 'technology', 'management',
-      'analysis', 'report', 'proposal', 'plan', 'research', 'investment', 'growth',
-      'artificial intelligence', 'ai', 'machine learning', 'innovation', 'development'
+      'business',
+      'strategy',
+      'financial',
+      'market',
+      'product',
+      'technology',
+      'management',
+      'analysis',
+      'report',
+      'proposal',
+      'plan',
+      'research',
+      'investment',
+      'growth',
+      'artificial intelligence',
+      'ai',
+      'machine learning',
+      'innovation',
+      'development',
     ];
 
     for (const topic of commonTopics) {
@@ -487,7 +555,25 @@ export class SecureAIServiceClient {
     }
 
     // Fallback to first meaningful words
-    const meaningfulWords = words.filter(word => word.length > 4 && !['the', 'and', 'that', 'this', 'with', 'from', 'they', 'have', 'been', 'will', 'would', 'could', 'should'].includes(word));
+    const meaningfulWords = words.filter(
+      word =>
+        word.length > 4 &&
+        ![
+          'the',
+          'and',
+          'that',
+          'this',
+          'with',
+          'from',
+          'they',
+          'have',
+          'been',
+          'will',
+          'would',
+          'could',
+          'should',
+        ].includes(word)
+    );
     return meaningfulWords.slice(0, 2).join(' ') || 'business topics';
   }
 
@@ -514,13 +600,13 @@ export class SecureAIServiceClient {
       usage: data.usage || {
         prompt_tokens: 0,
         completion_tokens: 0,
-        total_tokens: 0
+        total_tokens: 0,
       },
       metadata: {
         model: data.model || this.config.model || 'unknown',
         service: this.config.id,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 

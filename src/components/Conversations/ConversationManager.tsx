@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  MessageCircle, Plus, Search, Filter, Clock, Users, 
-  FileText, Star, MoreVertical, Trash2, Edit2, 
-  Download, Share2, Archive, Calendar, Brain,
-  Zap, TrendingUp, ArrowRight
+import {
+  MessageCircle,
+  Plus,
+  Search,
+  Filter,
+  Clock,
+  Users,
+  FileText,
+  Star,
+  MoreVertical,
+  Trash2,
+  Edit2,
+  Download,
+  Share2,
+  Archive,
+  Calendar,
+  Brain,
+  Zap,
+  TrendingUp,
+  ArrowRight,
 } from 'lucide-react';
 import { AdvisoryConversation } from './AdvisoryConversation';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
@@ -43,29 +58,29 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
       name: 'Strategic Planning',
       icon: <Brain className="w-4 h-4" />,
       color: 'bg-blue-500',
-      description: 'Long-term strategy and planning'
+      description: 'Long-term strategy and planning',
     },
     {
       id: 'due_diligence',
       name: 'Due Diligence',
       icon: <FileText className="w-4 h-4" />,
       color: 'bg-green-500',
-      description: 'Investment analysis and document review'
+      description: 'Investment analysis and document review',
     },
     {
       id: 'quick_consultation',
       name: 'Quick Consultation',
       icon: <Zap className="w-4 h-4" />,
       color: 'bg-orange-500',
-      description: 'Fast answers and immediate advice'
+      description: 'Fast answers and immediate advice',
     },
     {
       id: 'general',
       name: 'General Discussion',
       icon: <MessageCircle className="w-4 h-4" />,
       color: 'bg-purple-500',
-      description: 'Open conversation with advisors'
-    }
+      description: 'Open conversation with advisors',
+    },
   ];
 
   useEffect(() => {
@@ -74,7 +89,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
 
   const loadConversations = () => {
     const saved: SavedConversation[] = [];
-    
+
     // Load from localStorage
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -92,7 +107,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
             hasAttachments: data.files?.length > 0 || false,
             tags: data.tags || [],
             isStarred: data.isStarred || false,
-            isArchived: data.isArchived || false
+            isArchived: data.isArchived || false,
           });
         } catch (error) {
           console.error('Error loading conversation:', error);
@@ -108,13 +123,14 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
       if (filterMode === 'starred' && !conv.isStarred) return false;
       if (filterMode === 'archived' && !conv.isArchived) return false;
       if (filterMode === 'recent' && conv.isArchived) return false;
-      
+
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        return conv.title.toLowerCase().includes(query) ||
-               conv.lastMessage.toLowerCase().includes(query);
+        return (
+          conv.title.toLowerCase().includes(query) || conv.lastMessage.toLowerCase().includes(query)
+        );
       }
-      
+
       return true;
     })
     .sort((a, b) => {
@@ -183,10 +199,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <button
-                onClick={onBack}
-                className="text-gray-500 hover:text-gray-700 font-medium"
-              >
+              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
                 ← Back to Dashboard
               </button>
               <div className="h-6 border-l border-gray-300"></div>
@@ -274,7 +287,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                   type="text"
                   placeholder="Search conversations..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -285,10 +298,10 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                   key={filter}
                   onClick={() => setFilterMode(filter)}
                   className={cn(
-                    "px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     filterMode === filter
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   )}
                 >
                   {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -297,7 +310,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
             </div>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={e => setSortBy(e.target.value as any)}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
             >
               <option value="recent">Sort by Recent</option>
@@ -320,7 +333,12 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                 }}
                 className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-left group"
               >
-                <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center mb-4", mode.color)}>
+                <div
+                  className={cn(
+                    'w-12 h-12 rounded-lg flex items-center justify-center mb-4',
+                    mode.color
+                  )}
+                >
                   <div className="text-white text-lg">{mode.icon}</div>
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{mode.name}</h3>
@@ -342,10 +360,9 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
               <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No conversations found</h3>
               <p className="text-gray-600 mb-6">
-                {searchQuery || filterMode !== 'all' 
+                {searchQuery || filterMode !== 'all'
                   ? 'Try adjusting your search or filters'
-                  : 'Start your first conversation with our AI advisory board'
-                }
+                  : 'Start your first conversation with our AI advisory board'}
               </p>
               <button
                 onClick={() => setShowNewConversation(true)}
@@ -368,7 +385,12 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", modeInfo.color)}>
+                        <div
+                          className={cn(
+                            'w-10 h-10 rounded-lg flex items-center justify-center',
+                            modeInfo.color
+                          )}
+                        >
                           <div className="text-white">{modeInfo.icon}</div>
                         </div>
                         <div>
@@ -380,20 +402,23 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                       </div>
                       <div className="flex items-center space-x-1">
                         <button
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             toggleStar(conversation.id);
                           }}
                           className={cn(
-                            "p-1 rounded hover:bg-gray-100",
-                            conversation.isStarred ? "text-yellow-500" : "text-gray-400"
+                            'p-1 rounded hover:bg-gray-100',
+                            conversation.isStarred ? 'text-yellow-500' : 'text-gray-400'
                           )}
                         >
-                          <Star className="w-4 h-4" fill={conversation.isStarred ? "currentColor" : "none"} />
+                          <Star
+                            className="w-4 h-4"
+                            fill={conversation.isStarred ? 'currentColor' : 'none'}
+                          />
                         </button>
                         <div className="relative group/menu">
                           <button
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={e => e.stopPropagation()}
                             className="p-1 rounded hover:bg-gray-100 text-gray-400"
                           >
                             <MoreVertical className="w-4 h-4" />
@@ -401,7 +426,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                           <div className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-10">
                             <div className="py-1">
                               <button
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   archiveConversation(conversation.id);
                                 }}
@@ -411,7 +436,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                                 {conversation.isArchived ? 'Unarchive' : 'Archive'}
                               </button>
                               <button
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   deleteConversation(conversation.id);
                                 }}

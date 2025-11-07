@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { ChevronRight, CheckCircle, Play, Users, FileText, Mic, Settings, Star, ArrowRight } from 'lucide-react';
+import {
+  ChevronRight,
+  CheckCircle,
+  Play,
+  Users,
+  FileText,
+  Mic,
+  Settings,
+  Star,
+  ArrowRight,
+} from 'lucide-react';
 import { cn } from '../../utils';
 import { SubscriptionTier } from '../../types';
 
@@ -20,41 +30,137 @@ interface OnboardingPreferences {
 }
 
 const BUSINESS_GOALS = [
-  { id: 'fundraising', label: 'Raise Capital', icon: '💰', description: 'Pitch to investors and secure funding' },
-  { id: 'scaling', label: 'Scale Operations', icon: '📈', description: 'Grow team and expand market reach' },
-  { id: 'strategy', label: 'Strategic Planning', icon: '🎯', description: 'Develop long-term business strategy' },
-  { id: 'product', label: 'Product Development', icon: '🚀', description: 'Build and improve products' },
-  { id: 'marketing', label: 'Marketing & Sales', icon: '📊', description: 'Grow customer acquisition' },
-  { id: 'operations', label: 'Operational Excellence', icon: '⚙️', description: 'Optimize processes and efficiency' }
+  {
+    id: 'fundraising',
+    label: 'Raise Capital',
+    icon: '💰',
+    description: 'Pitch to investors and secure funding',
+  },
+  {
+    id: 'scaling',
+    label: 'Scale Operations',
+    icon: '📈',
+    description: 'Grow team and expand market reach',
+  },
+  {
+    id: 'strategy',
+    label: 'Strategic Planning',
+    icon: '🎯',
+    description: 'Develop long-term business strategy',
+  },
+  {
+    id: 'product',
+    label: 'Product Development',
+    icon: '🚀',
+    description: 'Build and improve products',
+  },
+  {
+    id: 'marketing',
+    label: 'Marketing & Sales',
+    icon: '📊',
+    description: 'Grow customer acquisition',
+  },
+  {
+    id: 'operations',
+    label: 'Operational Excellence',
+    icon: '⚙️',
+    description: 'Optimize processes and efficiency',
+  },
 ];
 
 const BUSINESS_STAGES = [
   { id: 'idea', label: 'Idea Stage', description: 'Validating concept and business model' },
-  { id: 'startup', label: 'Early Startup', description: 'Building MVP and finding product-market fit' },
+  {
+    id: 'startup',
+    label: 'Early Startup',
+    description: 'Building MVP and finding product-market fit',
+  },
   { id: 'growth', label: 'Growth Stage', description: 'Scaling team and expanding market' },
-  { id: 'established', label: 'Established Business', description: 'Optimizing operations and exploring new markets' }
+  {
+    id: 'established',
+    label: 'Established Business',
+    description: 'Optimizing operations and exploring new markets',
+  },
 ];
 
 const INDUSTRY_FOCUS = [
-  'SaaS & Technology', 'Healthcare & Biotech', 'Fintech & Financial Services',
-  'E-commerce & Retail', 'Manufacturing & Industrial', 'Real Estate', 'Energy & Sustainability',
-  'Education & EdTech', 'Entertainment & Media', 'Food & Beverage', 'Other'
+  'SaaS & Technology',
+  'Healthcare & Biotech',
+  'Fintech & Financial Services',
+  'E-commerce & Retail',
+  'Manufacturing & Industrial',
+  'Real Estate',
+  'Energy & Sustainability',
+  'Education & EdTech',
+  'Entertainment & Media',
+  'Food & Beverage',
+  'Other',
 ];
 
 const CELEBRITY_ADVISORS = [
-  { id: 'mark-cuban', name: 'Mark Cuban', title: 'Shark Tank Investor', expertise: 'Scaling, Investment' },
-  { id: 'reid-hoffman', name: 'Reid Hoffman', title: 'LinkedIn Founder', expertise: 'Networks, Strategy' },
-  { id: 'barbara-corcoran', name: 'Barbara Corcoran', title: 'Real Estate Mogul', expertise: 'Sales, Marketing' },
-  { id: 'daymond-john', name: 'Daymond John', title: 'FUBU Founder', expertise: 'Branding, Marketing' },
-  { id: 'jason-calacanis', name: 'Jason Calacanis', title: 'Angel Investor', expertise: 'Startups, Funding' },
-  { id: 'sheryl-sandberg', name: 'Sheryl Sandberg', title: 'Former Meta COO', expertise: 'Leadership, Growth' }
+  {
+    id: 'mark-cuban',
+    name: 'Mark Cuban',
+    title: 'Shark Tank Investor',
+    expertise: 'Scaling, Investment',
+  },
+  {
+    id: 'reid-hoffman',
+    name: 'Reid Hoffman',
+    title: 'LinkedIn Founder',
+    expertise: 'Networks, Strategy',
+  },
+  {
+    id: 'barbara-corcoran',
+    name: 'Barbara Corcoran',
+    title: 'Real Estate Mogul',
+    expertise: 'Sales, Marketing',
+  },
+  {
+    id: 'daymond-john',
+    name: 'Daymond John',
+    title: 'FUBU Founder',
+    expertise: 'Branding, Marketing',
+  },
+  {
+    id: 'jason-calacanis',
+    name: 'Jason Calacanis',
+    title: 'Angel Investor',
+    expertise: 'Startups, Funding',
+  },
+  {
+    id: 'sheryl-sandberg',
+    name: 'Sheryl Sandberg',
+    title: 'Former Meta COO',
+    expertise: 'Leadership, Growth',
+  },
 ];
 
 const FEATURES = [
-  { id: 'advisory', label: 'Strategic Conversations', icon: <Users className="w-5 h-5" />, description: 'Chat with AI advisors' },
-  { id: 'pitch', label: 'Pitch Practice', icon: <Mic className="w-5 h-5" />, description: 'Record and analyze pitches' },
-  { id: 'documents', label: 'Document Analysis', icon: <FileText className="w-5 h-5" />, description: 'Upload and analyze documents' },
-  { id: 'custom', label: 'Custom Advisors', icon: <Settings className="w-5 h-5" />, description: 'Create personalized advisors' }
+  {
+    id: 'advisory',
+    label: 'Strategic Conversations',
+    icon: <Users className="w-5 h-5" />,
+    description: 'Chat with AI advisors',
+  },
+  {
+    id: 'pitch',
+    label: 'Pitch Practice',
+    icon: <Mic className="w-5 h-5" />,
+    description: 'Record and analyze pitches',
+  },
+  {
+    id: 'documents',
+    label: 'Document Analysis',
+    icon: <FileText className="w-5 h-5" />,
+    description: 'Upload and analyze documents',
+  },
+  {
+    id: 'custom',
+    label: 'Custom Advisors',
+    icon: <Settings className="w-5 h-5" />,
+    description: 'Create personalized advisors',
+  },
 ];
 
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComplete }) => {
@@ -66,15 +172,15 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
     preferredAdvisors: [],
     interestedFeatures: [],
     experienceLevel: 'beginner',
-    subscriptionInterest: null
+    subscriptionInterest: null,
   });
 
   const steps = [
     {
       id: 'welcome',
       title: 'Welcome to Elite AI Advisory!',
-      subtitle: 'Let\'s personalize your experience',
-      component: <WelcomeStep onNext={() => setCurrentStep(1)} />
+      subtitle: "Let's personalize your experience",
+      component: <WelcomeStep onNext={() => setCurrentStep(1)} />,
     },
     {
       id: 'goals',
@@ -83,11 +189,11 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
       component: (
         <GoalsStep
           selected={preferences.primaryGoals}
-          onChange={(goals) => setPreferences(prev => ({ ...prev, primaryGoals: goals }))}
+          onChange={goals => setPreferences(prev => ({ ...prev, primaryGoals: goals }))}
           onNext={() => setCurrentStep(2)}
           onBack={() => setCurrentStep(0)}
         />
-      )
+      ),
     },
     {
       id: 'stage',
@@ -96,11 +202,11 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
       component: (
         <StageStep
           selected={preferences.businessStage}
-          onChange={(stage) => setPreferences(prev => ({ ...prev, businessStage: stage }))}
+          onChange={stage => setPreferences(prev => ({ ...prev, businessStage: stage }))}
           onNext={() => setCurrentStep(3)}
           onBack={() => setCurrentStep(1)}
         />
-      )
+      ),
     },
     {
       id: 'industry',
@@ -109,11 +215,11 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
       component: (
         <IndustryStep
           selected={preferences.industryFocus}
-          onChange={(industries) => setPreferences(prev => ({ ...prev, industryFocus: industries }))}
+          onChange={industries => setPreferences(prev => ({ ...prev, industryFocus: industries }))}
           onNext={() => setCurrentStep(4)}
           onBack={() => setCurrentStep(2)}
         />
-      )
+      ),
     },
     {
       id: 'advisors',
@@ -122,37 +228,37 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
       component: (
         <AdvisorsStep
           selected={preferences.preferredAdvisors}
-          onChange={(advisors) => setPreferences(prev => ({ ...prev, preferredAdvisors: advisors }))}
+          onChange={advisors => setPreferences(prev => ({ ...prev, preferredAdvisors: advisors }))}
           onNext={() => setCurrentStep(5)}
           onBack={() => setCurrentStep(3)}
         />
-      )
+      ),
     },
     {
       id: 'features',
       title: 'Which features are you most excited about?',
-      subtitle: 'We\'ll prioritize these in your experience',
+      subtitle: "We'll prioritize these in your experience",
       component: (
         <FeaturesStep
           selected={preferences.interestedFeatures}
-          onChange={(features) => setPreferences(prev => ({ ...prev, interestedFeatures: features }))}
+          onChange={features => setPreferences(prev => ({ ...prev, interestedFeatures: features }))}
           onNext={() => setCurrentStep(6)}
           onBack={() => setCurrentStep(4)}
         />
-      )
+      ),
     },
     {
       id: 'complete',
-      title: 'You\'re all set!',
-      subtitle: 'Let\'s start building your success story',
+      title: "You're all set!",
+      subtitle: "Let's start building your success story",
       component: (
         <CompleteStep
           preferences={preferences}
           onComplete={() => onComplete(preferences)}
           onBack={() => setCurrentStep(5)}
         />
-      )
-    }
+      ),
+    },
   ];
 
   if (!isOpen) return null;
@@ -173,13 +279,12 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">Elite AI Advisory</h1>
-                  <p className="text-sm text-gray-500">Step {currentStep + 1} of {steps.length}</p>
+                  <p className="text-sm text-gray-500">
+                    Step {currentStep + 1} of {steps.length}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
-              >
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
                 ×
               </button>
             </div>
@@ -214,7 +319,7 @@ const WelcomeStep: React.FC<{ onNext: () => void }> = ({ onNext }) => (
         { icon: '🎯', title: 'Strategic Advice', desc: 'World-class insights' },
         { icon: '🎤', title: 'Pitch Practice', desc: 'AI-powered feedback' },
         { icon: '📊', title: 'Document Analysis', desc: 'Expert evaluation' },
-        { icon: '👥', title: 'Custom Advisors', desc: 'Personalized team' }
+        { icon: '👥', title: 'Custom Advisors', desc: 'Personalized team' },
       ].map((feature, index) => (
         <div key={index} className="p-4 bg-gray-50 rounded-xl">
           <div className="text-3xl mb-2">{feature.icon}</div>
@@ -253,15 +358,15 @@ const GoalsStep: React.FC<{
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {BUSINESS_GOALS.map((goal) => (
+        {BUSINESS_GOALS.map(goal => (
           <button
             key={goal.id}
             onClick={() => toggleGoal(goal.id)}
             className={cn(
-              "p-6 rounded-xl border-2 text-left transition-all",
+              'p-6 rounded-xl border-2 text-left transition-all',
               selected.includes(goal.id)
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300'
             )}
           >
             <div className="flex items-start space-x-4">
@@ -278,20 +383,17 @@ const GoalsStep: React.FC<{
         ))}
       </div>
       <div className="flex justify-between">
-        <button
-          onClick={onBack}
-          className="px-6 py-3 text-gray-600 hover:text-gray-800"
-        >
+        <button onClick={onBack} className="px-6 py-3 text-gray-600 hover:text-gray-800">
           Back
         </button>
         <button
           onClick={onNext}
           disabled={selected.length === 0}
           className={cn(
-            "px-8 py-3 rounded-lg font-semibold flex items-center",
+            'px-8 py-3 rounded-lg font-semibold flex items-center',
             selected.length > 0
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           )}
         >
           Continue
@@ -310,15 +412,15 @@ const StageStep: React.FC<{
 }> = ({ selected, onChange, onNext, onBack }) => (
   <div>
     <div className="space-y-4 mb-8">
-      {BUSINESS_STAGES.map((stage) => (
+      {BUSINESS_STAGES.map(stage => (
         <button
           key={stage.id}
           onClick={() => onChange(stage.id)}
           className={cn(
-            "w-full p-6 rounded-xl border-2 text-left transition-all",
+            'w-full p-6 rounded-xl border-2 text-left transition-all',
             selected === stage.id
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-200 hover:border-gray-300"
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-200 hover:border-gray-300'
           )}
         >
           <div className="flex items-center justify-between">
@@ -326,28 +428,23 @@ const StageStep: React.FC<{
               <h3 className="font-semibold text-gray-900 mb-1">{stage.label}</h3>
               <p className="text-sm text-gray-600">{stage.description}</p>
             </div>
-            {selected === stage.id && (
-              <CheckCircle className="w-6 h-6 text-blue-500" />
-            )}
+            {selected === stage.id && <CheckCircle className="w-6 h-6 text-blue-500" />}
           </div>
         </button>
       ))}
     </div>
     <div className="flex justify-between">
-      <button
-        onClick={onBack}
-        className="px-6 py-3 text-gray-600 hover:text-gray-800"
-      >
+      <button onClick={onBack} className="px-6 py-3 text-gray-600 hover:text-gray-800">
         Back
       </button>
       <button
         onClick={onNext}
         disabled={!selected}
         className={cn(
-          "px-8 py-3 rounded-lg font-semibold flex items-center",
+          'px-8 py-3 rounded-lg font-semibold flex items-center',
           selected
-            ? "bg-blue-600 text-white hover:bg-blue-700"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            ? 'bg-blue-600 text-white hover:bg-blue-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
         )}
       >
         Continue
@@ -375,31 +472,28 @@ const IndustryStep: React.FC<{
     <div>
       <p className="text-center text-gray-600 mb-6">Select up to 3 industries</p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
-        {INDUSTRY_FOCUS.map((industry) => (
+        {INDUSTRY_FOCUS.map(industry => (
           <button
             key={industry}
             onClick={() => toggleIndustry(industry)}
             disabled={!selected.includes(industry) && selected.length >= 3}
             className={cn(
-              "p-4 rounded-lg border-2 text-sm font-medium transition-all",
+              'p-4 rounded-lg border-2 text-sm font-medium transition-all',
               selected.includes(industry)
-                ? "border-blue-500 bg-blue-50 text-blue-700"
-                : "border-gray-200 text-gray-700 hover:border-gray-300",
-              !selected.includes(industry) && selected.length >= 3 && "opacity-50 cursor-not-allowed"
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-200 text-gray-700 hover:border-gray-300',
+              !selected.includes(industry) &&
+                selected.length >= 3 &&
+                'opacity-50 cursor-not-allowed'
             )}
           >
             {industry}
-            {selected.includes(industry) && (
-              <CheckCircle className="w-4 h-4 ml-auto inline" />
-            )}
+            {selected.includes(industry) && <CheckCircle className="w-4 h-4 ml-auto inline" />}
           </button>
         ))}
       </div>
       <div className="flex justify-between">
-        <button
-          onClick={onBack}
-          className="px-6 py-3 text-gray-600 hover:text-gray-800"
-        >
+        <button onClick={onBack} className="px-6 py-3 text-gray-600 hover:text-gray-800">
           Back
         </button>
         <button
@@ -431,15 +525,15 @@ const AdvisorsStep: React.FC<{
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {CELEBRITY_ADVISORS.map((advisor) => (
+        {CELEBRITY_ADVISORS.map(advisor => (
           <button
             key={advisor.id}
             onClick={() => toggleAdvisor(advisor.id)}
             className={cn(
-              "p-6 rounded-xl border-2 text-left transition-all",
+              'p-6 rounded-xl border-2 text-left transition-all',
               selected.includes(advisor.id)
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300'
             )}
           >
             <div className="flex items-start space-x-4">
@@ -451,18 +545,13 @@ const AdvisorsStep: React.FC<{
                 <p className="text-sm text-gray-600 mb-2">{advisor.title}</p>
                 <p className="text-xs text-gray-500">{advisor.expertise}</p>
               </div>
-              {selected.includes(advisor.id) && (
-                <CheckCircle className="w-6 h-6 text-blue-500" />
-              )}
+              {selected.includes(advisor.id) && <CheckCircle className="w-6 h-6 text-blue-500" />}
             </div>
           </button>
         ))}
       </div>
       <div className="flex justify-between">
-        <button
-          onClick={onBack}
-          className="px-6 py-3 text-gray-600 hover:text-gray-800"
-        >
+        <button onClick={onBack} className="px-6 py-3 text-gray-600 hover:text-gray-800">
           Back
         </button>
         <button
@@ -494,22 +583,26 @@ const FeaturesStep: React.FC<{
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {FEATURES.map((feature) => (
+        {FEATURES.map(feature => (
           <button
             key={feature.id}
             onClick={() => toggleFeature(feature.id)}
             className={cn(
-              "p-6 rounded-xl border-2 text-left transition-all",
+              'p-6 rounded-xl border-2 text-left transition-all',
               selected.includes(feature.id)
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300'
             )}
           >
             <div className="flex items-center space-x-4">
-              <div className={cn(
-                "p-3 rounded-lg",
-                selected.includes(feature.id) ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600"
-              )}>
+              <div
+                className={cn(
+                  'p-3 rounded-lg',
+                  selected.includes(feature.id)
+                    ? 'bg-blue-100 text-blue-600'
+                    : 'bg-gray-100 text-gray-600'
+                )}
+              >
                 {feature.icon}
               </div>
               <div>
@@ -524,10 +617,7 @@ const FeaturesStep: React.FC<{
         ))}
       </div>
       <div className="flex justify-between">
-        <button
-          onClick={onBack}
-          className="px-6 py-3 text-gray-600 hover:text-gray-800"
-        >
+        <button onClick={onBack} className="px-6 py-3 text-gray-600 hover:text-gray-800">
           Back
         </button>
         <button
@@ -552,9 +642,12 @@ const CompleteStep: React.FC<{
       <CheckCircle className="w-10 h-10 text-green-600" />
     </div>
 
-    <h3 className="text-2xl font-bold text-gray-900 mb-4">Perfect! Your advisory board is ready.</h3>
+    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+      Perfect! Your advisory board is ready.
+    </h3>
     <p className="text-gray-600 mb-8">
-      Based on your preferences, we've customized your experience to help you achieve your goals faster.
+      Based on your preferences, we've customized your experience to help you achieve your goals
+      faster.
     </p>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -579,10 +672,7 @@ const CompleteStep: React.FC<{
     </div>
 
     <div className="flex justify-between items-center">
-      <button
-        onClick={onBack}
-        className="px-6 py-3 text-gray-600 hover:text-gray-800"
-      >
+      <button onClick={onBack} className="px-6 py-3 text-gray-600 hover:text-gray-800">
         Back
       </button>
       <div className="space-x-4">

@@ -42,7 +42,7 @@ export class DocumentContextService {
         documents: [],
         relevantChunks: [],
         totalTokens: 0,
-        maxTokens: this.maxContextTokens
+        maxTokens: this.maxContextTokens,
       };
     }
 
@@ -60,7 +60,7 @@ export class DocumentContextService {
       documents: advisorDocuments,
       relevantChunks: optimizedChunks,
       totalTokens: optimizedChunks.reduce((sum, chunk) => sum + chunk.tokens, 0),
-      maxTokens: this.maxContextTokens
+      maxTokens: this.maxContextTokens,
     };
   }
 
@@ -88,14 +88,15 @@ export class DocumentContextService {
           referencedDocuments.includes(document.id)
         );
 
-        if (relevanceScore > 0.1) { // Minimum relevance threshold
+        if (relevanceScore > 0.1) {
+          // Minimum relevance threshold
           allChunks.push({
             documentId: document.id,
             documentName: document.filename,
             chunkIndex: i,
             content: chunk,
             relevanceScore,
-            tokens: this.estimateTokens(chunk)
+            tokens: this.estimateTokens(chunk),
           });
         }
       }
@@ -166,12 +167,13 @@ export class DocumentContextService {
       } else {
         // Try to fit a truncated version
         const remainingTokens = this.maxContextTokens - totalTokens;
-        if (remainingTokens > 100) { // Minimum useful chunk size
+        if (remainingTokens > 100) {
+          // Minimum useful chunk size
           const truncatedContent = this.truncateToTokenLimit(chunk.content, remainingTokens);
           optimized.push({
             ...chunk,
             content: truncatedContent,
-            tokens: remainingTokens
+            tokens: remainingTokens,
           });
         }
         break;
@@ -207,7 +209,10 @@ export class DocumentContextService {
   /**
    * Parse document references from message text
    */
-  parseDocumentReferences(messageText: string, advisorDocuments: StoredDocument[]): DocumentReference[] {
+  parseDocumentReferences(
+    messageText: string,
+    advisorDocuments: StoredDocument[]
+  ): DocumentReference[] {
     const references: DocumentReference[] = [];
 
     // Match @document-name or @"document name" patterns
@@ -218,9 +223,10 @@ export class DocumentContextService {
       const referenceName = match[1] || match[2];
 
       // Find matching document
-      const document = advisorDocuments.find(doc =>
-        doc.filename.toLowerCase().includes(referenceName.toLowerCase()) ||
-        doc.metadata.title?.toLowerCase().includes(referenceName.toLowerCase())
+      const document = advisorDocuments.find(
+        doc =>
+          doc.filename.toLowerCase().includes(referenceName.toLowerCase()) ||
+          doc.metadata.title?.toLowerCase().includes(referenceName.toLowerCase())
       );
 
       if (document) {
@@ -228,7 +234,7 @@ export class DocumentContextService {
           id: document.id,
           name: referenceName,
           type: 'direct',
-          document
+          document,
         });
       }
     }
@@ -249,19 +255,23 @@ export class DocumentContextService {
     for (const document of advisorDocuments) {
       const relevanceScore = this.calculateDocumentRelevance(document, conversationText);
 
-      if (relevanceScore > 0.3) { // Suggestion threshold
+      if (relevanceScore > 0.3) {
+        // Suggestion threshold
         suggestions.push({
           id: document.id,
           name: document.filename,
           type: 'suggested',
-          document
+          document,
         });
       }
     }
 
     return suggestions
-      .sort((a, b) => this.calculateDocumentRelevance(b.document, conversationText) -
-                      this.calculateDocumentRelevance(a.document, conversationText))
+      .sort(
+        (a, b) =>
+          this.calculateDocumentRelevance(b.document, conversationText) -
+          this.calculateDocumentRelevance(a.document, conversationText)
+      )
       .slice(0, limit);
   }
 
@@ -270,8 +280,11 @@ export class DocumentContextService {
    */
   private calculateDocumentRelevance(document: StoredDocument, conversationText: string): number {
     const chunks = this.getDocumentChunks(document);
-    const avgRelevance = chunks.reduce((sum, chunk) =>
-      sum + this.calculateRelevanceScore(chunk, conversationText, false), 0) / chunks.length;
+    const avgRelevance =
+      chunks.reduce(
+        (sum, chunk) => sum + this.calculateRelevanceScore(chunk, conversationText, false),
+        0
+      ) / chunks.length;
 
     return avgRelevance;
   }
@@ -288,13 +301,16 @@ export class DocumentContextService {
     formattedContext += `You have access to ${context.documents.length} documents in your knowledge base.\n\n`;
 
     // Group chunks by document
-    const chunksByDocument = context.relevantChunks.reduce((groups, chunk) => {
-      if (!groups[chunk.documentId]) {
-        groups[chunk.documentId] = [];
-      }
-      groups[chunk.documentId].push(chunk);
-      return groups;
-    }, {} as Record<string, DocumentChunk[]>);
+    const chunksByDocument = context.relevantChunks.reduce(
+      (groups, chunk) => {
+        if (!groups[chunk.documentId]) {
+          groups[chunk.documentId] = [];
+        }
+        groups[chunk.documentId].push(chunk);
+        return groups;
+      },
+      {} as Record<string, DocumentChunk[]>
+    );
 
     // Format each document's relevant content
     for (const [documentId, chunks] of Object.entries(chunksByDocument)) {
@@ -312,7 +328,8 @@ export class DocumentContextService {
 
     formattedContext += `--- END DOCUMENTS (${context.totalTokens}/${context.maxTokens} tokens) ---\n\n`;
     formattedContext += 'Reference these documents when relevant to the conversation. ';
-    formattedContext += 'If the user asks about specific documents, provide accurate information based on the content above.\n\n';
+    formattedContext +=
+      'If the user asks about specific documents, provide accurate information based on the content above.\n\n';
 
     return formattedContext;
   }

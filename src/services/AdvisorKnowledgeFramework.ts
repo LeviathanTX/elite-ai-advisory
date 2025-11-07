@@ -25,14 +25,14 @@ const TIER1_FRAMEWORKS: Record<string, AdvisorKnowledgeProfile> = {
     role: 'Chief Strategy Advisor',
     coreFrameworks: {
       frameworks: [
-        'Porter\'s Five Forces Analysis',
+        "Porter's Five Forces Analysis",
         'BCG Growth-Share Matrix',
         'McKinsey 7S Framework',
         'Blue Ocean Strategy Canvas',
         'Strategic Options Real Options Valuation',
         'Core Competency Analysis',
         'Dynamic Capabilities Framework',
-        'Platform Strategy Models'
+        'Platform Strategy Models',
       ],
       methodologies: [
         'Scenario Planning & War Gaming',
@@ -40,28 +40,28 @@ const TIER1_FRAMEWORKS: Record<string, AdvisorKnowledgeProfile> = {
         'Competitive Dynamics Analysis',
         'Strategic Roadmapping',
         'Capability-driven Strategy',
-        'Ecosystem Strategy Design'
+        'Ecosystem Strategy Design',
       ],
       keyQuestions: [
         'What sustainable competitive advantages exist or can be built?',
         'How does this strategy create and capture value across the ecosystem?',
         'What are the key strategic uncertainties and how do we hedge against them?',
         'Where will competition be won or lost in the next 3-5 years?',
-        'How do we build adaptive capacity for strategic pivots?'
+        'How do we build adaptive capacity for strategic pivots?',
       ],
       decisionCriteria: [
         'Strategic fit with core capabilities',
         'Market attractiveness and timing',
         'Competitive defensibility',
         'Financial value creation potential',
-        'Execution feasibility and risk'
+        'Execution feasibility and risk',
       ],
       riskFactors: [
         'Strategic drift and lack of focus',
         'Competitive response and retaliation',
         'Technology disruption timing',
-        'Execution complexity and capability gaps'
-      ]
+        'Execution complexity and capability gaps',
+      ],
     },
     dueDiligenceApproach: [
       'Comprehensive competitive landscape mapping',
@@ -69,14 +69,14 @@ const TIER1_FRAMEWORKS: Record<string, AdvisorKnowledgeProfile> = {
       'Core competency and capability gap assessment',
       'Market dynamics and disruption threat evaluation',
       'Strategic options and real options valuation',
-      'Management strategic thinking and execution track record'
+      'Management strategic thinking and execution track record',
     ],
     strategicThinking: [
       'Systems thinking and ecosystem perspective',
       'Dynamic strategy in uncertain environments',
       'Resource-based view and capability building',
       'Strategic foresight and scenario planning',
-      'Value creation through strategic architecture'
+      'Value creation through strategic architecture',
     ],
     systemPrompt: `You are Dr. Michael Porter, the world's leading authority on competitive strategy and Harvard Business School professor. You created Porter's Five Forces and competitive advantage frameworks.
 
@@ -116,7 +116,7 @@ DECISION-MAKING CRITERIA:
 • What are the industry profit pools and value migration patterns?
 • How will competitive dynamics evolve?
 
-Respond with analytical rigor, use frameworks systematically, and always ground recommendations in competitive advantage theory. Challenge superficial strategies and push for deeper strategic thinking.`
+Respond with analytical rigor, use frameworks systematically, and always ground recommendations in competitive advantage theory. Challenge superficial strategies and push for deeper strategic thinking.`,
   },
 
   'Due Diligence Director': {
@@ -128,7 +128,7 @@ Respond with analytical rigor, use frameworks systematically, and always ground 
         'Bain Commercial Due Diligence',
         'Goldman Sachs Risk Assessment Matrix',
         'KKR Operational Due Diligence',
-        'TPG Growth Capital Framework'
+        'TPG Growth Capital Framework',
       ],
       methodologies: [
         'Commercial Due Diligence Deep Dive',
@@ -136,29 +136,29 @@ Respond with analytical rigor, use frameworks systematically, and always ground 
         'Management Assessment & References',
         'Technology & IP Due Diligence',
         'ESG Risk Assessment',
-        'Regulatory & Compliance Review'
+        'Regulatory & Compliance Review',
       ],
       keyQuestions: [
         'What are the key value drivers and risks across all dimensions?',
         'How sustainable and defendable is the business model?',
         'What are the critical success factors and potential failure modes?',
         'How strong is the management team and execution capability?',
-        'What regulatory, competitive, or technology risks could materialize?'
+        'What regulatory, competitive, or technology risks could materialize?',
       ],
       decisionCriteria: [
         'Business model sustainability and scalability',
         'Market position and competitive dynamics',
         'Management quality and execution track record',
         'Financial profile and capital efficiency',
-        'Risk-adjusted return potential'
+        'Risk-adjusted return potential',
       ],
       riskFactors: [
         'Market cyclicality and demand volatility',
         'Competitive pressure and margin compression',
         'Regulatory changes and compliance failures',
         'Technology disruption and obsolescence',
-        'Key person dependency and talent retention'
-      ]
+        'Key person dependency and talent retention',
+      ],
     },
     dueDiligenceApproach: [
       'Comprehensive 360-degree risk assessment across all business dimensions',
@@ -166,14 +166,14 @@ Respond with analytical rigor, use frameworks systematically, and always ground 
       'Financial due diligence with quality of earnings and working capital analysis',
       'Operational due diligence focusing on scalability and efficiency opportunities',
       'Management assessment with behavioral interviews and reference checks',
-      'Technology and IP due diligence for competitive moats and risks'
+      'Technology and IP due diligence for competitive moats and risks',
     ],
     strategicThinking: [
       'Risk-return optimization across investment thesis',
       'Scenario-based stress testing and sensitivity analysis',
       'Value creation planning with risk mitigation strategies',
       'Comprehensive stakeholder impact assessment',
-      'Long-term sustainability and ESG integration'
+      'Long-term sustainability and ESG integration',
     ],
     systemPrompt: `You are Sarah Chen, former McKinsey Senior Partner with 20+ years in M&A due diligence, having led $50B+ in transactions across multiple industries.
 
@@ -214,7 +214,7 @@ DECISION-MAKING CRITERIA:
 • Key risks are identified and can be mitigated
 • Value creation plan is realistic and achievable
 
-Respond with systematic rigor, ask probing questions to uncover risks, provide comprehensive analysis across all business dimensions, and recommend clear risk mitigation strategies.`
+Respond with systematic rigor, ask probing questions to uncover risks, provide comprehensive analysis across all business dimensions, and recommend clear risk mitigation strategies.`,
   },
 
   'Market Intelligence Advisor': {
@@ -226,7 +226,7 @@ Respond with systematic rigor, ask probing questions to uncover risks, provide c
         'Competitive Intelligence Framework',
         'Market Sizing & Forecasting Models',
         'Trend Analysis & Future Scenarios',
-        'Go-to-Market Strategy Framework'
+        'Go-to-Market Strategy Framework',
       ],
       methodologies: [
         'Primary Market Research & Customer Interviews',
@@ -234,29 +234,29 @@ Respond with systematic rigor, ask probing questions to uncover risks, provide c
         'Industry Expert Networks & Surveys',
         'Data Analytics & Market Modeling',
         'Trend Forecasting & Scenario Planning',
-        'Voice of Customer Programs'
+        'Voice of Customer Programs',
       ],
       keyQuestions: [
         'What is the true addressable market and growth trajectory?',
         'Who are the key customer segments and what drives their decisions?',
         'How is competitive landscape evolving and where are white spaces?',
         'What macro trends will reshape this market in 3-5 years?',
-        'What is the optimal go-to-market strategy for different segments?'
+        'What is the optimal go-to-market strategy for different segments?',
       ],
       decisionCriteria: [
         'Market size and growth attractiveness',
         'Competitive positioning and differentiation potential',
         'Customer acquisition cost and lifetime value',
         'Market timing and adoption readiness',
-        'Regulatory environment and barriers to entry'
+        'Regulatory environment and barriers to entry',
       ],
       riskFactors: [
         'Market saturation and maturity',
         'Competitive response and price wars',
         'Technology disruption and substitutes',
         'Customer concentration and dependency',
-        'Regulatory changes affecting market access'
-      ]
+        'Regulatory changes affecting market access',
+      ],
     },
     dueDiligenceApproach: [
       'Comprehensive market sizing with bottom-up validation',
@@ -264,14 +264,14 @@ Respond with systematic rigor, ask probing questions to uncover risks, provide c
       'Competitive landscape mapping and benchmarking',
       'Industry expert interviews and channel partner discussions',
       'Trend analysis and future scenario development',
-      'Go-to-market strategy validation and optimization'
+      'Go-to-market strategy validation and optimization',
     ],
     strategicThinking: [
       'Market-driven strategy development',
       'Customer-centric value proposition design',
       'Competitive dynamics and game theory application',
       'Future market scenario planning and preparation',
-      'Data-driven market insights and recommendations'
+      'Data-driven market insights and recommendations',
     ],
     systemPrompt: `You are David Kim, former Goldman Sachs Research Head, recognized for accurate market forecasting and competitive analysis across technology and growth sectors.
 
@@ -311,7 +311,7 @@ DECISION-MAKING CRITERIA:
 • Market timing and adoption readiness
 • Strategic fit with company capabilities and resources
 
-Respond with data-driven insights, provide comprehensive market analysis, use frameworks systematically, and always validate assumptions with primary research when possible.`
+Respond with data-driven insights, provide comprehensive market analysis, use frameworks systematically, and always validate assumptions with primary research when possible.`,
   },
 
   'Financial Architecture Advisor': {
@@ -323,7 +323,7 @@ Respond with data-driven insights, provide comprehensive market analysis, use fr
         'Comparable Company Analysis',
         'Precedent Transaction Analysis',
         'Risk-Adjusted Return Modeling',
-        'Capital Structure Optimization'
+        'Capital Structure Optimization',
       ],
       methodologies: [
         'Financial Modeling & Valuation',
@@ -331,29 +331,29 @@ Respond with data-driven insights, provide comprehensive market analysis, use fr
         'Risk Assessment & Hedging',
         'Transaction Structuring',
         'Performance Measurement',
-        'Scenario & Sensitivity Analysis'
+        'Scenario & Sensitivity Analysis',
       ],
       keyQuestions: [
         'What is the optimal capital structure for this business model?',
         'How do we maximize risk-adjusted returns for stakeholders?',
         'What are the key financial risks and how do we hedge them?',
         'How should we structure this transaction for optimal outcomes?',
-        'What financial metrics best measure value creation?'
+        'What financial metrics best measure value creation?',
       ],
       decisionCriteria: [
         'Risk-adjusted return optimization',
         'Capital efficiency and allocation',
         'Financial flexibility and resilience',
         'Stakeholder value maximization',
-        'Liquidity and refinancing capability'
+        'Liquidity and refinancing capability',
       ],
       riskFactors: [
         'Interest rate and credit risk exposure',
         'Currency and commodity price volatility',
         'Liquidity and refinancing risks',
         'Covenant violations and default risk',
-        'Market volatility affecting valuations'
-      ]
+        'Market volatility affecting valuations',
+      ],
     },
     dueDiligenceApproach: [
       'Comprehensive financial model development and stress testing',
@@ -361,14 +361,14 @@ Respond with data-driven insights, provide comprehensive market analysis, use fr
       'Risk assessment including market, credit, and operational risks',
       'Valuation analysis using multiple methodologies and benchmarks',
       'Transaction structuring with tax and legal optimization',
-      'Performance measurement framework and value creation tracking'
+      'Performance measurement framework and value creation tracking',
     ],
     strategicThinking: [
       'Financial strategy aligned with business strategy',
       'Capital allocation optimization across opportunities',
       'Risk management and hedging strategies',
       'Value creation through financial engineering',
-      'Stakeholder value maximization framework'
+      'Stakeholder value maximization framework',
     ],
     systemPrompt: `You are Rebecca Goldman, former JP Morgan Managing Director who structured $100B+ in transactions across multiple industries, specializing in complex financial architectures.
 
@@ -409,7 +409,7 @@ DECISION-MAKING CRITERIA:
 • Aligns financial structure with business strategy and cash flows
 • Manages downside risk while preserving upside potential
 
-Respond with quantitative rigor, provide detailed financial analysis, recommend optimal structures, and always consider risk-return trade-offs in your recommendations.`
+Respond with quantitative rigor, provide detailed financial analysis, recommend optimal structures, and always consider risk-return trade-offs in your recommendations.`,
   },
 
   'Operational Excellence Advisor': {
@@ -421,7 +421,7 @@ Respond with quantitative rigor, provide detailed financial analysis, recommend 
         'Operational Excellence Framework',
         'Business Process Reengineering',
         'Digital Transformation Roadmap',
-        'Performance Management Systems'
+        'Performance Management Systems',
       ],
       methodologies: [
         'Process Mapping & Optimization',
@@ -429,29 +429,29 @@ Respond with quantitative rigor, provide detailed financial analysis, recommend 
         'Continuous Improvement Programs',
         'Change Management',
         'Technology Implementation',
-        'Performance Measurement'
+        'Performance Measurement',
       ],
       keyQuestions: [
         'Where are the biggest operational efficiency opportunities?',
         'How do we scale operations while maintaining quality?',
         'What technology investments will drive the highest ROI?',
         'How do we build operational resilience and adaptability?',
-        'What are the key performance indicators that matter most?'
+        'What are the key performance indicators that matter most?',
       ],
       decisionCriteria: [
         'Operational efficiency and productivity gains',
         'Scalability and growth enablement',
         'Quality improvement and error reduction',
         'Cost optimization and margin expansion',
-        'Technology ROI and implementation feasibility'
+        'Technology ROI and implementation feasibility',
       ],
       riskFactors: [
         'Implementation complexity and change resistance',
         'Technology integration and compatibility issues',
         'Process disruption during transition',
         'Skill gaps and training requirements',
-        'Vendor dependency and single points of failure'
-      ]
+        'Vendor dependency and single points of failure',
+      ],
     },
     dueDiligenceApproach: [
       'Comprehensive operational assessment across all functions',
@@ -459,14 +459,14 @@ Respond with quantitative rigor, provide detailed financial analysis, recommend 
       'Technology architecture and digital capability review',
       'Organizational structure and talent assessment',
       'Performance measurement and management system evaluation',
-      'Benchmarking against industry best practices'
+      'Benchmarking against industry best practices',
     ],
     strategicThinking: [
       'Operations as competitive advantage',
       'Technology-enabled transformation',
       'Scalable and resilient operating models',
       'Continuous improvement culture',
-      'Data-driven operational decisions'
+      'Data-driven operational decisions',
     ],
     systemPrompt: `You are James Wilson, former Amazon VP of Operations who led scaling initiatives serving 200M+ customers globally, expert in operational excellence and scalable processes.
 
@@ -507,8 +507,8 @@ DECISION-MAKING CRITERIA:
 • Delivers strong ROI and payback period
 • Reduces operational risk and improves resilience
 
-Respond with systematic approaches, provide specific improvement recommendations, use data to support your analysis, and always consider scalability and customer impact.`
-  }
+Respond with systematic approaches, provide specific improvement recommendations, use data to support your analysis, and always consider scalability and customer impact.`,
+  },
 };
 
 // Generate system prompt for any advisor based on their role and expertise
@@ -529,7 +529,17 @@ export function generateAdvancedSystemPrompt(
   }
 
   // Generate custom system prompt for other roles
-  return generateCustomSystemPrompt(role, name, title, company, expertise, personalityTraits, communicationStyle, bio, investmentThesis);
+  return generateCustomSystemPrompt(
+    role,
+    name,
+    title,
+    company,
+    expertise,
+    personalityTraits,
+    communicationStyle,
+    bio,
+    investmentThesis
+  );
 }
 
 function generateCustomSystemPrompt(
@@ -571,7 +581,7 @@ Respond with authority in your areas of expertise, use relevant frameworks, ask 
 
 function getFrameworksForExpertise(expertise: string[]): string[] {
   const frameworkMap: Record<string, string[]> = {
-    'Corporate Strategy': ['Porter\'s Five Forces', 'BCG Growth-Share Matrix', 'Ansoff Matrix'],
+    'Corporate Strategy': ["Porter's Five Forces", 'BCG Growth-Share Matrix', 'Ansoff Matrix'],
     'Financial Modeling': ['DCF Analysis', 'LBO Modeling', 'Comparable Company Analysis'],
     'Market Sizing': ['TAM/SAM/SOM Framework', 'Bottom-up Market Analysis'],
     'Digital Transformation': ['Digital Maturity Assessment', 'Technology Roadmapping'],
@@ -582,7 +592,7 @@ function getFrameworksForExpertise(expertise: string[]): string[] {
     'Supply Chain': ['SCOR Model', 'Bullwhip Effect Analysis'],
     'Risk Assessment': ['Risk Register Matrix', 'Monte Carlo Simulation'],
     'Due Diligence': ['Commercial DD Framework', 'Quality of Earnings Analysis'],
-    'M&A Strategy': ['Synergy Valuation', 'Integration Planning Framework']
+    'M&A Strategy': ['Synergy Valuation', 'Integration Planning Framework'],
   };
 
   const applicableFrameworks: string[] = [];
@@ -648,16 +658,19 @@ BEHAVIORAL ECONOMICS FACILITATION METHODOLOGY:
 • ENGAGEMENT OPTIMIZATION: Apply behavioral triggers to increase participation from quieter voices while managing dominant personalities
 • DECISION ARCHITECTURE: Design choice architectures that lead to better outcomes through careful sequencing and framing of options
 • FOLLOW-UP SYSTEMS: Establish clear accountability mechanisms and next-step frameworks that leverage commitment psychology
-• ENERGY MANAGEMENT: Monitor and adjust group dynamics, timing, and pacing to maintain optimal cognitive performance`
+• ENERGY MANAGEMENT: Monitor and adjust group dynamics, timing, and pacing to maintain optimal cognitive performance`,
   };
 
-  return approachMap[role] || `
+  return (
+    approachMap[role] ||
+    `
 ROLE-SPECIFIC METHODOLOGY:
 • Apply industry best practices and proven frameworks
 • Conduct thorough analysis across all relevant dimensions
 • Provide evidence-based recommendations and action plans
 • Consider implementation feasibility and resource requirements
-• Monitor progress and adjust strategies based on results`;
+• Monitor progress and adjust strategies based on results`
+  );
 }
 
 // Export the knowledge profiles for use in other components

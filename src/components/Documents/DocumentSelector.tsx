@@ -18,15 +18,15 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
   onDocumentsSelected,
   selectedDocuments,
   isOpen,
-  onClose
+  onClose,
 }) => {
   const [documentStorage] = useState(() => DocumentStorage.getInstance());
   const [documentProcessor] = useState(() => new DocumentProcessor());
   const [availableDocuments, setAvailableDocuments] = useState<StoredDocument[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
-  const [uploadErrors, setUploadErrors] = useState<{[key: string]: string}>({});
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [uploadErrors, setUploadErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (isOpen) {
@@ -58,11 +58,14 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
       console.log('📁 DocumentSelector (Advisor Mode):');
       console.log(`  - Advisor-specific documents: ${advisorDocs.length}`);
       console.log(`  - Total available documents: ${allDocs.length}`);
-      console.log('  - Documents:', allDocs.map(d => ({
-        filename: d.filename,
-        advisorId: d.advisorId,
-        isTemporary: d.isTemporary
-      })));
+      console.log(
+        '  - Documents:',
+        allDocs.map(d => ({
+          filename: d.filename,
+          advisorId: d.advisorId,
+          isTemporary: d.isTemporary,
+        }))
+      );
 
       setAvailableDocuments(allDocs);
     }
@@ -71,9 +74,11 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
   const filteredDocuments = availableDocuments.filter(doc => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
-    return doc.filename.toLowerCase().includes(query) ||
-           doc.category.toLowerCase().includes(query) ||
-           doc.extractedText.toLowerCase().includes(query);
+    return (
+      doc.filename.toLowerCase().includes(query) ||
+      doc.category.toLowerCase().includes(query) ||
+      doc.extractedText.toLowerCase().includes(query)
+    );
   });
 
   const isDocumentSelected = (documentId: string): boolean => {
@@ -93,7 +98,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
         id: document.id,
         name: document.filename,
         type: 'direct',
-        document
+        document,
       };
       onDocumentsSelected([...selectedDocuments, newReference]);
     }
@@ -106,7 +111,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
         id: document.id,
         name: document.filename,
         type: 'direct' as const,
-        document
+        document,
       }));
 
     onDocumentsSelected([...selectedDocuments, ...newReferences]);
@@ -119,8 +124,8 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
   const handleFileUpload = async (files: FileList) => {
     setIsLoading(true);
     const fileArray = Array.from(files);
-    const newProgress: {[key: string]: number} = {};
-    const newErrors: {[key: string]: string} = {};
+    const newProgress: { [key: string]: number } = {};
+    const newErrors: { [key: string]: string } = {};
 
     // Initialize progress tracking
     fileArray.forEach(file => {
@@ -160,7 +165,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
           {
             category: 'other',
             confidentialityLevel: 'internal',
-            tags: []
+            tags: [],
           }
         );
 
@@ -168,7 +173,6 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
         setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
 
         console.log(`✅ Successfully uploaded: ${file.name}`, storedDoc);
-
       } catch (error) {
         console.error(`❌ Error uploading ${file.name}:`, error);
         const errorMessage = error instanceof Error ? error.message : 'Upload failed';
@@ -201,15 +205,11 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
               <p className="text-sm text-gray-600">
                 {advisorId === 'general'
                   ? 'Browse your document library and select documents for conversations'
-                  : 'Choose documents to include in your conversation context'
-                }
+                  : 'Choose documents to include in your conversation context'}
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -224,7 +224,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
                   type="text"
                   placeholder="Search documents by name, category, or content..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -237,7 +237,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
                   input.type = 'file';
                   input.multiple = true;
                   input.accept = '.pdf,.doc,.docx,.txt,.md,.xlsx,.pptx,.ppt';
-                  input.onchange = (e) => {
+                  input.onchange = e => {
                     const files = (e.target as HTMLInputElement).files;
                     if (files && files.length > 0) {
                       handleFileUpload(files);
@@ -247,10 +247,10 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
                 }}
                 disabled={isLoading}
                 className={cn(
-                  "flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg border",
+                  'flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg border',
                   isLoading
-                    ? "text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed"
-                    : "text-green-600 hover:bg-green-50 border-green-200"
+                    ? 'text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed'
+                    : 'text-green-600 hover:bg-green-50 border-green-200'
                 )}
               >
                 <Upload className="w-4 h-4" />
@@ -276,7 +276,8 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
           {selectedDocuments.length > 0 && (
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-sm font-medium text-blue-900">
-                {selectedDocuments.length} document{selectedDocuments.length === 1 ? '' : 's'} selected
+                {selectedDocuments.length} document{selectedDocuments.length === 1 ? '' : 's'}{' '}
+                selected
               </p>
             </div>
           )}
@@ -287,9 +288,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
               {Object.entries(uploadProgress).map(([filename, progress]) => (
                 <div key={filename} className="bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700 truncate">
-                      {filename}
-                    </span>
+                    <span className="text-sm font-medium text-gray-700 truncate">{filename}</span>
                     <span className="text-sm text-gray-500">{progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -325,31 +324,32 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
               <p className="text-gray-600 mb-6">
                 {searchQuery
                   ? 'Try adjusting your search terms'
-                  : 'Upload documents for this advisor to get started'
-                }
+                  : 'Upload documents for this advisor to get started'}
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
-              {filteredDocuments.map((document) => {
+              {filteredDocuments.map(document => {
                 const isSelected = isDocumentSelected(document.id);
                 return (
                   <div
                     key={document.id}
                     onClick={() => toggleDocument(document)}
                     className={cn(
-                      "p-4 border rounded-lg cursor-pointer transition-all",
+                      'p-4 border rounded-lg cursor-pointer transition-all',
                       isSelected
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     )}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3 flex-1">
-                        <div className={cn(
-                          "w-10 h-10 rounded-lg flex items-center justify-center",
-                          isSelected ? "bg-blue-600" : "bg-gray-100"
-                        )}>
+                        <div
+                          className={cn(
+                            'w-10 h-10 rounded-lg flex items-center justify-center',
+                            isSelected ? 'bg-blue-600' : 'bg-gray-100'
+                          )}
+                        >
                           {isSelected ? (
                             <Check className="w-5 h-5 text-white" />
                           ) : (
@@ -366,12 +366,17 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
                             <span className="capitalize">{document.category}</span>
                             <span>{DocumentProcessor.formatFileSize(document.metadata.size)}</span>
                             <span>{document.metadata.wordCount} words</span>
-                            <span className={cn(
-                              "px-2 py-1 rounded text-xs font-medium",
-                              document.confidentialityLevel === 'public' && "bg-green-100 text-green-800",
-                              document.confidentialityLevel === 'internal' && "bg-yellow-100 text-yellow-800",
-                              document.confidentialityLevel === 'confidential' && "bg-red-100 text-red-800"
-                            )}>
+                            <span
+                              className={cn(
+                                'px-2 py-1 rounded text-xs font-medium',
+                                document.confidentialityLevel === 'public' &&
+                                  'bg-green-100 text-green-800',
+                                document.confidentialityLevel === 'internal' &&
+                                  'bg-yellow-100 text-yellow-800',
+                                document.confidentialityLevel === 'confidential' &&
+                                  'bg-red-100 text-red-800'
+                              )}
+                            >
                               {document.confidentialityLevel}
                             </span>
                           </div>
@@ -395,7 +400,8 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
           <div className="text-sm text-gray-600">
             {selectedDocuments.length > 0 && (
               <span>
-                {selectedDocuments.length} document{selectedDocuments.length === 1 ? '' : 's'} will be included in conversation context
+                {selectedDocuments.length} document{selectedDocuments.length === 1 ? '' : 's'} will
+                be included in conversation context
               </span>
             )}
           </div>

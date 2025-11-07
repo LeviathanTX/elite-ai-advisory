@@ -13,12 +13,13 @@ const QUICK_START_STEPS = [
   {
     id: 'start-conversation',
     title: 'Start Your First Advisory Conversation',
-    description: 'Chat with Mark Cuban about scaling your business or Reid Hoffman about networking strategy.',
+    description:
+      'Chat with Mark Cuban about scaling your business or Reid Hoffman about networking strategy.',
     icon: <MessageCircle className="w-6 h-6" />,
     color: 'bg-blue-100 text-blue-600',
     action: 'Start Chatting',
     estimatedTime: '5 minutes',
-    difficulty: 'Easy'
+    difficulty: 'Easy',
   },
   {
     id: 'upload-document',
@@ -28,7 +29,7 @@ const QUICK_START_STEPS = [
     color: 'bg-green-100 text-green-600',
     action: 'Upload Document',
     estimatedTime: '3 minutes',
-    difficulty: 'Easy'
+    difficulty: 'Easy',
   },
   {
     id: 'practice-pitch',
@@ -38,7 +39,7 @@ const QUICK_START_STEPS = [
     color: 'bg-purple-100 text-purple-600',
     action: 'Start Recording',
     estimatedTime: '10 minutes',
-    difficulty: 'Medium'
+    difficulty: 'Medium',
   },
   {
     id: 'create-advisor',
@@ -48,23 +49,48 @@ const QUICK_START_STEPS = [
     color: 'bg-orange-100 text-orange-600',
     action: 'Create Advisor',
     estimatedTime: '15 minutes',
-    difficulty: 'Advanced'
-  }
+    difficulty: 'Advanced',
+  },
 ];
 
 const ACHIEVEMENT_BADGES = [
-  { id: 'first-chat', title: 'First Conversation', icon: '💬', description: 'Started your first advisory chat' },
-  { id: 'document-uploaded', title: 'Document Analyzer', icon: '📄', description: 'Uploaded and analyzed a document' },
-  { id: 'pitch-recorded', title: 'Pitch Master', icon: '🎤', description: 'Recorded your first pitch' },
-  { id: 'custom-advisor', title: 'Team Builder', icon: '👥', description: 'Created a custom advisor' },
-  { id: 'power-user', title: 'Power User', icon: '⭐', description: 'Completed all quick start steps' }
+  {
+    id: 'first-chat',
+    title: 'First Conversation',
+    icon: '💬',
+    description: 'Started your first advisory chat',
+  },
+  {
+    id: 'document-uploaded',
+    title: 'Document Analyzer',
+    icon: '📄',
+    description: 'Uploaded and analyzed a document',
+  },
+  {
+    id: 'pitch-recorded',
+    title: 'Pitch Master',
+    icon: '🎤',
+    description: 'Recorded your first pitch',
+  },
+  {
+    id: 'custom-advisor',
+    title: 'Team Builder',
+    icon: '👥',
+    description: 'Created a custom advisor',
+  },
+  {
+    id: 'power-user',
+    title: 'Power User',
+    icon: '⭐',
+    description: 'Completed all quick start steps',
+  },
 ];
 
 export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
   isOpen,
   onClose,
   onStartDemo,
-  onStartConversation
+  onStartConversation,
 }) => {
   const [completedSteps, setCompletedSteps] = React.useState<Set<string>>(new Set());
 
@@ -85,7 +111,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
   React.useEffect(() => {
     const progress = {
       completedSteps: Array.from(completedSteps),
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
     localStorage.setItem('elite-ai-quick-start-progress', JSON.stringify(progress));
   }, [completedSteps]);
@@ -127,7 +153,9 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-2xl font-bold mb-2">Quick Start Guide</h2>
-              <p className="text-blue-100">Get up and running in minutes with these essential features</p>
+              <p className="text-blue-100">
+                Get up and running in minutes with these essential features
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -141,7 +169,9 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-blue-100">Your Progress</span>
-              <span className="text-sm text-blue-100">{completedSteps.size} of {QUICK_START_STEPS.length} completed</span>
+              <span className="text-sm text-blue-100">
+                {completedSteps.size} of {QUICK_START_STEPS.length} completed
+              </span>
             </div>
             <div className="w-full bg-white bg-opacity-20 rounded-full h-3">
               <div
@@ -154,7 +184,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           {/* Achievement Badges */}
           {earnedBadges.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {earnedBadges.map((badge) => (
+              {earnedBadges.map(badge => (
                 <div
                   key={badge.id}
                   className="bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm flex items-center"
@@ -210,10 +240,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Getting Started Steps</h3>
             {completedSteps.size > 0 && (
-              <button
-                onClick={resetProgress}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={resetProgress} className="text-sm text-gray-500 hover:text-gray-700">
                 Reset Progress
               </button>
             )}
@@ -222,33 +249,33 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           <div className="space-y-4">
             {QUICK_START_STEPS.map((step, index) => {
               const isCompleted = completedSteps.has(step.id);
-              const isNext = !isCompleted && Array.from({ length: index }).every((_, i) =>
-                completedSteps.has(QUICK_START_STEPS[i].id)
-              );
+              const isNext =
+                !isCompleted &&
+                Array.from({ length: index }).every((_, i) =>
+                  completedSteps.has(QUICK_START_STEPS[i].id)
+                );
 
               return (
                 <div
                   key={step.id}
                   className={cn(
-                    "border rounded-xl p-6 transition-all",
+                    'border rounded-xl p-6 transition-all',
                     isCompleted
-                      ? "border-green-200 bg-green-50"
+                      ? 'border-green-200 bg-green-50'
                       : isNext
-                      ? "border-blue-200 bg-blue-50"
-                      : "border-gray-200"
+                        ? 'border-blue-200 bg-blue-50'
+                        : 'border-gray-200'
                   )}
                 >
                   <div className="flex items-start space-x-4">
                     {/* Step Number/Icon */}
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0",
-                      step.color
-                    )}>
-                      {isCompleted ? (
-                        <CheckCircle className="w-6 h-6 text-green-600" />
-                      ) : (
-                        step.icon
+                    <div
+                      className={cn(
+                        'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
+                        step.color
                       )}
+                    >
+                      {isCompleted ? <CheckCircle className="w-6 h-6 text-green-600" /> : step.icon}
                     </div>
 
                     {/* Content */}
@@ -256,12 +283,16 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="text-lg font-semibold text-gray-900">{step.title}</h4>
                         <div className="flex items-center space-x-2 text-sm text-gray-500">
-                          <span className={cn(
-                            "px-2 py-1 rounded text-xs",
-                            step.difficulty === 'Easy' ? "bg-green-100 text-green-700" :
-                            step.difficulty === 'Medium' ? "bg-yellow-100 text-yellow-700" :
-                            "bg-red-100 text-red-700"
-                          )}>
+                          <span
+                            className={cn(
+                              'px-2 py-1 rounded text-xs',
+                              step.difficulty === 'Easy'
+                                ? 'bg-green-100 text-green-700'
+                                : step.difficulty === 'Medium'
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-red-100 text-red-700'
+                            )}
+                          >
                             {step.difficulty}
                           </span>
                           <span>{step.estimatedTime}</span>
@@ -277,10 +308,10 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                             console.log(`Starting step: ${step.id}`);
                           }}
                           className={cn(
-                            "inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors",
+                            'inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors',
                             isNext
-                              ? "bg-blue-600 text-white hover:bg-blue-700"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                           )}
                         >
                           {step.action}
@@ -310,8 +341,8 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Congratulations!</h3>
                 <p className="text-gray-600 mb-4">
-                  You've completed the quick start guide and earned the Power User badge.
-                  You're now ready to get the most out of Elite AI Advisory!
+                  You've completed the quick start guide and earned the Power User badge. You're now
+                  ready to get the most out of Elite AI Advisory!
                 </p>
                 <button
                   onClick={onClose}
@@ -329,8 +360,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Need help? Check our{' '}
-              <button className="text-blue-600 hover:underline">FAQ section</button>
-              {' '}or{' '}
+              <button className="text-blue-600 hover:underline">FAQ section</button> or{' '}
               <button className="text-blue-600 hover:underline">contact support</button>
             </div>
             <button

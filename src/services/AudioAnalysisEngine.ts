@@ -6,63 +6,63 @@
 export interface AudioFeatures {
   // Fundamental frequency analysis
   pitch: {
-    fundamental: number[];      // F0 values over time
-    mean: number;              // Average pitch
-    variance: number;          // Pitch variability
-    range: number;             // Pitch range (max - min)
-    monotoneScore: number;     // 0-100, higher = more monotone
+    fundamental: number[]; // F0 values over time
+    mean: number; // Average pitch
+    variance: number; // Pitch variability
+    range: number; // Pitch range (max - min)
+    monotoneScore: number; // 0-100, higher = more monotone
   };
 
   // Volume and energy analysis
   volume: {
-    rms: number[];             // RMS energy over time
-    peak: number;              // Peak volume
-    average: number;           // Average volume
-    dynamic_range: number;     // Volume variation
-    consistency: number;       // Volume consistency score
+    rms: number[]; // RMS energy over time
+    peak: number; // Peak volume
+    average: number; // Average volume
+    dynamic_range: number; // Volume variation
+    consistency: number; // Volume consistency score
   };
 
   // Speaking pace and rhythm
   rhythm: {
-    speaking_rate: number;     // Words per minute (actual)
-    syllable_rate: number;     // Syllables per minute
-    pause_rate: number;        // Pauses per minute
+    speaking_rate: number; // Words per minute (actual)
+    syllable_rate: number; // Syllables per minute
+    pause_rate: number; // Pauses per minute
     rhythm_regularity: number; // Rhythm consistency score
   };
 
   // Voice quality metrics
   voice_quality: {
-    jitter: number;            // Pitch perturbation
-    shimmer: number;           // Amplitude perturbation
-    hnr: number;               // Harmonics-to-noise ratio
+    jitter: number; // Pitch perturbation
+    shimmer: number; // Amplitude perturbation
+    hnr: number; // Harmonics-to-noise ratio
     spectral_centroid: number; // Voice brightness
-    voice_breaks: number;      // Number of voice breaks detected
+    voice_breaks: number; // Number of voice breaks detected
   };
 
   // Emotional and stress indicators
   emotional_markers: {
-    stress_level: number;      // 0-100, vocal stress indicators
-    confidence_level: number;  // 0-100, vocal confidence
-    energy_level: number;      // 0-100, vocal energy
-    nervousness: number;       // 0-100, nervousness indicators
-    authenticity: number;      // 0-100, vocal authenticity
+    stress_level: number; // 0-100, vocal stress indicators
+    confidence_level: number; // 0-100, vocal confidence
+    energy_level: number; // 0-100, vocal energy
+    nervousness: number; // 0-100, nervousness indicators
+    authenticity: number; // 0-100, vocal authenticity
   };
 
   // Pause and timing analysis
   timing: {
     total_speech_time: number; // Total speaking time
-    total_pause_time: number;  // Total pause time
-    pause_count: number;       // Number of pauses
+    total_pause_time: number; // Total pause time
+    pause_count: number; // Number of pauses
     average_pause_length: number; // Average pause duration
-    longest_pause: number;     // Longest pause
+    longest_pause: number; // Longest pause
     speech_to_pause_ratio: number; // Ratio of speech to pause
   };
 
   // Professional coaching metrics
   coaching_metrics: {
-    clarity_score: number;     // 0-100, pronunciation clarity
+    clarity_score: number; // 0-100, pronunciation clarity
     articulation_score: number; // 0-100, articulation quality
-    flow_score: number;        // 0-100, speech flow quality
+    flow_score: number; // 0-100, speech flow quality
     emphasis_variation: number; // 0-100, emphasis variety
     professional_tone: number; // 0-100, professional delivery
   };
@@ -196,7 +196,7 @@ export class AudioAnalysisEngine {
       voice_quality: voiceQualityFeatures,
       emotional_markers: emotionalFeatures,
       timing: timingFeatures,
-      coaching_metrics: coachingFeatures
+      coaching_metrics: coachingFeatures,
     };
   }
 
@@ -207,13 +207,14 @@ export class AudioAnalysisEngine {
         mean: 0,
         variance: 0,
         range: 0,
-        monotoneScore: 50
+        monotoneScore: 50,
       };
     }
 
     const validPitches = this.pitchBuffer.filter(p => p > 0);
     const mean = validPitches.reduce((a, b) => a + b, 0) / validPitches.length;
-    const variance = validPitches.reduce((sum, pitch) => sum + Math.pow(pitch - mean, 2), 0) / validPitches.length;
+    const variance =
+      validPitches.reduce((sum, pitch) => sum + Math.pow(pitch - mean, 2), 0) / validPitches.length;
     const range = Math.max(...validPitches) - Math.min(...validPitches);
 
     // Calculate monotone score (lower variance = higher monotone score)
@@ -224,7 +225,7 @@ export class AudioAnalysisEngine {
       mean,
       variance,
       range,
-      monotoneScore
+      monotoneScore,
     };
   }
 
@@ -235,7 +236,7 @@ export class AudioAnalysisEngine {
         peak: 0,
         average: 0,
         dynamic_range: 0,
-        consistency: 0
+        consistency: 0,
       };
     }
 
@@ -244,15 +245,17 @@ export class AudioAnalysisEngine {
     const dynamic_range = peak - Math.min(...this.volumeBuffer);
 
     // Calculate volume consistency (lower variance = higher consistency)
-    const variance = this.volumeBuffer.reduce((sum, vol) => sum + Math.pow(vol - average, 2), 0) / this.volumeBuffer.length;
-    const consistency = Math.max(0, Math.min(100, 100 - (variance * 1000)));
+    const variance =
+      this.volumeBuffer.reduce((sum, vol) => sum + Math.pow(vol - average, 2), 0) /
+      this.volumeBuffer.length;
+    const consistency = Math.max(0, Math.min(100, 100 - variance * 1000));
 
     return {
       rms: this.volumeBuffer,
       peak,
       average,
       dynamic_range,
-      consistency
+      consistency,
     };
   }
 
@@ -273,7 +276,7 @@ export class AudioAnalysisEngine {
       pause_count: pauseCount,
       average_pause_length: averagePauseLength,
       longest_pause: averagePauseLength * 1.5, // Estimate
-      speech_to_pause_ratio: estimatedSpeechTime / Math.max(0.1, estimatedPauseTime)
+      speech_to_pause_ratio: estimatedSpeechTime / Math.max(0.1, estimatedPauseTime),
     };
   }
 
@@ -290,7 +293,7 @@ export class AudioAnalysisEngine {
       shimmer,
       hnr,
       spectral_centroid: spectralCentroid,
-      voice_breaks: voiceBreaks
+      voice_breaks: voiceBreaks,
     };
   }
 
@@ -310,7 +313,7 @@ export class AudioAnalysisEngine {
       confidence_level: confidenceLevel,
       energy_level: energyLevel,
       nervousness: nervousness,
-      authenticity: authenticity
+      authenticity: authenticity,
     };
   }
 
@@ -330,7 +333,7 @@ export class AudioAnalysisEngine {
       articulation_score: articulationScore,
       flow_score: flowScore,
       emphasis_variation: emphasisVariation,
-      professional_tone: professionalTone
+      professional_tone: professionalTone,
     };
   }
 
@@ -374,7 +377,7 @@ export class AudioAnalysisEngine {
       jitterSum += diff;
     }
 
-    return (jitterSum / (this.pitchBuffer.length - 1)) / 1000; // Normalize
+    return jitterSum / (this.pitchBuffer.length - 1) / 1000; // Normalize
   }
 
   private calculateShimmer(): number {
@@ -393,8 +396,13 @@ export class AudioAnalysisEngine {
   private calculateHNR(): number {
     // Harmonics-to-noise ratio (simplified)
     const avgVolume = this.volumeBuffer.reduce((a, b) => a + b, 0) / this.volumeBuffer.length;
-    const noise = this.volumeBuffer.reduce((sum, vol) => sum + Math.pow(vol - avgVolume, 2), 0) / this.volumeBuffer.length;
-    return Math.max(0, Math.min(40, 20 * Math.log10(avgVolume / Math.max(0.001, Math.sqrt(noise)))));
+    const noise =
+      this.volumeBuffer.reduce((sum, vol) => sum + Math.pow(vol - avgVolume, 2), 0) /
+      this.volumeBuffer.length;
+    return Math.max(
+      0,
+      Math.min(40, 20 * Math.log10(avgVolume / Math.max(0.001, Math.sqrt(noise))))
+    );
   }
 
   private calculateSpectralCentroid(): number {
@@ -411,7 +419,9 @@ export class AudioAnalysisEngine {
       denominator += magnitude;
     }
 
-    return denominator > 0 ? (numerator / denominator) * (this.sampleRate / 2) / latest.length : 1000;
+    return denominator > 0
+      ? ((numerator / denominator) * (this.sampleRate / 2)) / latest.length
+      : 1000;
   }
 
   private detectVoiceBreaks(): number {
@@ -435,39 +445,53 @@ export class AudioAnalysisEngine {
 
     const speakingRate = duration > 0 ? (words.length / duration) * 60 : 0;
     const syllableRate = duration > 0 ? (syllables / duration) * 60 : 0;
-    const pauseRate = duration > 0 ? (this.pitchBuffer.filter(p => p === 0).length / duration) * 60 : 0;
+    const pauseRate =
+      duration > 0 ? (this.pitchBuffer.filter(p => p === 0).length / duration) * 60 : 0;
 
     // Rhythm regularity based on pitch and volume consistency
-    const pitchVariance = this.pitchBuffer.length > 0 ?
-      this.pitchBuffer.reduce((sum, p, i, arr) => sum + Math.pow(p - arr.reduce((a, b) => a + b) / arr.length, 2), 0) / this.pitchBuffer.length : 0;
+    const pitchVariance =
+      this.pitchBuffer.length > 0
+        ? this.pitchBuffer.reduce(
+            (sum, p, i, arr) => sum + Math.pow(p - arr.reduce((a, b) => a + b) / arr.length, 2),
+            0
+          ) / this.pitchBuffer.length
+        : 0;
     const rhythmRegularity = Math.max(0, Math.min(100, 100 - (pitchVariance / 10000) * 100));
 
     return {
       speaking_rate: speakingRate,
       syllable_rate: syllableRate,
       pause_rate: pauseRate,
-      rhythm_regularity: rhythmRegularity
+      rhythm_regularity: rhythmRegularity,
     };
   }
 
   private estimateSyllables(text: string): number {
     // Simple syllable estimation
-    return text.toLowerCase()
-      .replace(/[^a-z]/g, '')
-      .replace(/[aeiouy]+/g, 'a')
-      .replace(/[^a]/g, '')
-      .length || 1;
+    return (
+      text
+        .toLowerCase()
+        .replace(/[^a-z]/g, '')
+        .replace(/[aeiouy]+/g, 'a')
+        .replace(/[^a]/g, '').length || 1
+    );
   }
 
   // Emotional and coaching metric calculations
-  private calculateStressLevel(pitch: AudioFeatures['pitch'], volume: AudioFeatures['volume']): number {
+  private calculateStressLevel(
+    pitch: AudioFeatures['pitch'],
+    volume: AudioFeatures['volume']
+  ): number {
     // Higher pitch variance + volume inconsistency = higher stress
     const pitchStress = Math.min(50, (pitch.variance / 1000) * 100);
     const volumeStress = Math.min(50, 100 - volume.consistency);
     return Math.min(100, pitchStress + volumeStress);
   }
 
-  private calculateConfidenceLevel(pitch: AudioFeatures['pitch'], volume: AudioFeatures['volume']): number {
+  private calculateConfidenceLevel(
+    pitch: AudioFeatures['pitch'],
+    volume: AudioFeatures['volume']
+  ): number {
     // Consistent volume + moderate pitch variation = confidence
     const volumeConfidence = volume.consistency;
     const pitchConfidence = Math.max(0, Math.min(100, 100 - pitch.monotoneScore + 20));
@@ -486,7 +510,10 @@ export class AudioAnalysisEngine {
     return Math.min(100, (pitch.variance / 1000) * 100);
   }
 
-  private calculateAuthenticity(pitch: AudioFeatures['pitch'], volume: AudioFeatures['volume']): number {
+  private calculateAuthenticity(
+    pitch: AudioFeatures['pitch'],
+    volume: AudioFeatures['volume']
+  ): number {
     // Natural variation without extreme inconsistency
     const pitchNaturalness = Math.max(0, 100 - Math.abs(pitch.monotoneScore - 30)); // Sweet spot around 30
     const volumeNaturalness = Math.max(0, 100 - Math.abs(volume.consistency - 70)); // Sweet spot around 70
@@ -513,7 +540,10 @@ export class AudioAnalysisEngine {
     return Math.max(0, 100 - pitch.monotoneScore + 20);
   }
 
-  private calculateProfessionalTone(pitch: AudioFeatures['pitch'], volume: AudioFeatures['volume']): number {
+  private calculateProfessionalTone(
+    pitch: AudioFeatures['pitch'],
+    volume: AudioFeatures['volume']
+  ): number {
     // Balanced pitch variation + consistent volume = professional
     const pitchProfessionalism = Math.max(0, 100 - Math.abs(pitch.monotoneScore - 25)); // Slightly varied is professional
     const volumeProfessionalism = volume.consistency;
@@ -528,81 +558,82 @@ export class AudioAnalysisEngine {
 
     // Analyze strengths
     if (features.coaching_metrics.clarity_score > 80) {
-      strengths.push("Excellent speech clarity and pronunciation");
+      strengths.push('Excellent speech clarity and pronunciation');
     }
     if (features.emotional_markers.confidence_level > 80) {
-      strengths.push("Strong vocal confidence and authority");
+      strengths.push('Strong vocal confidence and authority');
     }
     if (features.volume.consistency > 80) {
-      strengths.push("Consistent and controlled volume delivery");
+      strengths.push('Consistent and controlled volume delivery');
     }
     if (features.pitch.monotoneScore < 30) {
-      strengths.push("Good vocal variety and intonation");
+      strengths.push('Good vocal variety and intonation');
     }
     if (features.rhythm.speaking_rate >= 140 && features.rhythm.speaking_rate <= 160) {
-      strengths.push("Optimal speaking pace for engagement");
+      strengths.push('Optimal speaking pace for engagement');
     }
 
     // Analyze improvement areas
     if (features.emotional_markers.stress_level > 60) {
-      improvementAreas.push("Reduce vocal stress indicators");
-      recommendations.push("Practice deep breathing exercises before speaking");
-      coachingTips.push("Take slow, deep breaths between key points to maintain vocal calm");
+      improvementAreas.push('Reduce vocal stress indicators');
+      recommendations.push('Practice deep breathing exercises before speaking');
+      coachingTips.push('Take slow, deep breaths between key points to maintain vocal calm');
     }
 
     if (features.pitch.monotoneScore > 70) {
-      improvementAreas.push("Increase vocal variety and intonation");
-      recommendations.push("Practice emphasizing key words with pitch changes");
-      coachingTips.push("Use rising intonation for questions and falling for statements");
+      improvementAreas.push('Increase vocal variety and intonation');
+      recommendations.push('Practice emphasizing key words with pitch changes');
+      coachingTips.push('Use rising intonation for questions and falling for statements');
     }
 
     if (features.rhythm.speaking_rate < 120) {
-      improvementAreas.push("Increase speaking pace for better engagement");
-      recommendations.push("Practice speaking at 140-160 words per minute");
-      coachingTips.push("Use a metronome app to practice consistent speaking rhythm");
+      improvementAreas.push('Increase speaking pace for better engagement');
+      recommendations.push('Practice speaking at 140-160 words per minute');
+      coachingTips.push('Use a metronome app to practice consistent speaking rhythm');
     }
 
     if (features.rhythm.speaking_rate > 180) {
-      improvementAreas.push("Slow down speaking pace for clarity");
-      recommendations.push("Practice pausing between key points");
-      coachingTips.push("Use strategic 2-second pauses to emphasize important information");
+      improvementAreas.push('Slow down speaking pace for clarity');
+      recommendations.push('Practice pausing between key points');
+      coachingTips.push('Use strategic 2-second pauses to emphasize important information');
     }
 
     if (features.volume.consistency < 60) {
-      improvementAreas.push("Improve volume consistency");
-      recommendations.push("Practice maintaining steady vocal projection");
-      coachingTips.push("Speak from your diaphragm rather than your throat");
+      improvementAreas.push('Improve volume consistency');
+      recommendations.push('Practice maintaining steady vocal projection');
+      coachingTips.push('Speak from your diaphragm rather than your throat');
     }
 
     if (features.voice_quality.voice_breaks > 5) {
-      improvementAreas.push("Reduce voice breaks and maintain vocal stability");
-      recommendations.push("Work on breath support and vocal warm-ups");
+      improvementAreas.push('Reduce voice breaks and maintain vocal stability');
+      recommendations.push('Work on breath support and vocal warm-ups');
       coachingTips.push("Do vocal warm-ups: humming, lip trills, and 'ma-me-mi-mo-mu' exercises");
     }
 
     if (features.emotional_markers.nervousness > 70) {
-      improvementAreas.push("Manage presentation nervousness");
-      recommendations.push("Practice relaxation techniques and mental preparation");
-      coachingTips.push("Visualize successful delivery and practice progressive muscle relaxation");
+      improvementAreas.push('Manage presentation nervousness');
+      recommendations.push('Practice relaxation techniques and mental preparation');
+      coachingTips.push('Visualize successful delivery and practice progressive muscle relaxation');
     }
 
     // Calculate professional score
     const professionalScore = Math.round(
       (features.coaching_metrics.clarity_score +
-       features.coaching_metrics.articulation_score +
-       features.coaching_metrics.flow_score +
-       features.coaching_metrics.professional_tone +
-       features.emotional_markers.confidence_level) / 5
+        features.coaching_metrics.articulation_score +
+        features.coaching_metrics.flow_score +
+        features.coaching_metrics.professional_tone +
+        features.emotional_markers.confidence_level) /
+        5
     );
 
     // Add general coaching tips if needed
     if (strengths.length === 0) {
-      coachingTips.push("Focus on one improvement area at a time for best results");
-      coachingTips.push("Record yourself regularly to track vocal progress");
+      coachingTips.push('Focus on one improvement area at a time for best results');
+      coachingTips.push('Record yourself regularly to track vocal progress');
     }
 
     if (features.timing.speech_to_pause_ratio < 2) {
-      coachingTips.push("Use strategic pauses - they create impact and help audience processing");
+      coachingTips.push('Use strategic pauses - they create impact and help audience processing');
     }
 
     return {
@@ -610,7 +641,7 @@ export class AudioAnalysisEngine {
       improvement_areas: improvementAreas,
       specific_recommendations: recommendations,
       coaching_tips: coachingTips,
-      professional_score: professionalScore
+      professional_score: professionalScore,
     };
   }
 }

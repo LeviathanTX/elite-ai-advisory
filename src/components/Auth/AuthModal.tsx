@@ -63,22 +63,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   console.log('AuthModal rendering modal');
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={(e) => {
-      if (e.target === e.currentTarget) {
-        console.log('Background clicked');
-        onClose();
-      }
-    }}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          console.log('Background clicked');
+          onClose();
+        }
+      }}
+    >
       <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 relative">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             {mode === 'signin' ? 'Sign In' : 'Create Account'}
           </h2>
           <p className="text-gray-600">
-            {mode === 'signin' 
-              ? 'Welcome back to Bearable Advisors' 
-              : 'Join thousands of entrepreneurs using AI advisory'
-            }
+            {mode === 'signin'
+              ? 'Welcome back to Bearable Advisors'
+              : 'Join thousands of entrepreneurs using AI advisory'}
           </p>
         </div>
 
@@ -92,7 +94,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 type="text"
                 id="fullName"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={e => setFullName(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
@@ -107,7 +109,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -121,7 +123,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               minLength={6}
@@ -138,12 +140,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             type="submit"
             disabled={loading}
             className={cn(
-              "w-full py-2 px-4 rounded-lg font-semibold text-white",
-              "bg-gradient-to-r from-blue-600 to-purple-600",
-              "hover:from-blue-700 hover:to-purple-700",
-              "focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "transition-all duration-200"
+              'w-full py-2 px-4 rounded-lg font-semibold text-white',
+              'bg-gradient-to-r from-blue-600 to-purple-600',
+              'hover:from-blue-700 hover:to-purple-700',
+              'focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              'transition-all duration-200'
             )}
           >
             {loading ? 'Loading...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
@@ -167,7 +169,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>

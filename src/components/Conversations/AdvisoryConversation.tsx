@@ -1,14 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  MessageCircle, Users, Settings, Send, Paperclip, FileText, Zap,
-  ArrowLeft, Star, Brain,
-  Mic, MicOff, Download, Share2, Edit2, Plus, Folder
+  MessageCircle,
+  Users,
+  Settings,
+  Send,
+  Paperclip,
+  FileText,
+  Zap,
+  ArrowLeft,
+  Star,
+  Brain,
+  Mic,
+  MicOff,
+  Download,
+  Share2,
+  Edit2,
+  Plus,
+  Folder,
 } from 'lucide-react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useDocumentContext } from '../../hooks/useDocumentContext';
 import { createAdvisorAI } from '../../services/advisorAI';
-import { generateDueDiligencePrompt, generateStrategicThinkingPrompt } from '../../services/DueDiligenceFramework';
+import {
+  generateDueDiligencePrompt,
+  generateStrategicThinkingPrompt,
+} from '../../services/DueDiligenceFramework';
 import { AdvisorEditModal } from '../Modals/AdvisorEditModal';
 import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
 import { CelebrityAdvisorCustomizationModal } from '../Modals/CelebrityAdvisorCustomizationModal';
@@ -48,14 +65,18 @@ interface AdvisoryConversationProps {
   conversationId?: string;
 }
 
-export function AdvisoryConversation({ onBack, initialMode = 'general', conversationId }: AdvisoryConversationProps) {
+export function AdvisoryConversation({
+  onBack,
+  initialMode = 'general',
+  conversationId,
+}: AdvisoryConversationProps) {
   const { celebrityAdvisors, customAdvisors } = useAdvisor();
   const { settings, isConfigured } = useSettings();
   const {
     getDocumentContext,
     parseDocumentReferences,
     formatDocumentContextForAI,
-    isLoading: documentContextLoading
+    isLoading: documentContextLoading,
   } = useDocumentContext();
 
   const [selectedMode, setSelectedMode] = useState<ConversationMode['id']>(initialMode);
@@ -70,7 +91,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     enableConsensusBuilding: false,
     discussionRounds: 1,
     includeDocumentAnalysis: false,
-    autoSummary: false
+    autoSummary: false,
   });
   const [isRecording, setIsRecording] = useState(false);
   const [showAdvisorPanel, setShowAdvisorPanel] = useState(true);
@@ -84,7 +105,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
   const [showQuickCreateModal, setShowQuickCreateModal] = useState(false);
   const [showCelebrityCustomizationModal, setShowCelebrityCustomizationModal] = useState(false);
   const [editingAdvisor, setEditingAdvisor] = useState<any>(null);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,29 +115,29 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
       name: 'Strategic Planning',
       icon: <Brain className="w-4 h-4" />,
       description: 'Long-term strategy and planning discussions',
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: 'due_diligence',
       name: 'Due Diligence',
       icon: <FileText className="w-4 h-4" />,
       description: 'Investment analysis and document review',
-      color: 'bg-green-500'
+      color: 'bg-green-500',
     },
     {
       id: 'quick_consultation',
       name: 'Quick Consultation',
       icon: <Zap className="w-4 h-4" />,
       description: 'Fast answers and immediate advice',
-      color: 'bg-orange-500'
+      color: 'bg-orange-500',
     },
     {
       id: 'general',
       name: 'General Discussion',
       icon: <MessageCircle className="w-4 h-4" />,
       description: 'Open conversation with your advisors',
-      color: 'bg-purple-500'
-    }
+      color: 'bg-purple-500',
+    },
   ];
 
   const allAdvisors = [...celebrityAdvisors, ...customAdvisors];
@@ -164,7 +185,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
       files: uploadedFiles,
       selectedDocuments,
       lastUpdated: new Date().toISOString(),
-      title: generateConversationTitle()
+      title: generateConversationTitle(),
     };
 
     localStorage.setItem(`conversation-${conversationData.id}`, JSON.stringify(conversationData));
@@ -178,13 +199,13 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
       .filter(Boolean)
       .slice(0, 2)
       .join(', ');
-    
+
     return `${mode} with ${advisorNames}${selectedAdvisors.length > 2 ? ` +${selectedAdvisors.length - 2}` : ''}`;
   };
 
   const extractTextFromFile = async (file: File): Promise<string> => {
     console.log('📄 Extracting text from file:', file.name, 'type:', file.type);
-    
+
     if (file.type === 'text/plain' || file.type === 'text/csv') {
       // Plain text files
       return await file.text();
@@ -206,8 +227,10 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
         console.error('PDF extraction error:', error);
         return `PDF Document: ${file.name}\n[Error extracting PDF content: ${error instanceof Error ? error.message : 'Unknown error'}]`;
       }
-    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
-               file.type === 'application/msword') {
+    } else if (
+      file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.type === 'application/msword'
+    ) {
       // Word documents (.docx, .doc)
       try {
         console.log('📝 Extracting text from Word document...');
@@ -218,8 +241,10 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
         console.error('Word extraction error:', error);
         return `Word Document: ${file.name}\n[Error extracting Word content: ${error instanceof Error ? error.message : 'Unknown error'}]`;
       }
-    } else if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-               file.type === 'application/vnd.ms-excel') {
+    } else if (
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel'
+    ) {
       // Excel files (.xlsx, .xls)
       try {
         console.log('📊 Extracting data from Excel spreadsheet...');
@@ -230,8 +255,10 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
         console.error('Excel extraction error:', error);
         return `Excel Document: ${file.name}\n[Error extracting Excel content: ${error instanceof Error ? error.message : 'Unknown error'}]`;
       }
-    } else if (file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
-               file.type === 'application/vnd.ms-powerpoint') {
+    } else if (
+      file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+      file.type === 'application/vnd.ms-powerpoint'
+    ) {
       // PowerPoint files (.pptx, .ppt)
       try {
         console.log('🎤 Extracting text from PowerPoint presentation...');
@@ -258,7 +285,9 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     const pdfjsLib = await import('pdfjs-dist');
 
     // Import and use centralized worker setup
-    const { configurePDFWorkerAuto, checkPDFWorkerCompatibility } = await import('../../utils/pdfWorkerSetup');
+    const { configurePDFWorkerAuto, checkPDFWorkerCompatibility } = await import(
+      '../../utils/pdfWorkerSetup'
+    );
 
     // Configure worker if not already done
     if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
@@ -266,20 +295,20 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     }
 
     checkPDFWorkerCompatibility();
-    
+
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let fullText = '';
-    
+
     console.log(`📄 PDF has ${pdf.numPages} pages`);
-    
+
     // Extract text from all pages with improved text handling
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       console.log(`📖 Processing page ${pageNum}...`);
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();
-      
+
       console.log(`📝 Page ${pageNum} has ${textContent.items.length} text items`);
-      
+
       // Improved text extraction with better spacing and formatting
       const pageText = textContent.items
         .map((item: any) => {
@@ -290,20 +319,20 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
         .join(' ') // Join with spaces
         .replace(/\s+/g, ' ') // Normalize multiple spaces
         .trim();
-      
+
       console.log(`📄 Page ${pageNum} extracted text length: ${pageText.length}`);
       console.log(`📄 Page ${pageNum} first 100 chars: "${pageText.substring(0, 100)}..."`);
-      
+
       if (pageText) {
         fullText += `Page ${pageNum}:\n${pageText}\n\n`;
       } else {
         console.log(`⚠️ Page ${pageNum} contains no extractable text`);
       }
     }
-    
+
     console.log(`📖 TOTAL extracted ${fullText.length} characters from PDF`);
     console.log(`📖 First 200 characters: "${fullText.substring(0, 200)}..."`);
-    
+
     if (fullText.trim()) {
       return fullText.trim();
     } else {
@@ -316,14 +345,14 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     try {
       // Dynamically import mammoth to avoid SSR issues
       const mammoth = await import('mammoth');
-      
+
       const result = await mammoth.extractRawText({ arrayBuffer });
       console.log(`📝 Extracted ${result.value.length} characters from Word document`);
-      
+
       if (result.messages.length > 0) {
         console.log('Word extraction messages:', result.messages);
       }
-      
+
       return result.value || '[Word document contains no extractable text]';
     } catch (error) {
       console.error('Mammoth extraction error:', error);
@@ -335,20 +364,22 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     try {
       // Dynamically import xlsx to avoid SSR issues
       const XLSX = await import('xlsx');
-      
+
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
       let allText = '';
-      
+
       workbook.SheetNames.forEach((sheetName, index) => {
         const worksheet = workbook.Sheets[sheetName];
         const sheetData = XLSX.utils.sheet_to_csv(worksheet);
-        
+
         if (sheetData.trim()) {
           allText += `Sheet: ${sheetName}\n${sheetData}\n\n`;
         }
       });
-      
-      console.log(`📊 Extracted ${allText.length} characters from Excel spreadsheet (${workbook.SheetNames.length} sheets)`);
+
+      console.log(
+        `📊 Extracted ${allText.length} characters from Excel spreadsheet (${workbook.SheetNames.length} sheets)`
+      );
       return allText.trim() || '[Excel spreadsheet contains no data]';
     } catch (error) {
       console.error('XLSX extraction error:', error);
@@ -360,14 +391,19 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     // Note: PowerPoint extraction is complex and requires specialized libraries
     // For now, we'll provide a placeholder with instructions
     console.log('🎤 PowerPoint extraction attempted');
-    
+
     try {
       // Try to read as a zip file and extract XML content (basic approach)
       const text = await extractPowerPointBasic(arrayBuffer);
-      return text || '[PowerPoint extraction not fully supported - consider converting to PDF for better text extraction]';
+      return (
+        text ||
+        '[PowerPoint extraction not fully supported - consider converting to PDF for better text extraction]'
+      );
     } catch (error) {
       console.error('PowerPoint extraction error:', error);
-      throw new Error('PowerPoint files require conversion to PDF for optimal text extraction. Please save your presentation as PDF and upload that instead.');
+      throw new Error(
+        'PowerPoint files require conversion to PDF for optimal text extraction. Please save your presentation as PDF and upload that instead.'
+      );
     }
   };
 
@@ -379,16 +415,14 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
 
   const toggleAdvisor = (advisorId: string) => {
     setSelectedAdvisors(prev =>
-      prev.includes(advisorId)
-        ? prev.filter(id => id !== advisorId)
-        : [...prev, advisorId]
+      prev.includes(advisorId) ? prev.filter(id => id !== advisorId) : [...prev, advisorId]
     );
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setUploadedFiles(prev => [...prev, ...files]);
-    
+
     // Add system message about file upload
     files.forEach(file => {
       const message: ConversationMessage = {
@@ -396,7 +430,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
         type: 'system',
         content: `📎 Document uploaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
         timestamp: new Date(),
-        attachments: [{ name: file.name, size: file.size, type: file.type }]
+        attachments: [{ name: file.name, size: file.size, type: file.type }],
       };
       setMessages(prev => [...prev, message]);
     });
@@ -413,13 +447,13 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
       id: `msg-${Date.now()}`,
       type: 'user',
       content: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
-    
+
     // Store uploaded files for this message and clear the state
     const currentFiles = [...uploadedFiles];
     setUploadedFiles([]);
@@ -455,7 +489,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
       id: `system-${Date.now()}`,
       type: 'system',
       content: `🚀 Enhanced Meeting Mode: ${advisors.length} advisors discussing your question with ${enhancedSettings.discussionRounds} rounds of debate`,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     setMessages(prev => [...prev, systemMessage]);
 
@@ -464,7 +498,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
         id: `round-${Date.now()}-${round}`,
         type: 'system',
         content: `🔄 Discussion Round ${round}/${enhancedSettings.discussionRounds}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
       setMessages(prev => [...prev, roundMessage]);
 
@@ -475,7 +509,7 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
           round,
           totalRounds: enhancedSettings.discussionRounds,
           otherAdvisors: advisors.filter((_, index) => index !== i),
-          previousMessages: messages.slice(-10)
+          previousMessages: messages.slice(-10),
         });
 
         const advisorMessage: ConversationMessage = {
@@ -484,11 +518,11 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
           content: response,
           timestamp: new Date(),
           advisor,
-          metadata: { round, discussionMode: true }
+          metadata: { round, discussionMode: true },
         };
 
         setMessages(prev => [...prev, advisorMessage]);
-        
+
         // Simulate typing delay between advisors
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
       }
@@ -503,23 +537,28 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
   const generateIndividualResponses = async (advisors: any[], userInput: string, files: File[]) => {
     for (const advisor of advisors) {
       const response = await generateSingleAdvisorResponse(advisor, userInput, files);
-      
+
       const advisorMessage: ConversationMessage = {
         id: `advisor-${Date.now()}-${advisor.id}`,
         type: 'advisor',
         content: response,
         timestamp: new Date(),
-        advisor
+        advisor,
       };
 
       setMessages(prev => [...prev, advisorMessage]);
-      
+
       // Simulate typing delay between advisors
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
     }
   };
 
-  const generateSingleAdvisorResponse = async (advisor: any, userInput: string, files: File[], context?: any) => {
+  const generateSingleAdvisorResponse = async (
+    advisor: any,
+    userInput: string,
+    files: File[],
+    context?: any
+  ) => {
     // Use mock AI service to generate response
     const mode = conversationModes.find(m => m.id === selectedMode);
 
@@ -552,11 +591,16 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
     // Extract document content from uploaded files
     let uploadedFileContent = '';
     if (files.length > 0) {
-      console.log('📄 Processing uploaded documents:', files.map(f => f.name));
+      console.log(
+        '📄 Processing uploaded documents:',
+        files.map(f => f.name)
+      );
       const fileContents = await Promise.all(
-        files.map(async (file) => {
+        files.map(async file => {
           try {
-            console.log(`🔍 Starting extraction for file: ${file.name} (${file.size} bytes, type: ${file.type})`);
+            console.log(
+              `🔍 Starting extraction for file: ${file.name} (${file.size} bytes, type: ${file.type})`
+            );
             const text = await extractTextFromFile(file);
             console.log(`✅ Successfully extracted ${text.length} characters from ${file.name}`);
             console.log(`📝 First 200 chars from ${file.name}: "${text.substring(0, 200)}..."`);
@@ -577,9 +621,15 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
 
     const contextInfo = [
       files.length > 0 ? `Files uploaded: ${files.map(f => f.name).join(', ')}` : '',
-      selectedDocuments.length > 0 ? `Knowledge base documents: ${selectedDocuments.map(d => d.name).join(', ')}` : '',
-      documentReferences.length > 0 ? `Referenced documents: ${documentReferences.map(d => d.name).join(', ')}` : ''
-    ].filter(Boolean).join('\n');
+      selectedDocuments.length > 0
+        ? `Knowledge base documents: ${selectedDocuments.map(d => d.name).join(', ')}`
+        : '',
+      documentReferences.length > 0
+        ? `Referenced documents: ${documentReferences.map(d => d.name).join(', ')}`
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     const systemPrompt = `You are ${advisor.name} in a ${mode?.name || 'general'} conversation.
     ${mode?.description || ''}
@@ -600,34 +650,51 @@ export function AdvisoryConversation({ onBack, initialMode = 'general', conversa
       knowledgeBaseLength: documentContextString.length,
       uploadedContentLength: uploadedFileContent.length,
       selectedDocuments: selectedDocuments.length,
-      systemPromptLength: systemPrompt.length
+      systemPromptLength: systemPrompt.length,
     });
 
     try {
-      console.log('Advisor response debug:', { isConfigured, hasClaudeService: !!settings.aiServices.claude, hasApiKey: !!settings.aiServices.claude?.apiKey });
+      console.log('Advisor response debug:', {
+        isConfigured,
+        hasClaudeService: !!settings.aiServices.claude,
+        hasApiKey: !!settings.aiServices.claude?.apiKey,
+      });
       if (isConfigured) {
         const aiService = settings.aiServices.claude; // Default to Claude
         if (aiService?.apiKey) {
-          console.log('Attempting to use real AI service for', advisor.name, 'with API key:', aiService.apiKey.substring(0, 10) + '...');
+          console.log(
+            'Attempting to use real AI service for',
+            advisor.name,
+            'with API key:',
+            aiService.apiKey.substring(0, 10) + '...'
+          );
           const advisorAI = createAdvisorAI(aiService);
-          
+
           // Enhanced prompt generation based on mode and advisor role
-          const hasDocumentContext = documentContextString.length > 0 || uploadedFileContent.length > 0;
+          const hasDocumentContext =
+            documentContextString.length > 0 || uploadedFileContent.length > 0;
           let enhancedPrompt = systemPrompt;
 
           // Generate specialized prompts for due diligence and strategic thinking
           if (selectedMode === 'due_diligence' && advisor.role) {
-            const contextInfo = hasDocumentContext ? `${documentContextString}\n\n${uploadedFileContent}` : '';
+            const contextInfo = hasDocumentContext
+              ? `${documentContextString}\n\n${uploadedFileContent}`
+              : '';
             enhancedPrompt = generateDueDiligencePrompt(
               advisor.role,
               `User Question: ${userInput}`,
               contextInfo || undefined
             );
           } else if (selectedMode === 'strategic_planning') {
-            const contextInfo = hasDocumentContext ? `${documentContextString}\n\n${uploadedFileContent}` : '';
+            const contextInfo = hasDocumentContext
+              ? `${documentContextString}\n\n${uploadedFileContent}`
+              : '';
             // Determine business stage based on conversation context (default to growth)
-            const businessStage = userInput.toLowerCase().includes('startup') ? 'startup' :
-                                userInput.toLowerCase().includes('mature') ? 'mature' : 'growth';
+            const businessStage = userInput.toLowerCase().includes('startup')
+              ? 'startup'
+              : userInput.toLowerCase().includes('mature')
+                ? 'mature'
+                : 'growth';
             enhancedPrompt = generateStrategicThinkingPrompt(
               businessStage,
               userInput,
@@ -651,7 +718,12 @@ Based on the documents provided and your expertise, please analyze and respond t
           );
 
           if (response && response.trim().length > 0) {
-            console.log('Successfully got AI response for', advisor.name, 'Document analysis:', hasDocumentContext);
+            console.log(
+              'Successfully got AI response for',
+              advisor.name,
+              'Document analysis:',
+              hasDocumentContext
+            );
             return response;
           } else {
             console.log('AI response was empty or null');
@@ -672,29 +744,34 @@ Based on the documents provided and your expertise, please analyze and respond t
     return generateMockAdvisorResponse(advisor, userInput, selectedMode, context);
   };
 
-  const generateMockAdvisorResponse = (advisor: any, userInput: string, mode: string, context?: any) => {
+  const generateMockAdvisorResponse = (
+    advisor: any,
+    userInput: string,
+    mode: string,
+    context?: any
+  ) => {
     const responses = {
       'Mark Cuban': [
         "Let me be direct - this comes down to execution and numbers. The market won't care about your idea if you can't prove traction.",
         "I've seen this pattern before. The companies that win here focus on customer acquisition costs and lifetime value from day one.",
-        "The opportunity is real, but you need to think bigger about scalability. How do you 10x this business model?"
+        'The opportunity is real, but you need to think bigger about scalability. How do you 10x this business model?',
       ],
       'Reid Hoffman': [
-        "This has interesting network effects potential. The key is building defensible moats through data and user engagement.",
+        'This has interesting network effects potential. The key is building defensible moats through data and user engagement.',
         "I'm thinking about platform dynamics here. How do you create an ecosystem that becomes more valuable as it grows?",
-        "The strategic positioning looks solid, but consider the long-term competitive landscape and potential platform plays."
+        'The strategic positioning looks solid, but consider the long-term competitive landscape and potential platform plays.',
       ],
       'Barbara Corcoran': [
         "I love the energy, but let's talk about the practical side. How are you actually going to get customers through the door?",
-        "This reminds me of a deal I saw succeed because of brilliant sales execution. Your go-to-market strategy is everything here.",
-        "The fundamentals are good, but you need to think like a customer. What's going to make them choose you over the competition?"
-      ]
+        'This reminds me of a deal I saw succeed because of brilliant sales execution. Your go-to-market strategy is everything here.',
+        "The fundamentals are good, but you need to think like a customer. What's going to make them choose you over the competition?",
+      ],
     };
 
     const advisorResponses = responses[advisor.name as keyof typeof responses] || [
-      "Based on my experience, this presents both opportunities and challenges that we should explore further.",
-      "I see potential here, but execution will be critical to success in this market.",
-      "This is an interesting approach. Let me share some thoughts on how to strengthen your position."
+      'Based on my experience, this presents both opportunities and challenges that we should explore further.',
+      'I see potential here, but execution will be critical to success in this market.',
+      'This is an interesting approach. Let me share some thoughts on how to strengthen your position.',
     ];
 
     let response = advisorResponses[Math.floor(Math.random() * advisorResponses.length)];
@@ -705,7 +782,8 @@ Based on the documents provided and your expertise, please analyze and respond t
     }
 
     if (mode === 'due_diligence') {
-      response += " From an investment perspective, I'd want to see stronger validation of the market demand.";
+      response +=
+        " From an investment perspective, I'd want to see stronger validation of the market demand.";
     }
 
     return response;
@@ -716,17 +794,17 @@ Based on the documents provided and your expertise, please analyze and respond t
       id: `consensus-${Date.now()}`,
       type: 'system',
       content: `🤝 Building Consensus: Advisors are working to find common ground and final recommendations...`,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     setMessages(prev => [...prev, consensusMessage]);
-    
+
     try {
       // Get the most recent advisor responses from current conversation
       const currentMessages = [...messages]; // Capture current state
       const recentAdvisorMessages = currentMessages
         .filter(msg => msg.type === 'advisor' && advisors.some(a => a.id === msg.advisor?.id))
         .slice(-advisors.length); // Get the last response from each advisor
-      
+
       if (recentAdvisorMessages.length === 0) {
         console.log('⚠️ No recent advisor messages found for consensus');
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -735,20 +813,22 @@ Based on the documents provided and your expertise, please analyze and respond t
           type: 'analysis',
           content: `📊 Advisory Committee Consensus:\n\nThe advisors are still formulating their collective recommendations. Please try the consensus feature after getting individual responses from the advisors.`,
           timestamp: new Date(),
-          metadata: { type: 'consensus', advisors: advisors.map(a => a.name) }
+          metadata: { type: 'consensus', advisors: advisors.map(a => a.name) },
         };
         setMessages(prev => [...prev, fallbackMessage]);
         return;
       }
 
       // Compile advisor responses for AI analysis
-      const advisorResponseSummary = recentAdvisorMessages.map(msg => 
-        `**${msg.advisor?.name}**: ${msg.content}`
-      ).join('\n\n');
-      
+      const advisorResponseSummary = recentAdvisorMessages
+        .map(msg => `**${msg.advisor?.name}**: ${msg.content}`)
+        .join('\n\n');
+
       console.log('🔍 Generating AI consensus from advisor responses...');
-      console.log(`📝 Advisor responses summary length: ${advisorResponseSummary.length} characters`);
-      
+      console.log(
+        `📝 Advisor responses summary length: ${advisorResponseSummary.length} characters`
+      );
+
       // Create a prompt for AI to generate consensus
       const consensusPrompt = `You are facilitating an advisory committee meeting. Based on the individual responses from these business advisors, synthesize their collective wisdom into a unified consensus.
 
@@ -773,7 +853,7 @@ Be concise but comprehensive, focusing on actionable insights that represent the
       // Use AI service to generate consensus
       const { aiServices } = settings;
       const isConfigured = aiServices?.claude?.apiKey && aiServices.claude.apiKey.trim().length > 0;
-      
+
       if (isConfigured) {
         console.log('🤖 Using real AI service to generate consensus');
         const advisorAI = createAdvisorAI(aiServices.claude);
@@ -782,21 +862,20 @@ Be concise but comprehensive, focusing on actionable insights that represent the
           '', // Empty user message since prompt contains everything
           { temperature: 0.7, maxTokens: 800 }
         );
-        
+
         await new Promise(resolve => setTimeout(resolve, 1000));
         const finalMessage: ConversationMessage = {
           id: `final-${Date.now()}`,
           type: 'analysis',
           content: consensusContent,
           timestamp: new Date(),
-          metadata: { type: 'consensus', advisors: advisors.map(a => a.name) }
+          metadata: { type: 'consensus', advisors: advisors.map(a => a.name) },
         };
         setMessages(prev => [...prev, finalMessage]);
-        
       } else {
         console.log('⚠️ AI service not configured, using enhanced mock consensus');
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
+
         // Create a more dynamic mock consensus based on advisor names
         const advisorNames = advisors.map(a => a.name).join(', ');
         const mockConsensus = `📊 Advisory Committee Consensus:
@@ -816,11 +895,10 @@ The committee unanimously recommends proceeding with measured optimism while sys
           type: 'analysis',
           content: mockConsensus,
           timestamp: new Date(),
-          metadata: { type: 'consensus', advisors: advisors.map(a => a.name) }
+          metadata: { type: 'consensus', advisors: advisors.map(a => a.name) },
         };
         setMessages(prev => [...prev, finalMessage]);
       }
-      
     } catch (error) {
       console.error('Error generating consensus:', error);
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -829,7 +907,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
         type: 'analysis',
         content: `📊 Advisory Committee Consensus:\n\n⚠️ Unable to generate consensus analysis at this time. Please try again or review the individual advisor responses above for guidance.`,
         timestamp: new Date(),
-        metadata: { type: 'consensus', advisors: advisors.map(a => a.name) }
+        metadata: { type: 'consensus', advisors: advisors.map(a => a.name) },
       };
       setMessages(prev => [...prev, errorMessage]);
     }
@@ -841,7 +919,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
   const handleEditAdvisor = (advisor: any) => {
     setEditingAdvisor(advisor);
     const isCelebrity = celebrityAdvisors.some(ca => ca.id === advisor.id);
-    
+
     if (isCelebrity) {
       setShowCelebrityCustomizationModal(true);
     } else {
@@ -857,13 +935,13 @@ The committee unanimously recommends proceeding with measured optimism while sys
   const handleAdvisorCreated = (newAdvisor: any) => {
     // Automatically add the new advisor to the conversation
     setSelectedAdvisors(prev => [...prev, newAdvisor.id]);
-    
+
     // Add a system message about the new advisor joining
     const systemMessage: ConversationMessage = {
       id: `advisor-joined-${Date.now()}`,
       type: 'system',
       content: `✨ ${newAdvisor.name} (${newAdvisor.role}) has joined the conversation`,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     setMessages(prev => [...prev, systemMessage]);
   };
@@ -871,13 +949,13 @@ The committee unanimously recommends proceeding with measured optimism while sys
   const handleAdvisorUpdated = (updatedAdvisor: any) => {
     // Real-time update: refresh advisor data in conversation
     // The advisor context will handle the global update
-    
+
     // Add a system message about the update
     const systemMessage: ConversationMessage = {
       id: `advisor-updated-${Date.now()}`,
       type: 'system',
       content: `🔄 ${updatedAdvisor.name}'s settings have been updated`,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     setMessages(prev => [...prev, systemMessage]);
   };
@@ -894,7 +972,8 @@ The committee unanimously recommends proceeding with measured optimism while sys
       {/* Development Mode Banner */}
       {!isConfigured && (
         <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium z-50">
-          🔧 DEVELOPMENT MODE - Using simulated AI responses. Configure API keys in Settings for real AI integration.
+          🔧 DEVELOPMENT MODE - Using simulated AI responses. Configure API keys in Settings for
+          real AI integration.
         </div>
       )}
 
@@ -925,10 +1004,10 @@ The committee unanimously recommends proceeding with measured optimism while sys
                     key={mode.id}
                     onClick={() => setSelectedMode(mode.id)}
                     className={cn(
-                      "p-2 rounded-lg text-xs font-medium transition-all flex items-center space-x-1",
+                      'p-2 rounded-lg text-xs font-medium transition-all flex items-center space-x-1',
                       selectedMode === mode.id
                         ? `${mode.color} text-white`
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     )}
                   >
                     {mode.icon}
@@ -966,25 +1045,25 @@ The committee unanimously recommends proceeding with measured optimism while sys
               {allAdvisors.map(advisor => {
                 const isSelected = selectedAdvisors.includes(advisor.id);
                 const isCelebrity = celebrityAdvisors.some(ca => ca.id === advisor.id);
-                
+
                 return (
                   <div
                     key={advisor.id}
                     className={cn(
-                      "p-3 rounded-lg border transition-all group",
+                      'p-3 rounded-lg border transition-all group',
                       isSelected
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
                     )}
                   >
                     <div className="flex items-center space-x-3">
-                      <div 
+                      <div
                         className="text-2xl cursor-pointer"
                         onClick={() => toggleAdvisor(advisor.id)}
                       >
                         {advisor.avatar_emoji || '👤'}
                       </div>
-                      <div 
+                      <div
                         className="flex-1 min-w-0 cursor-pointer"
                         onClick={() => toggleAdvisor(advisor.id)}
                       >
@@ -994,21 +1073,23 @@ The committee unanimously recommends proceeding with measured optimism while sys
                             <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 truncate">{advisor.role || advisor.title}</div>
+                        <div className="text-xs text-gray-600 truncate">
+                          {advisor.role || advisor.title}
+                        </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-1">
                         <button
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             handleEditAdvisor(advisor);
                           }}
                           className="p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title={isCelebrity ? "Customize AI settings" : "Edit advisor"}
+                          title={isCelebrity ? 'Customize AI settings' : 'Edit advisor'}
                         >
                           <Edit2 className="w-3 h-3 text-gray-600" />
                         </button>
-                        
+
                         {isSelected && (
                           <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">✓</span>
@@ -1031,10 +1112,12 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   <input
                     type="checkbox"
                     checked={enhancedSettings.enableDebate}
-                    onChange={(e) => setEnhancedSettings(prev => ({
-                      ...prev,
-                      enableDebate: e.target.checked
-                    }))}
+                    onChange={e =>
+                      setEnhancedSettings(prev => ({
+                        ...prev,
+                        enableDebate: e.target.checked,
+                      }))
+                    }
                     className="rounded border-gray-300 mr-2"
                   />
                   Enable Advisor Debate
@@ -1043,10 +1126,12 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   <input
                     type="checkbox"
                     checked={enhancedSettings.enableConsensusBuilding}
-                    onChange={(e) => setEnhancedSettings(prev => ({
-                      ...prev,
-                      enableConsensusBuilding: e.target.checked
-                    }))}
+                    onChange={e =>
+                      setEnhancedSettings(prev => ({
+                        ...prev,
+                        enableConsensusBuilding: e.target.checked,
+                      }))
+                    }
                     className="rounded border-gray-300 mr-2"
                   />
                   Build Consensus
@@ -1060,10 +1145,12 @@ The committee unanimously recommends proceeding with measured optimism while sys
                     min="1"
                     max="3"
                     value={enhancedSettings.discussionRounds}
-                    onChange={(e) => setEnhancedSettings(prev => ({
-                      ...prev,
-                      discussionRounds: parseInt(e.target.value)
-                    }))}
+                    onChange={e =>
+                      setEnhancedSettings(prev => ({
+                        ...prev,
+                        discussionRounds: parseInt(e.target.value),
+                      }))
+                    }
                     className="w-full"
                   />
                 </div>
@@ -1087,15 +1174,12 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   <Users className="w-4 h-4" />
                 </button>
               )}
-              <button
-                onClick={onBack}
-                className="text-gray-500 hover:text-gray-700 font-medium"
-              >
+              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
                 ← Back to Dashboard
               </button>
               <div className="h-6 border-l border-gray-300"></div>
               <div className="flex items-center space-x-2">
-                <div className={cn("w-3 h-3 rounded-full", currentMode?.color)} />
+                <div className={cn('w-3 h-3 rounded-full', currentMode?.color)} />
                 <h1 className="text-xl font-bold text-gray-900">{currentMode?.name}</h1>
               </div>
             </div>
@@ -1108,24 +1192,32 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   // Share functionality
                   const conversationData = {
                     title: `Advisory Session - ${currentMode?.name}`,
-                    advisors: selectedAdvisors.map(id => celebrityAdvisors.find(a => a.id === id)?.name).filter(Boolean).join(', '),
+                    advisors: selectedAdvisors
+                      .map(id => celebrityAdvisors.find(a => a.id === id)?.name)
+                      .filter(Boolean)
+                      .join(', '),
                     messages: messages,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
                   };
 
                   if (navigator.share) {
-                    navigator.share({
-                      title: conversationData.title,
-                      text: `Conversation with ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).join('\n\n')}`,
-                    }).catch(console.error);
+                    navigator
+                      .share({
+                        title: conversationData.title,
+                        text: `Conversation with ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).join('\n\n')}`,
+                      })
+                      .catch(console.error);
                   } else {
                     // Fallback: copy to clipboard
                     const shareText = `${conversationData.title}\nAdvisors: ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).join('\n\n')}`;
-                    navigator.clipboard.writeText(shareText).then(() => {
-                      alert('Conversation copied to clipboard!');
-                    }).catch(() => {
-                      alert('Could not share conversation');
-                    });
+                    navigator.clipboard
+                      .writeText(shareText)
+                      .then(() => {
+                        alert('Conversation copied to clipboard!');
+                      })
+                      .catch(() => {
+                        alert('Could not share conversation');
+                      });
                   }
                 }}
                 className="p-2 rounded-lg hover:bg-gray-100"
@@ -1138,10 +1230,13 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   // Download functionality
                   const conversationData = {
                     title: `Advisory Session - ${currentMode?.name}`,
-                    advisors: selectedAdvisors.map(id => celebrityAdvisors.find(a => a.id === id)?.name).filter(Boolean).join(', '),
+                    advisors: selectedAdvisors
+                      .map(id => celebrityAdvisors.find(a => a.id === id)?.name)
+                      .filter(Boolean)
+                      .join(', '),
                     messages: messages,
                     timestamp: new Date().toISOString(),
-                    mode: currentMode?.name
+                    mode: currentMode?.name,
                   };
 
                   const chatText = `${conversationData.title}
@@ -1176,16 +1271,22 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className="text-center py-12">
-              <div className={cn("w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center", currentMode?.color)}>
+              <div
+                className={cn(
+                  'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center',
+                  currentMode?.color
+                )}
+              >
                 <div className="text-white text-2xl">{currentMode?.icon}</div>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Start Your Advisory Session</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Start Your Advisory Session
+              </h3>
               <p className="text-gray-600 mb-4">{currentMode?.description}</p>
               <p className="text-sm text-gray-500">
-                {selectedAdvisors.length > 0 
+                {selectedAdvisors.length > 0
                   ? `${selectedAdvisors.length} advisor${selectedAdvisors.length !== 1 ? 's' : ''} ready to help`
-                  : 'Select advisors from the sidebar to begin'
-                }
+                  : 'Select advisors from the sidebar to begin'}
               </p>
             </div>
           )}
@@ -1193,21 +1294,18 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
           {messages.map(message => (
             <div
               key={message.id}
-              className={cn(
-                "flex",
-                message.type === 'user' ? 'justify-end' : 'justify-start'
-              )}
+              className={cn('flex', message.type === 'user' ? 'justify-end' : 'justify-start')}
             >
               <div
                 className={cn(
-                  "max-w-xs lg:max-w-md px-4 py-3 rounded-lg",
+                  'max-w-xs lg:max-w-md px-4 py-3 rounded-lg',
                   message.type === 'user'
                     ? 'bg-blue-600 text-white'
                     : message.type === 'system'
-                    ? 'bg-gray-100 text-gray-800 border-l-4 border-gray-400'
-                    : message.type === 'analysis'
-                    ? 'bg-green-50 text-green-800 border-l-4 border-green-400 max-w-2xl'
-                    : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                      ? 'bg-gray-100 text-gray-800 border-l-4 border-gray-400'
+                      : message.type === 'analysis'
+                        ? 'bg-green-50 text-green-800 border-l-4 border-green-400 max-w-2xl'
+                        : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
                 )}
               >
                 {message.advisor && (
@@ -1229,7 +1327,11 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                     <button
                       onClick={() => handleEditAdvisor(message.advisor)}
                       className="p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title={celebrityAdvisors.some(ca => ca.id === message.advisor.id) ? "Customize AI settings" : "Edit advisor"}
+                      title={
+                        celebrityAdvisors.some(ca => ca.id === message.advisor.id)
+                          ? 'Customize AI settings'
+                          : 'Edit advisor'
+                      }
                     >
                       <Edit2 className="w-3 h-3 text-gray-500" />
                     </button>
@@ -1266,7 +1368,10 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
           {uploadedFiles.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
               {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-2">
+                <div
+                  key={index}
+                  className="flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-2"
+                >
                   <Paperclip className="w-4 h-4 text-gray-500" />
                   <span className="text-sm text-gray-700">{file.name}</span>
                   <button
@@ -1295,16 +1400,17 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {selectedDocuments.slice(0, 3).map((doc) => (
-                  <div key={doc.id} className="flex items-center space-x-1 bg-white rounded px-2 py-1">
+                {selectedDocuments.slice(0, 3).map(doc => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center space-x-1 bg-white rounded px-2 py-1"
+                  >
                     <FileText className="w-3 h-3 text-blue-600" />
                     <span className="text-xs text-gray-700">{doc.name}</span>
                   </div>
                 ))}
                 {selectedDocuments.length > 3 && (
-                  <div className="text-xs text-blue-600">
-                    +{selectedDocuments.length - 3} more
-                  </div>
+                  <div className="text-xs text-blue-600">+{selectedDocuments.length - 3} more</div>
                 )}
               </div>
             </div>
@@ -1330,10 +1436,10 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
               <button
                 onClick={() => setShowDocumentSelector(true)}
                 className={cn(
-                  "p-2 rounded-lg transition-colors",
+                  'p-2 rounded-lg transition-colors',
                   selectedDocuments.length > 0
-                    ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                    ? 'bg-blue-100 hover:bg-blue-200 text-blue-600'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
                 )}
                 title="Browse and select documents"
               >
@@ -1342,10 +1448,10 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
               <button
                 onClick={() => setIsRecording(!isRecording)}
                 className={cn(
-                  "p-2 rounded-lg transition-colors",
+                  'p-2 rounded-lg transition-colors',
                   isRecording
-                    ? "bg-red-100 hover:bg-red-200 text-red-600"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                    ? 'bg-red-100 hover:bg-red-200 text-red-600'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
                 )}
               >
                 {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
@@ -1354,8 +1460,8 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
             <div className="flex-1 relative">
               <textarea
                 value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => {
+                onChange={e => setInputMessage(e.target.value)}
+                onKeyPress={e => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();

@@ -15,7 +15,7 @@ console.log('🔧 Supabase initialization:', {
   anonKeyLength: supabaseAnonKey?.length || 0,
   keySource: process.env.REACT_APP_SUPABASE_ANON_KEY ? 'env var' : 'fallback',
   isDemoMode,
-  envVarPresent: !!process.env.REACT_APP_SUPABASE_URL
+  envVarPresent: !!process.env.REACT_APP_SUPABASE_URL,
 });
 
 // Alert if using fallback values
@@ -29,8 +29,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false
-  }
+    detectSessionInUrl: false,
+  },
 });
 
 // Database Tables Schema (for reference)
@@ -155,15 +155,15 @@ export const testSupabaseConnectivity = async () => {
     const response = await fetch(`${supabaseUrl}/rest/v1/`, {
       method: 'GET',
       headers: {
-        'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`
-      }
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
     });
 
     console.log('Supabase connectivity test:', {
       status: response.status,
       statusText: response.statusText,
-      ok: response.ok
+      ok: response.ok,
     });
 
     return response.ok;
@@ -184,14 +184,14 @@ export const signIn = async (email: string, password: string) => {
       id: 'demo-user-123',
       email,
       user_metadata: { full_name: 'Demo User' },
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
     return {
       data: {
         user: demoUser,
-        session: { user: demoUser, access_token: 'demo-token' }
+        session: { user: demoUser, access_token: 'demo-token' },
       },
-      error: null
+      error: null,
     };
   }
 
@@ -212,11 +212,19 @@ export const signIn = async (email: string, password: string) => {
     });
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Authentication timed out. Please check your internet connection or try again later.')), 15000)
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              'Authentication timed out. Please check your internet connection or try again later.'
+            )
+          ),
+        15000
+      )
     );
 
     console.log('Starting authentication request...');
-    const { data, error } = await Promise.race([signinPromise, timeoutPromise]) as any;
+    const { data, error } = (await Promise.race([signinPromise, timeoutPromise])) as any;
     const duration = Date.now() - startTime;
 
     console.log('Supabase auth response:', {
@@ -225,16 +233,25 @@ export const signIn = async (email: string, password: string) => {
       errorMessage: error?.message,
       duration: `${duration}ms`,
       hasUser: !!data?.user,
-      hasSession: !!data?.session
+      hasSession: !!data?.session,
     });
 
     // Check for common errors and provide helpful messages
     if (error) {
       if (error.message?.includes('Invalid login credentials')) {
-        return { data: null, error: { message: 'Invalid email or password. Please check your credentials or sign up for a new account.' } };
+        return {
+          data: null,
+          error: {
+            message:
+              'Invalid email or password. Please check your credentials or sign up for a new account.',
+          },
+        };
       }
       if (error.message?.includes('Email not confirmed')) {
-        return { data: null, error: { message: 'Please check your email to confirm your account before signing in.' } };
+        return {
+          data: null,
+          error: { message: 'Please check your email to confirm your account before signing in.' },
+        };
       }
     }
 
@@ -243,7 +260,7 @@ export const signIn = async (email: string, password: string) => {
     console.error('Supabase auth exception:', {
       message: err.message,
       stack: err.stack,
-      name: err.name
+      name: err.name,
     });
 
     // Provide user-friendly error message
@@ -265,14 +282,14 @@ export const signUp = async (email: string, password: string, fullName?: string)
       id: 'demo-user-123',
       email,
       user_metadata: { full_name: fullName || 'Demo User' },
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
     return {
       data: {
         user: demoUser,
-        session: { user: demoUser, access_token: 'demo-token' }
+        session: { user: demoUser, access_token: 'demo-token' },
       },
-      error: null
+      error: null,
     };
   }
 
@@ -311,14 +328,14 @@ export const signUp = async (email: string, password: string, fullName?: string)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
       },
       body: JSON.stringify({
         email,
         password,
-        data: { full_name: fullName }
-      })
+        data: { full_name: fullName },
+      }),
     }).then(async response => {
       const responseData = await response.json();
       if (!response.ok) {
@@ -328,14 +345,14 @@ export const signUp = async (email: string, password: string, fullName?: string)
     });
 
     // Race between client call and direct API call
-    const { data, error } = await Promise.race([
+    const { data, error } = (await Promise.race([
       signupPromise,
       directSignupPromise.then(result => {
         console.log('Direct API signup completed first');
         return result;
       }),
-      timeoutPromise
-    ]) as any;
+      timeoutPromise,
+    ])) as any;
     const duration = Date.now() - startTime;
 
     console.log('Supabase signup response:', {
@@ -344,7 +361,7 @@ export const signUp = async (email: string, password: string, fullName?: string)
       errorMessage: error?.message,
       duration: `${duration}ms`,
       hasUser: !!data?.user,
-      hasSession: !!data?.session
+      hasSession: !!data?.session,
     });
 
     return { data, error };
@@ -352,7 +369,7 @@ export const signUp = async (email: string, password: string, fullName?: string)
     console.error('Supabase signup exception:', {
       message: err.message,
       stack: err.stack,
-      name: err.name
+      name: err.name,
     });
     return { data: null, error: { message: err.message || 'Signup failed' } };
   }
@@ -362,7 +379,7 @@ export const signOut = async () => {
   if (isDemoMode) {
     return { error: null };
   }
-  
+
   const { error } = await supabase.auth.signOut();
   return { error };
 };
@@ -371,7 +388,10 @@ export const getCurrentUser = async () => {
   if (isDemoMode) {
     return { user: null, error: null };
   }
-  
-  const { data: { user }, error } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   return { user, error };
 };

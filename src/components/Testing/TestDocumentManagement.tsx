@@ -24,15 +24,13 @@ export const TestDocumentManagement: React.FC = () => {
     mcp_enabled: true,
     mcp_folder_path: '/documents/test-advisor',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          Document Management Testing
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Document Management Testing</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Document Dashboard Test */}
@@ -42,7 +40,8 @@ export const TestDocumentManagement: React.FC = () => {
               Document Dashboard
             </h2>
             <p className="text-gray-600 mb-4">
-              Test the comprehensive document management system with upload, search, filtering, and organization features.
+              Test the comprehensive document management system with upload, search, filtering, and
+              organization features.
             </p>
             <button
               onClick={() => setShowDashboard(true)}
@@ -60,7 +59,8 @@ export const TestDocumentManagement: React.FC = () => {
               MCP Document Manager
             </h2>
             <p className="text-gray-600 mb-4">
-              Test the advisor-specific document upload and management system for MCP knowledge bases.
+              Test the advisor-specific document upload and management system for MCP knowledge
+              bases.
             </p>
             <button
               onClick={() => setShowMCPManager(true)}
@@ -78,7 +78,8 @@ export const TestDocumentManagement: React.FC = () => {
               Debug Integration
             </h2>
             <p className="text-gray-600 mb-4">
-              Debug and troubleshoot document integration issues. Check if documents are properly stored and accessible.
+              Debug and troubleshoot document integration issues. Check if documents are properly
+              stored and accessible.
             </p>
             <button
               onClick={() => setShowDebugger(true)}
@@ -128,9 +129,14 @@ export const TestDocumentManagement: React.FC = () => {
               <h4 className="font-medium text-gray-900">🔧 Troubleshooting Issues:</h4>
               <p>If advisors say they can't access document content:</p>
               <ul className="list-disc ml-5 mt-1">
-                <li>Use the <strong>Debug Integration</strong> tool above to check if documents are stored</li>
+                <li>
+                  Use the <strong>Debug Integration</strong> tool above to check if documents are
+                  stored
+                </li>
                 <li>Ensure you're using the same advisor ID for upload and conversation</li>
-                <li>Verify documents are uploaded to <code>test-advisor-1</code> (the mock advisor)</li>
+                <li>
+                  Verify documents are uploaded to <code>test-advisor-1</code> (the mock advisor)
+                </li>
                 <li>Check browser console for any integration errors</li>
               </ul>
             </div>

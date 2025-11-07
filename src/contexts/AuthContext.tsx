@@ -3,6 +3,7 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase, signIn, signUp, signOut, getCurrentUser } from '../services/supabase';
 import { User } from '../types';
 import { setUser as setSentryUser } from '../sentry';
+import { appConfig } from '../config/env';
 
 interface AuthContextType {
   user: User | null;
@@ -25,17 +26,21 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // BYPASS: Auto-login for development/testing
-  const bypassAuth = true; // Set to false to re-enable authentication
+  // Use environment configuration for auth bypass
+  const bypassAuth = appConfig.bypassAuth;
 
-  const [user, setUser] = useState<User | null>(bypassAuth ? {
-    id: '00000000-0000-0000-0000-000000000001', // Valid UUID for bypass mode
-    email: 'LeviathanTX@gmail.com',
-    full_name: 'Jeff (Bypass Mode)',
-    subscription_tier: 'founder',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  } : null);
+  const [user, setUser] = useState<User | null>(
+    bypassAuth
+      ? {
+          id: '00000000-0000-0000-0000-000000000001', // Valid UUID for bypass mode
+          email: 'LeviathanTX@gmail.com',
+          full_name: 'Jeff (Demo Mode)',
+          subscription_tier: 'founder',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      : null
+  );
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(bypassAuth ? false : true);
 
@@ -70,7 +75,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     // Listen for changes on auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSupabaseUser(session?.user ?? null);
 
       if (session?.user) {
@@ -86,11 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
       if (error) {
         // If user doesn't exist in our users table, create them
@@ -128,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleSignIn = async (email: string, password: string) => {
     const { data, error } = await signIn(email, password);
-    
+
     // In demo mode, manually set the user
     if (!error && data?.user) {
       const demoUser: User = {
@@ -137,18 +140,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         full_name: data.user.user_metadata?.full_name || 'Demo User',
         subscription_tier: 'founder',
         created_at: data.user.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       setUser(demoUser);
       setSupabaseUser(data.user as any);
     }
-    
+
     return { error };
   };
 
   const handleSignUp = async (email: string, password: string, fullName?: string) => {
     const { data, error } = await signUp(email, password, fullName);
-    
+
     // In demo mode, manually set the user
     if (!error && data?.user) {
       const demoUser: User = {
@@ -157,12 +160,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         full_name: data.user.user_metadata?.full_name || fullName || 'Demo User',
         subscription_tier: 'founder',
         created_at: data.user.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
       setUser(demoUser);
       setSupabaseUser(data.user as any);
     }
-    
+
     return { error };
   };
 
@@ -199,9 +202,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,0 +1,9 @@
+build
+node_modules
+coverage
+.cache
+dist
+*.min.js
+*.min.css
+package-lock.json
+public/pdf.worker.min.js

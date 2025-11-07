@@ -31,7 +31,7 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
   isRecording,
   audioContext,
   analyserNode,
-  onMetricsUpdate
+  onMetricsUpdate,
 }) => {
   const [metrics, setMetrics] = useState<RealTimeMetrics>({
     currentPace: 0,
@@ -43,7 +43,7 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
     recentFillerWords: 0,
     currentPitch: 0,
     speakingTime: 0,
-    pauseTime: 0
+    pauseTime: 0,
   });
 
   const [alerts, setAlerts] = useState<RealTimeAlert[]>([]);
@@ -111,7 +111,6 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
 
       // Generate real-time alerts
       generateRealTimeAlerts(newMetrics);
-
     }, 200); // Update every 200ms for smooth real-time feedback
   };
 
@@ -151,36 +150,55 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
     return Math.sqrt(sum / timeData.length);
   };
 
-  const calculateRealTimeMetrics = (currentPitch: number, currentVolume: number, currentTime: number): RealTimeMetrics => {
+  const calculateRealTimeMetrics = (
+    currentPitch: number,
+    currentVolume: number,
+    currentTime: number
+  ): RealTimeMetrics => {
     const timeElapsed = (currentTime - lastAnalysisTimeRef.current) / 1000;
 
     // Calculate current pace (simplified estimation)
-    const currentPace = paceHistoryRef.current.length > 0 ?
-      paceHistoryRef.current.reduce((a, b) => a + b, 0) / paceHistoryRef.current.length : 140;
+    const currentPace =
+      paceHistoryRef.current.length > 0
+        ? paceHistoryRef.current.reduce((a, b) => a + b, 0) / paceHistoryRef.current.length
+        : 140;
 
     // Calculate volume level (normalized)
     const volumeLevel = Math.min(100, currentVolume * 1000);
 
     // Calculate pitch-based metrics
-    const pitchVariance = pitchHistoryRef.current.length > 1 ?
-      pitchHistoryRef.current.reduce((sum, p, i, arr) => {
-        const mean = arr.reduce((a, b) => a + b) / arr.length;
-        return sum + Math.pow(p - mean, 2);
-      }, 0) / pitchHistoryRef.current.length : 0;
+    const pitchVariance =
+      pitchHistoryRef.current.length > 1
+        ? pitchHistoryRef.current.reduce((sum, p, i, arr) => {
+            const mean = arr.reduce((a, b) => a + b) / arr.length;
+            return sum + Math.pow(p - mean, 2);
+          }, 0) / pitchHistoryRef.current.length
+        : 0;
 
     const monotoneScore = Math.min(100, Math.max(0, 100 - (pitchVariance / 1000) * 100));
 
     // Calculate confidence based on volume consistency and pitch control
-    const volumeConsistency = volumeHistoryRef.current.length > 1 ?
-      100 - (volumeHistoryRef.current.reduce((sum, v, i, arr) => {
-        const mean = arr.reduce((a, b) => a + b) / arr.length;
-        return sum + Math.pow(v - mean, 2);
-      }, 0) / volumeHistoryRef.current.length) * 1000 : 75;
+    const volumeConsistency =
+      volumeHistoryRef.current.length > 1
+        ? 100 -
+          (volumeHistoryRef.current.reduce((sum, v, i, arr) => {
+            const mean = arr.reduce((a, b) => a + b) / arr.length;
+            return sum + Math.pow(v - mean, 2);
+          }, 0) /
+            volumeHistoryRef.current.length) *
+            1000
+        : 75;
 
-    const confidenceLevel = Math.min(100, Math.max(30, (volumeConsistency + (100 - monotoneScore)) / 2));
+    const confidenceLevel = Math.min(
+      100,
+      Math.max(30, (volumeConsistency + (100 - monotoneScore)) / 2)
+    );
 
     // Calculate stress level (higher pitch variance + volume inconsistency = stress)
-    const stressLevel = Math.min(100, Math.max(0, monotoneScore / 2 + (100 - volumeConsistency) / 2));
+    const stressLevel = Math.min(
+      100,
+      Math.max(0, monotoneScore / 2 + (100 - volumeConsistency) / 2)
+    );
 
     // Calculate energy level (volume + pitch activity)
     const energyLevel = Math.min(100, Math.max(20, volumeLevel + (100 - monotoneScore) / 2));
@@ -195,7 +213,7 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
       recentFillerWords: 0, // Would need speech recognition for this
       currentPitch,
       speakingTime: timeElapsed,
-      pauseTime: 0
+      pauseTime: 0,
     };
   };
 
@@ -211,19 +229,19 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
       newAlerts.push({
         type: 'warning',
         message: 'Speaking too fast - slow down for clarity',
-        timestamp: now
+        timestamp: now,
       });
     } else if (currentMetrics.currentPace < 100 && currentMetrics.currentPace > 0) {
       newAlerts.push({
         type: 'tip',
         message: 'Speaking pace is slow - try to increase energy',
-        timestamp: now
+        timestamp: now,
       });
     } else if (currentMetrics.currentPace >= 140 && currentMetrics.currentPace <= 160) {
       newAlerts.push({
         type: 'success',
         message: 'Perfect speaking pace!',
-        timestamp: now
+        timestamp: now,
       });
     }
 
@@ -232,13 +250,13 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
       newAlerts.push({
         type: 'warning',
         message: 'Speak louder - project your voice more',
-        timestamp: now
+        timestamp: now,
       });
     } else if (currentMetrics.volumeLevel > 80) {
       newAlerts.push({
         type: 'warning',
         message: 'Volume is very high - moderate your voice',
-        timestamp: now
+        timestamp: now,
       });
     }
 
@@ -247,13 +265,13 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
       newAlerts.push({
         type: 'tip',
         message: 'Add vocal variety - vary your pitch and tone',
-        timestamp: now
+        timestamp: now,
       });
     } else if (currentMetrics.monotoneScore < 30) {
       newAlerts.push({
         type: 'success',
         message: 'Great vocal variety!',
-        timestamp: now
+        timestamp: now,
       });
     }
 
@@ -262,7 +280,7 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
       newAlerts.push({
         type: 'tip',
         message: 'Take a deep breath - you sound stressed',
-        timestamp: now
+        timestamp: now,
       });
     }
 
@@ -271,13 +289,13 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
       newAlerts.push({
         type: 'success',
         message: 'Strong confident delivery!',
-        timestamp: now
+        timestamp: now,
       });
     } else if (currentMetrics.confidenceLevel < 50) {
       newAlerts.push({
         type: 'tip',
         message: 'Project more confidence in your voice',
-        timestamp: now
+        timestamp: now,
       });
     }
 
@@ -285,9 +303,8 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
     newAlerts.forEach(newAlert => {
       setAlerts(prev => {
         // Check if similar alert exists recently
-        const hasRecent = prev.some(alert =>
-          alert.message === newAlert.message &&
-          now - alert.timestamp < 3000
+        const hasRecent = prev.some(
+          alert => alert.message === newAlert.message && now - alert.timestamp < 3000
         );
 
         if (!hasRecent) {
@@ -312,34 +329,44 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
 
   const getAlertIcon = (type: RealTimeAlert['type']) => {
     switch (type) {
-      case 'success': return '✅';
-      case 'warning': return '⚠️';
-      case 'tip': return '💡';
-      default: return 'ℹ️';
+      case 'success':
+        return '✅';
+      case 'warning':
+        return '⚠️';
+      case 'tip':
+        return '💡';
+      default:
+        return 'ℹ️';
     }
   };
 
   const getAlertColor = (type: RealTimeAlert['type']) => {
     switch (type) {
-      case 'success': return 'bg-green-100 border-green-300 text-green-800';
-      case 'warning': return 'bg-red-100 border-red-300 text-red-800';
-      case 'tip': return 'bg-blue-100 border-blue-300 text-blue-800';
-      default: return 'bg-gray-100 border-gray-300 text-gray-800';
+      case 'success':
+        return 'bg-green-100 border-green-300 text-green-800';
+      case 'warning':
+        return 'bg-red-100 border-red-300 text-red-800';
+      case 'tip':
+        return 'bg-blue-100 border-blue-300 text-blue-800';
+      default:
+        return 'bg-gray-100 border-gray-300 text-gray-800';
     }
   };
 
   if (!isRecording) return null;
 
   return (
-    <div className={cn(
-      "fixed right-4 top-20 w-80 z-50 transition-all duration-300",
-      isVisible ? "translate-x-0" : "translate-x-full"
-    )}>
+    <div
+      className={cn(
+        'fixed right-4 top-20 w-80 z-50 transition-all duration-300',
+        isVisible ? 'translate-x-0' : 'translate-x-full'
+      )}
+    >
       {/* Toggle Button */}
       <button
         onClick={() => setIsVisible(!isVisible)}
         className="absolute -left-8 top-4 bg-purple-600 text-white p-2 rounded-l-lg shadow-lg hover:bg-purple-700 transition-colors"
-        title={isVisible ? "Hide feedback" : "Show feedback"}
+        title={isVisible ? 'Hide feedback' : 'Show feedback'}
       >
         {isVisible ? '→' : '←'}
       </button>
@@ -358,50 +385,54 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
         <div className="space-y-3 mb-4">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Speaking Pace</span>
-            <span className={cn(
-              "text-sm font-medium",
-              getMetricColor(metrics.currentPace, [140, 160])
-            )}>
+            <span
+              className={cn('text-sm font-medium', getMetricColor(metrics.currentPace, [140, 160]))}
+            >
               {metrics.currentPace.toFixed(0)} WPM
             </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Confidence</span>
-            <span className={cn(
-              "text-sm font-medium",
-              getMetricColor(metrics.confidenceLevel, [70, 100])
-            )}>
+            <span
+              className={cn(
+                'text-sm font-medium',
+                getMetricColor(metrics.confidenceLevel, [70, 100])
+              )}
+            >
               {metrics.confidenceLevel.toFixed(0)}%
             </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Energy Level</span>
-            <span className={cn(
-              "text-sm font-medium",
-              getMetricColor(metrics.energyLevel, [60, 90])
-            )}>
+            <span
+              className={cn('text-sm font-medium', getMetricColor(metrics.energyLevel, [60, 90]))}
+            >
               {metrics.energyLevel.toFixed(0)}%
             </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Vocal Variety</span>
-            <span className={cn(
-              "text-sm font-medium",
-              getMetricColor(metrics.monotoneScore, [20, 50], true)
-            )}>
+            <span
+              className={cn(
+                'text-sm font-medium',
+                getMetricColor(metrics.monotoneScore, [20, 50], true)
+              )}
+            >
               {metrics.monotoneScore > 70 ? 'Low' : metrics.monotoneScore < 30 ? 'High' : 'Good'}
             </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Stress Level</span>
-            <span className={cn(
-              "text-sm font-medium",
-              getMetricColor(metrics.stressLevel, [0, 40], true)
-            )}>
+            <span
+              className={cn(
+                'text-sm font-medium',
+                getMetricColor(metrics.stressLevel, [0, 40], true)
+              )}
+            >
               {metrics.stressLevel.toFixed(0)}%
             </span>
           </div>
@@ -412,17 +443,24 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
           <div className="flex justify-between items-center mb-1">
             <span className="text-sm text-gray-600">Volume</span>
             <span className="text-xs text-gray-500">
-              {metrics.volumeLevel < 20 ? 'Too quiet' :
-               metrics.volumeLevel > 80 ? 'Too loud' : 'Good'}
+              {metrics.volumeLevel < 20
+                ? 'Too quiet'
+                : metrics.volumeLevel > 80
+                  ? 'Too loud'
+                  : 'Good'}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className={cn(
-                "h-2 rounded-full transition-all duration-200",
-                metrics.volumeLevel < 20 ? "bg-red-500" :
-                metrics.volumeLevel > 80 ? "bg-red-500" :
-                metrics.volumeLevel > 40 ? "bg-green-500" : "bg-yellow-500"
+                'h-2 rounded-full transition-all duration-200',
+                metrics.volumeLevel < 20
+                  ? 'bg-red-500'
+                  : metrics.volumeLevel > 80
+                    ? 'bg-red-500'
+                    : metrics.volumeLevel > 40
+                      ? 'bg-green-500'
+                      : 'bg-yellow-500'
               )}
               style={{ width: `${Math.min(100, metrics.volumeLevel)}%` }}
             />
@@ -435,7 +473,7 @@ export const RealTimeAudioFeedback: React.FC<RealTimeAudioFeedbackProps> = ({
             <div
               key={`${alert.timestamp}-${index}`}
               className={cn(
-                "p-2 rounded-lg border text-xs animate-fade-in",
+                'p-2 rounded-lg border text-xs animate-fade-in',
                 getAlertColor(alert.type)
               )}
             >

@@ -28,16 +28,16 @@ export function PDFTestComponent() {
         {
           success: true,
           message: 'PDF.js worker configuration successful',
-          details: 'All worker tests passed. Check browser console for detailed results.'
-        }
+          details: 'All worker tests passed. Check browser console for detailed results.',
+        },
       ]);
     } catch (error) {
       setTestResults([
         {
           success: false,
           message: 'PDF.js worker test failed',
-          details: error instanceof Error ? error.message : 'Unknown error'
-        }
+          details: error instanceof Error ? error.message : 'Unknown error',
+        },
       ]);
     } finally {
       setIsLoading(false);
@@ -53,11 +53,13 @@ export function PDFTestComponent() {
 
   const testPDFProcessing = async () => {
     if (!selectedFile) {
-      setTestResults([{
-        success: false,
-        message: 'No file selected',
-        details: 'Please select a PDF file to test processing'
-      }]);
+      setTestResults([
+        {
+          success: false,
+          message: 'No file selected',
+          details: 'Please select a PDF file to test processing',
+        },
+      ]);
       return;
     }
 
@@ -78,20 +80,19 @@ export function PDFTestComponent() {
         {
           success: true,
           message: 'PDF processing successful',
-          details: `Extracted ${result.metadata.wordCount} words from ${result.metadata.pages} pages. File size: ${DocumentProcessor.formatFileSize(result.metadata.size)}`
-        }
+          details: `Extracted ${result.metadata.wordCount} words from ${result.metadata.pages} pages. File size: ${DocumentProcessor.formatFileSize(result.metadata.size)}`,
+        },
       ]);
 
       console.log('📄 Full extracted text:', result.text.substring(0, 500) + '...');
       console.log('📊 Processing metadata:', result.metadata);
-
     } catch (error) {
       setTestResults([
         {
           success: false,
           message: 'PDF processing failed',
-          details: error instanceof Error ? error.message : 'Unknown error occurred'
-        }
+          details: error instanceof Error ? error.message : 'Unknown error occurred',
+        },
       ]);
     } finally {
       setIsLoading(false);
@@ -174,10 +175,7 @@ export function PDFTestComponent() {
           <div className="p-4 border border-gray-200 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-800">Test Results</h3>
-              <button
-                onClick={clearResults}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={clearResults} className="text-sm text-gray-500 hover:text-gray-700">
                 Clear
               </button>
             </div>
@@ -187,9 +185,7 @@ export function PDFTestComponent() {
                 <div
                   key={index}
                   className={`p-3 rounded-lg border-l-4 ${
-                    result.success
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-red-500 bg-red-50'
+                    result.success ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
                   }`}
                 >
                   <div className="flex items-center space-x-2 mb-1">
@@ -207,11 +203,7 @@ export function PDFTestComponent() {
                     </span>
                   </div>
                   {result.details && (
-                    <p
-                      className={`text-sm ${
-                        result.success ? 'text-green-700' : 'text-red-700'
-                      }`}
-                    >
+                    <p className={`text-sm ${result.success ? 'text-green-700' : 'text-red-700'}`}>
                       {result.details}
                     </p>
                   )}

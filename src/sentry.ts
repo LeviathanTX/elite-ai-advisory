@@ -24,7 +24,6 @@ export const initSentry = () => {
       /^https:\/\/.*\.supabase\.co/,
     ],
 
-
     environment: process.env.NODE_ENV || 'development',
 
     // Ignore common errors that aren't actionable
@@ -34,7 +33,7 @@ export const initSentry = () => {
       'chrome-extension://',
       'moz-extension://',
       // Random plugins/extensions
-      'Can\'t find variable: ZiteReader',
+      "Can't find variable: ZiteReader",
       'jigsaw is not defined',
       'ComboSearch is not defined',
       // Network errors
@@ -51,7 +50,10 @@ export const initSentry = () => {
         const error = hint.originalException;
         if (error && typeof error === 'object' && 'stack' in error) {
           const stack = (error as Error).stack;
-          if (stack && (stack.includes('chrome-extension://') || stack.includes('moz-extension://'))) {
+          if (
+            stack &&
+            (stack.includes('chrome-extension://') || stack.includes('moz-extension://'))
+          ) {
             return null;
           }
         }

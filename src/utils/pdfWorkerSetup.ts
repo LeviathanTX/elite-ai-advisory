@@ -99,7 +99,15 @@ export async function testPDFWorker(): Promise<boolean> {
   try {
     // Create a minimal PDF for testing
     const testPDF = new Uint8Array([
-      0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x0a, // %PDF-1.4
+      0x25,
+      0x50,
+      0x44,
+      0x46,
+      0x2d,
+      0x31,
+      0x2e,
+      0x34,
+      0x0a, // %PDF-1.4
       // ... minimal PDF structure
     ]);
 

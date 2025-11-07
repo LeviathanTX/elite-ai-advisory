@@ -8,9 +8,7 @@ import { initSentry } from './sentry';
 // Initialize Sentry for error tracking
 initSentry();
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <App />

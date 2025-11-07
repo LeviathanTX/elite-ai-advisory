@@ -31,11 +31,11 @@ export class AdvisorAI {
     contentScore?: number;
   }> {
     const systemPrompt = this.buildAdvisorSystemPrompt(advisor, 'pitch_analysis');
-    
+
     const messages: AIMessage[] = [
       {
         role: 'system',
-        content: systemPrompt
+        content: systemPrompt,
       },
       {
         role: 'user',
@@ -49,7 +49,9 @@ export class AdvisorAI {
   "contentScore": 90
 }
 
-${audioFeatures ? `COMPREHENSIVE VOICE ANALYSIS:
+${
+  audioFeatures
+    ? `COMPREHENSIVE VOICE ANALYSIS:
 
 Vocal Delivery Metrics:
 - Speaking pace: ${audioFeatures.rhythm.speaking_rate.toFixed(1)} words per minute
@@ -72,14 +74,20 @@ Vocal Quality:
 - Emphasis variation: ${audioFeatures.coaching_metrics.emphasis_variation.toFixed(1)}%
 - Speech-to-pause ratio: ${audioFeatures.timing.speech_to_pause_ratio.toFixed(1)}
 
-` : voiceMetrics ? `Basic Voice Metrics:
+`
+    : voiceMetrics
+      ? `Basic Voice Metrics:
 - Speaking pace: ${voiceMetrics.wordsPerMinute} words per minute
 - Filler words used: ${voiceMetrics.fillerWords}
 - Confidence level: ${voiceMetrics.confidenceLevel}%
 - Clarity score: ${voiceMetrics.clarityScore}%
 - Duration: ${Math.round(voiceMetrics.duration / 60)} minutes ${voiceMetrics.duration % 60} seconds
 
-` : ''}${vocalInsights ? `PROFESSIONAL COACHING INSIGHTS:
+`
+      : ''
+}${
+          vocalInsights
+            ? `PROFESSIONAL COACHING INSIGHTS:
 
 Vocal Strengths Identified:
 ${vocalInsights.strengths.map(s => `- ${s}`).join('\n')}
@@ -95,18 +103,20 @@ ${vocalInsights.coaching_tips.map(t => `- ${t}`).join('\n')}
 
 Professional Delivery Score: ${vocalInsights.professional_score}/100
 
-` : ''}CONTENT ANALYSIS:
+`
+            : ''
+        }CONTENT ANALYSIS:
 Pitch to analyze:
 ${pitchText}
 
-Please provide feedback that combines both CONTENT analysis (business model, market opportunity, team, etc.) and DELIVERY analysis (vocal coaching, presentation skills, etc.). Give separate scores for content (business merit) and delivery (presentation effectiveness).`
-      }
+Please provide feedback that combines both CONTENT analysis (business model, market opportunity, team, etc.) and DELIVERY analysis (vocal coaching, presentation skills, etc.). Give separate scores for content (business merit) and delivery (presentation effectiveness).`,
+      },
     ];
 
     console.log('AdvisorAI: About to call generateResponse');
     const response = await this.client.generateResponse(messages, {
       temperature: 0.7,
-      maxTokens: 1000
+      maxTokens: 1000,
     });
 
     try {
@@ -125,7 +135,7 @@ Please provide feedback that combines both CONTENT analysis (business model, mar
     conversationHistory: string[] = []
   ): Promise<string> {
     const systemPrompt = this.buildAdvisorSystemPrompt(advisor, 'strategic_planning');
-    
+
     const messages: AIMessage[] = [
       {
         role: 'system',
@@ -136,18 +146,18 @@ You are in a strategic planning discussion about: ${topic}
 Previous conversation context:
 ${conversationHistory.slice(-5).join('\n')}
 
-Respond as ${advisor.name} with specific, actionable advice in 2-3 sentences. Stay true to their communication style and expertise.`
+Respond as ${advisor.name} with specific, actionable advice in 2-3 sentences. Stay true to their communication style and expertise.`,
       },
       {
         role: 'user',
-        content: userMessage
-      }
+        content: userMessage,
+      },
     ];
 
     console.log('AdvisorAI: About to call generateResponse');
     const response = await this.client.generateResponse(messages, {
       temperature: 0.8,
-      maxTokens: 300
+      maxTokens: 300,
     });
 
     return response.content;
@@ -218,11 +228,10 @@ COMMUNICATION STYLE:
 
 Respond as the Host, providing facilitation guidance, process suggestions, or behavioral economics insights as appropriate for this moment in the conversation.`;
 
-    return await this.generateResponseWithCustomPrompt(
-      hostSystemPrompt,
-      userMessage,
-      { temperature: 0.7, maxTokens: 2000 }
-    );
+    return await this.generateResponseWithCustomPrompt(hostSystemPrompt, userMessage, {
+      temperature: 0.7,
+      maxTokens: 2000,
+    });
   }
 
   async generateResponseWithCustomPrompt(
@@ -236,18 +245,18 @@ Respond as the Host, providing facilitation guidance, process suggestions, or be
     const messages: AIMessage[] = [
       {
         role: 'system',
-        content: customSystemPrompt
+        content: customSystemPrompt,
       },
       {
         role: 'user',
-        content: userMessage
-      }
+        content: userMessage,
+      },
     ];
 
     console.log('AdvisorAI: About to call generateResponse with custom prompt');
     const response = await this.client.generateResponse(messages, {
       temperature: options?.temperature || 0.8,
-      maxTokens: options?.maxTokens || 1000
+      maxTokens: options?.maxTokens || 1000,
     });
 
     return response.content;
@@ -257,26 +266,28 @@ Respond as the Host, providing facilitation guidance, process suggestions, or be
     if (!timestampedMetrics.length) return '';
 
     // Sample metrics every 5 seconds to avoid overwhelming the prompt
-    const sampledMetrics = timestampedMetrics.filter((_, index) =>
-      index === 0 || index === timestampedMetrics.length - 1 || index % 10 === 0
+    const sampledMetrics = timestampedMetrics.filter(
+      (_, index) => index === 0 || index === timestampedMetrics.length - 1 || index % 10 === 0
     );
 
-    return sampledMetrics.map(metric => {
-      const seconds = Math.round(metric.timeInSeconds);
-      const issues = [];
+    return sampledMetrics
+      .map(metric => {
+        const seconds = Math.round(metric.timeInSeconds);
+        const issues = [];
 
-      if (metric.currentPace > 180) issues.push('speaking too fast');
-      if (metric.currentPace < 120) issues.push('speaking too slow');
-      if (metric.volumeLevel < 30) issues.push('volume too low');
-      if (metric.confidenceLevel < 60) issues.push('low confidence');
-      if (metric.stressLevel > 70) issues.push('high stress');
-      if (metric.monotoneScore > 70) issues.push('monotone delivery');
-      if (metric.recentFillerWords > 2) issues.push(`${metric.recentFillerWords} filler words`);
+        if (metric.currentPace > 180) issues.push('speaking too fast');
+        if (metric.currentPace < 120) issues.push('speaking too slow');
+        if (metric.volumeLevel < 30) issues.push('volume too low');
+        if (metric.confidenceLevel < 60) issues.push('low confidence');
+        if (metric.stressLevel > 70) issues.push('high stress');
+        if (metric.monotoneScore > 70) issues.push('monotone delivery');
+        if (metric.recentFillerWords > 2) issues.push(`${metric.recentFillerWords} filler words`);
 
-      const status = issues.length === 0 ? 'good performance' : issues.join(', ');
+        const status = issues.length === 0 ? 'good performance' : issues.join(', ');
 
-      return `${seconds}s: ${status} (pace: ${Math.round(metric.currentPace)}wpm, confidence: ${Math.round(metric.confidenceLevel)}%, stress: ${Math.round(metric.stressLevel)}%)`;
-    }).join('\n');
+        return `${seconds}s: ${status} (pace: ${Math.round(metric.currentPace)}wpm, confidence: ${Math.round(metric.confidenceLevel)}%, stress: ${Math.round(metric.stressLevel)}%)`;
+      })
+      .join('\n');
   }
 
   async generateComprehensivePitchCoaching(
@@ -326,7 +337,7 @@ Provide detailed, actionable coaching feedback as ${advisor.name} would, focusin
     const messages: AIMessage[] = [
       {
         role: 'system',
-        content: systemPrompt
+        content: systemPrompt,
       },
       {
         role: 'user',
@@ -390,20 +401,24 @@ ${vocalInsights.specific_recommendations.map(r => `- ${r}`).join('\n')}
 Vocal Coaching Tips:
 ${vocalInsights.coaching_tips.map(t => `- ${t}`).join('\n')}
 
-${timestampedMetrics.length > 0 ? `
+${
+  timestampedMetrics.length > 0
+    ? `
 Real-Time Performance Timeline:
 ${this.generateTimelineAnalysis(timestampedMetrics)}
 
-This timeline data shows exactly where they struggled during the pitch. Use this to provide specific, timestamp-based recommendations.` : ''}
+This timeline data shows exactly where they struggled during the pitch. Use this to provide specific, timestamp-based recommendations.`
+    : ''
+}
 
-Provide coaching that addresses both the business merit of their pitch AND their presentation delivery skills. Be specific and actionable in your recommendations. If timeline data is available, include specific timestamps where improvements are needed.`
-      }
+Provide coaching that addresses both the business merit of their pitch AND their presentation delivery skills. Be specific and actionable in your recommendations. If timeline data is available, include specific timestamps where improvements are needed.`,
+      },
     ];
 
     console.log('AdvisorAI: Generating comprehensive pitch coaching');
     const response = await this.client.generateResponse(messages, {
       temperature: 0.7,
-      maxTokens: 2000
+      maxTokens: 2000,
     });
 
     try {
@@ -414,19 +429,21 @@ Provide coaching that addresses both the business merit of their pitch AND their
         overall_feedback: response.content,
         content_analysis: {
           score: 80,
-          strengths: ["Clear value proposition"],
-          improvements: ["More specific market metrics"],
-          specific_recommendations: ["Include customer acquisition cost data"]
+          strengths: ['Clear value proposition'],
+          improvements: ['More specific market metrics'],
+          specific_recommendations: ['Include customer acquisition cost data'],
         },
         delivery_analysis: {
           score: vocalInsights.professional_score,
           vocal_strengths: vocalInsights.strengths,
           vocal_improvements: vocalInsights.improvement_areas,
           coaching_recommendations: vocalInsights.specific_recommendations,
-          technical_metrics: [`Speaking rate: ${audioFeatures.rhythm.speaking_rate.toFixed(1)} WPM`]
+          technical_metrics: [
+            `Speaking rate: ${audioFeatures.rhythm.speaking_rate.toFixed(1)} WPM`,
+          ],
         },
         combined_score: Math.round((80 + vocalInsights.professional_score) / 2),
-        action_plan: ["Practice pitch timing", "Work on vocal variety", "Refine business metrics"]
+        action_plan: ['Practice pitch timing', 'Work on vocal variety', 'Refine business metrics'],
       };
     }
   }
@@ -440,11 +457,11 @@ Provide coaching that addresses both the business merit of their pitch AND their
     recommendation: string;
   }> {
     const systemPrompt = this.buildAdvisorSystemPrompt(advisor, 'due_diligence');
-    
+
     const messages: AIMessage[] = [
       {
         role: 'system',
-        content: systemPrompt
+        content: systemPrompt,
       },
       {
         role: 'user',
@@ -455,14 +472,14 @@ Provide coaching that addresses both the business merit of their pitch AND their
 }
 
 Document summary:
-${documentSummary}`
-      }
+${documentSummary}`,
+      },
     ];
 
     console.log('AdvisorAI: About to call generateResponse');
     const response = await this.client.generateResponse(messages, {
       temperature: 0.7,
-      maxTokens: 500
+      maxTokens: 500,
     });
 
     try {
@@ -470,7 +487,7 @@ ${documentSummary}`
     } catch (error) {
       return {
         insight: response.content,
-        recommendation: "Continue with detailed analysis."
+        recommendation: 'Continue with detailed analysis.',
       };
     }
   }
@@ -481,7 +498,7 @@ ${documentSummary}`
     question: string
   ): Promise<string> {
     const systemPrompt = this.buildAdvisorSystemPrompt(advisor, 'quick_consultation');
-    
+
     const messages: AIMessage[] = [
       {
         role: 'system',
@@ -489,18 +506,18 @@ ${documentSummary}`
 
 You are providing quick consultation on: ${category}
 
-Provide a focused, actionable response in 2-3 sentences that directly addresses their question. Be specific and practical.`
+Provide a focused, actionable response in 2-3 sentences that directly addresses their question. Be specific and practical.`,
       },
       {
         role: 'user',
-        content: question
-      }
+        content: question,
+      },
     ];
 
     console.log('AdvisorAI: About to call generateResponse');
     const response = await this.client.generateResponse(messages, {
       temperature: 0.8,
-      maxTokens: 300
+      maxTokens: 300,
     });
 
     return response.content;
@@ -549,7 +566,7 @@ You are providing rapid, focused advice for immediate decisions. Be:
 - Direct and actionable
 - Based on your real-world experience
 - Focused on the most critical factors
-- Practical and implementable`
+- Practical and implementable`,
     };
 
     return basePrompt + (modeSpecificPrompts[mode as keyof typeof modeSpecificPrompts] || '');
@@ -562,7 +579,7 @@ You are providing rapid, focused advice for immediate decisions. Be:
       feedback: '',
       strengths: [] as string[],
       improvements: [] as string[],
-      overallScore: 80
+      overallScore: 80,
     };
 
     let currentSection = '';

@@ -1,10 +1,13 @@
-import { configurePDFWorkerAuto, testPDFWorker, checkPDFWorkerCompatibility } from './pdfWorkerSetup';
+import {
+  configurePDFWorkerAuto,
+  testPDFWorker,
+  checkPDFWorkerCompatibility,
+} from './pdfWorkerSetup';
 
 /**
  * Comprehensive test suite for PDF.js worker configuration
  */
 export class PDFWorkerTester {
-
   /**
    * Run all PDF worker tests
    */
@@ -22,7 +25,7 @@ export class PDFWorkerTester {
       results.push({
         test: 'Worker Configuration',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
 
@@ -34,7 +37,7 @@ export class PDFWorkerTester {
       results.push({
         test: 'Compatibility Check',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
 
@@ -46,7 +49,7 @@ export class PDFWorkerTester {
       results.push({
         test: 'Worker Function Test',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
 
@@ -58,7 +61,7 @@ export class PDFWorkerTester {
       results.push({
         test: 'Real PDF Processing',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
 
@@ -171,7 +174,7 @@ startxref
       `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`,
 
       // Alternative CDN
-      `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`
+      `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`,
     ];
 
     for (const workerSrc of workerSources) {
@@ -181,7 +184,6 @@ startxref
         // Test if URL is accessible
         const response = await fetch(workerSrc, { method: 'HEAD' });
         console.log(`📊 Worker source status: ${response.status} (${workerSrc})`);
-
       } catch (error) {
         console.log(`❌ Worker source failed: ${workerSrc}`, error);
       }
@@ -191,7 +193,9 @@ startxref
   /**
    * Generate test report
    */
-  static generateTestReport(results: Array<{ test: string; success: boolean; error?: string }>): string {
+  static generateTestReport(
+    results: Array<{ test: string; success: boolean; error?: string }>
+  ): string {
     let report = '📋 PDF.js Worker Test Report\n';
     report += '=' + '='.repeat(30) + '\n\n';
 

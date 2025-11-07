@@ -75,7 +75,7 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
     const state = {
       isFirstVisit,
       hasCompletedOnboarding,
-      hasSeenDemoTour
+      hasSeenDemoTour,
     };
     localStorage.setItem('elite-ai-help-state', JSON.stringify(state));
   }, [isFirstVisit, hasCompletedOnboarding, hasSeenDemoTour]);
@@ -140,12 +140,8 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
     setShowDemoTour,
     markOnboardingComplete,
     markDemoTourComplete,
-    resetHelpState
+    resetHelpState,
   };
 
-  return (
-    <HelpContext.Provider value={value}>
-      {children}
-    </HelpContext.Provider>
-  );
+  return <HelpContext.Provider value={value}>{children}</HelpContext.Provider>;
 };

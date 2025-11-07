@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { X, Zap, Users, Brain, TrendingUp, Code, Briefcase, Target, Star, Plus } from 'lucide-react';
+import {
+  X,
+  Zap,
+  Users,
+  Brain,
+  TrendingUp,
+  Code,
+  Briefcase,
+  Target,
+  Star,
+  Plus,
+} from 'lucide-react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { Advisor, AdvisorRole, AdvisorExpertise } from '../../types';
@@ -30,23 +41,26 @@ const advisorTemplates: AdvisorTemplate[] = [
     role: 'Investment Partner',
     expertise: ['Venture Capital', 'Startups', 'Finance', 'Strategy'],
     personality: 'Analytical, risk-aware, and focused on scalability and market potential.',
-    background: 'Experienced venture capitalist with a track record of identifying and scaling high-growth startups.',
+    background:
+      'Experienced venture capitalist with a track record of identifying and scaling high-growth startups.',
     avatar_emoji: '💰',
     icon: <TrendingUp className="w-5 h-5" />,
     description: 'Investment-focused advisor for funding and growth strategies',
-    color: 'bg-green-500'
+    color: 'bg-green-500',
   },
   {
     id: 'marketing',
     name: 'Marketing Expert',
     role: 'CMO',
     expertise: ['Marketing', 'Digital Transformation', 'Strategy', 'Sales'],
-    personality: 'Creative, data-driven, and passionate about building brands and customer engagement.',
-    background: 'Senior marketing executive with expertise in digital marketing, brand building, and customer acquisition.',
+    personality:
+      'Creative, data-driven, and passionate about building brands and customer engagement.',
+    background:
+      'Senior marketing executive with expertise in digital marketing, brand building, and customer acquisition.',
     avatar_emoji: '📢',
     icon: <Target className="w-5 h-5" />,
     description: 'Brand building and customer acquisition specialist',
-    color: 'bg-pink-500'
+    color: 'bg-pink-500',
   },
   {
     id: 'tech_cto',
@@ -54,11 +68,12 @@ const advisorTemplates: AdvisorTemplate[] = [
     role: 'CTO',
     expertise: ['Technology', 'AI/ML', 'Product Development', 'Operations'],
     personality: 'Technical, innovative, and focused on building scalable technology solutions.',
-    background: 'Technology leader with deep expertise in software development, AI/ML, and technical strategy.',
+    background:
+      'Technology leader with deep expertise in software development, AI/ML, and technical strategy.',
     avatar_emoji: '💻',
     icon: <Code className="w-5 h-5" />,
     description: 'Technical strategy and product development expert',
-    color: 'bg-blue-500'
+    color: 'bg-blue-500',
   },
   {
     id: 'operations',
@@ -70,7 +85,7 @@ const advisorTemplates: AdvisorTemplate[] = [
     avatar_emoji: '⚙️',
     icon: <Briefcase className="w-5 h-5" />,
     description: 'Operational excellence and process optimization specialist',
-    color: 'bg-orange-500'
+    color: 'bg-orange-500',
   },
   {
     id: 'finance',
@@ -78,11 +93,12 @@ const advisorTemplates: AdvisorTemplate[] = [
     role: 'CFO',
     expertise: ['Finance', 'Strategy', 'Investment Banking', 'Operations'],
     personality: 'Analytical, detail-oriented, and focused on financial health and growth.',
-    background: 'Financial executive with expertise in corporate finance, fundraising, and financial strategy.',
+    background:
+      'Financial executive with expertise in corporate finance, fundraising, and financial strategy.',
     avatar_emoji: '📊',
     icon: <Brain className="w-5 h-5" />,
     description: 'Financial strategy and capital management expert',
-    color: 'bg-indigo-500'
+    color: 'bg-indigo-500',
   },
   {
     id: 'sales',
@@ -94,11 +110,15 @@ const advisorTemplates: AdvisorTemplate[] = [
     avatar_emoji: '🎯',
     icon: <Target className="w-5 h-5" />,
     description: 'Revenue growth and sales strategy specialist',
-    color: 'bg-red-500'
-  }
+    color: 'bg-red-500',
+  },
 ];
 
-export function QuickCreateAdvisorModal({ isOpen, onClose, onAdvisorCreated }: QuickCreateAdvisorModalProps) {
+export function QuickCreateAdvisorModal({
+  isOpen,
+  onClose,
+  onAdvisorCreated,
+}: QuickCreateAdvisorModalProps) {
   const { addAdvisor } = useAdvisor();
   const { settings } = useSettings();
   const [selectedTemplate, setSelectedTemplate] = useState<AdvisorTemplate | null>(null);
@@ -126,12 +146,12 @@ export function QuickCreateAdvisorModal({ isOpen, onClose, onAdvisorCreated }: Q
       ai_service: 'claude', // Default to Claude
       system_prompt: generateSystemPrompt(selectedTemplate, customName || selectedTemplate.name),
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     try {
       addAdvisor(newAdvisor);
-      
+
       if (onAdvisorCreated) {
         onAdvisorCreated(newAdvisor);
       }
@@ -139,7 +159,7 @@ export function QuickCreateAdvisorModal({ isOpen, onClose, onAdvisorCreated }: Q
       // Reset form
       setSelectedTemplate(null);
       setCustomName('');
-      
+
       onClose();
     } catch (error) {
       console.error('Error creating advisor:', error);
@@ -205,7 +225,9 @@ Always maintain your persona and provide advice that reflects your expertise are
                       className="p-4 rounded-xl border-2 border-gray-200 hover:border-purple-300 hover:shadow-md transition-all text-left group"
                     >
                       <div className="flex items-center space-x-3 mb-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${template.color}`}>
+                        <div
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${template.color}`}
+                        >
                           <div className="text-white">{template.icon}</div>
                         </div>
                         <div>
@@ -218,7 +240,10 @@ Always maintain your persona and provide advice that reflects your expertise are
                       <p className="text-sm text-gray-600 mb-3">{template.description}</p>
                       <div className="flex flex-wrap gap-1">
                         {template.expertise.slice(0, 3).map(exp => (
-                          <span key={exp} className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                          <span
+                            key={exp}
+                            className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                          >
                             {exp}
                           </span>
                         ))}
@@ -247,7 +272,9 @@ Always maintain your persona and provide advice that reflects your expertise are
                     <Plus className="w-5 h-5" />
                     <span className="font-medium">Create Custom Advisor</span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">Build from scratch with full customization</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Build from scratch with full customization
+                  </p>
                 </button>
               </div>
             </>
@@ -264,11 +291,15 @@ Always maintain your persona and provide advice that reflects your expertise are
 
                 <div className="bg-gray-50 rounded-xl p-6 mb-6">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${selectedTemplate.color}`}>
+                    <div
+                      className={`w-16 h-16 rounded-xl flex items-center justify-center ${selectedTemplate.color}`}
+                    >
                       <span className="text-3xl">{selectedTemplate.avatar_emoji}</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{selectedTemplate.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {selectedTemplate.name}
+                      </h3>
                       <p className="text-gray-600">{selectedTemplate.role}</p>
                       <p className="text-sm text-gray-500 mt-1">{selectedTemplate.description}</p>
                     </div>
@@ -279,7 +310,10 @@ Always maintain your persona and provide advice that reflects your expertise are
                       <h4 className="font-medium text-gray-900 mb-2">Expertise Areas</h4>
                       <div className="flex flex-wrap gap-1">
                         {selectedTemplate.expertise.map(exp => (
-                          <span key={exp} className="inline-block px-2 py-1 bg-white text-gray-700 text-xs rounded border">
+                          <span
+                            key={exp}
+                            className="inline-block px-2 py-1 bg-white text-gray-700 text-xs rounded border"
+                          >
                             {exp}
                           </span>
                         ))}
@@ -302,7 +336,7 @@ Always maintain your persona and provide advice that reflects your expertise are
                     <input
                       type="text"
                       value={customName}
-                      onChange={(e) => setCustomName(e.target.value)}
+                      onChange={e => setCustomName(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder={selectedTemplate.name}
                     />
@@ -320,7 +354,10 @@ Always maintain your persona and provide advice that reflects your expertise are
         {selectedTemplate && (
           <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              AI Service: {settings.aiServices.claude?.apiKey ? '✅ Claude configured' : '⚠️ Configure AI service in settings'}
+              AI Service:{' '}
+              {settings.aiServices.claude?.apiKey
+                ? '✅ Claude configured'
+                : '⚠️ Configure AI service in settings'}
             </div>
             <div className="flex space-x-3">
               <button

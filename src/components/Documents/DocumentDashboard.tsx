@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Upload, Search, Filter, Grid, List, FileText, Folder,
-  BarChart3, TrendingUp, Calendar, User, Tag, Shield,
-  Download, Eye, Trash2, Edit, Plus, X, ChevronDown
+  Upload,
+  Search,
+  Filter,
+  Grid,
+  List,
+  FileText,
+  Folder,
+  BarChart3,
+  TrendingUp,
+  Calendar,
+  User,
+  Tag,
+  Shield,
+  Download,
+  Eye,
+  Trash2,
+  Edit,
+  Plus,
+  X,
+  ChevronDown,
 } from 'lucide-react';
 import { DocumentProcessor } from '../../services/DocumentProcessor';
-import { DocumentStorage, StoredDocument, DocumentCategory, ConfidentialityLevel } from '../../services/DocumentStorage';
+import {
+  DocumentStorage,
+  StoredDocument,
+  DocumentCategory,
+  ConfidentialityLevel,
+} from '../../services/DocumentStorage';
 import { useDropzone } from 'react-dropzone';
 
 interface DocumentDashboardProps {
@@ -19,13 +41,15 @@ export const DocumentDashboard: React.FC<DocumentDashboardProps> = ({
   isOpen,
   onClose,
   advisorId,
-  userId
+  userId,
 }) => {
   const [documents, setDocuments] = useState<StoredDocument[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<StoredDocument[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<DocumentCategory | 'all'>('all');
-  const [selectedConfidentiality, setSelectedConfidentiality] = useState<ConfidentialityLevel | 'all'>('all');
+  const [selectedConfidentiality, setSelectedConfidentiality] = useState<
+    ConfidentialityLevel | 'all'
+  >('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [uploading, setUploading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -61,16 +85,12 @@ export const DocumentDashboard: React.FC<DocumentDashboardProps> = ({
 
     // Search filter
     if (searchQuery.trim()) {
-      const searchResults = documentStorage.searchDocuments(
-        searchQuery,
-        advisorId,
-        userId,
-        {
-          category: selectedCategory !== 'all' ? selectedCategory : undefined,
-          confidentialityLevel: selectedConfidentiality !== 'all' ? selectedConfidentiality : undefined,
-          tags: selectedTags.length > 0 ? selectedTags : undefined
-        }
-      );
+      const searchResults = documentStorage.searchDocuments(searchQuery, advisorId, userId, {
+        category: selectedCategory !== 'all' ? selectedCategory : undefined,
+        confidentialityLevel:
+          selectedConfidentiality !== 'all' ? selectedConfidentiality : undefined,
+        tags: selectedTags.length > 0 ? selectedTags : undefined,
+      });
       filtered = searchResults.map(result => result.document);
     } else {
       // Apply filters without search
@@ -81,9 +101,7 @@ export const DocumentDashboard: React.FC<DocumentDashboardProps> = ({
         filtered = filtered.filter(doc => doc.confidentialityLevel === selectedConfidentiality);
       }
       if (selectedTags.length > 0) {
-        filtered = filtered.filter(doc =>
-          selectedTags.some(tag => doc.tags.includes(tag))
-        );
+        filtered = filtered.filter(doc => selectedTags.some(tag => doc.tags.includes(tag)));
       }
     }
 
@@ -102,17 +120,11 @@ export const DocumentDashboard: React.FC<DocumentDashboardProps> = ({
         }
 
         const processed = await documentProcessor.processFile(file);
-        await documentStorage.storeDocument(
-          file,
-          processed,
-          advisorId || 'default',
-          userId,
-          {
-            category: 'other',
-            confidentialityLevel: 'internal',
-            tags: []
-          }
-        );
+        await documentStorage.storeDocument(file, processed, advisorId || 'default', userId, {
+          category: 'other',
+          confidentialityLevel: 'internal',
+          tags: [],
+        });
       }
 
       loadDocuments();
@@ -130,11 +142,11 @@ export const DocumentDashboard: React.FC<DocumentDashboardProps> = ({
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
       'text/plain': ['.txt'],
-      'text/markdown': ['.md']
+      'text/markdown': ['.md'],
     },
     maxSize: 50 * 1024 * 1024,
     onDrop: handleFileUpload,
-    disabled: uploading
+    disabled: uploading,
   });
 
   const deleteDocument = (documentId: string) => {
@@ -224,11 +236,7 @@ ${document.extractedText}`;
             <h2 className="text-xl font-bold text-gray-900 flex items-center">
               <FileText className="w-6 h-6 mr-2 text-blue-600" />
               Document Management
-              {advisorId && (
-                <span className="ml-2 text-sm text-gray-500">
-                  (Advisor Documents)
-                </span>
-              )}
+              {advisorId && <span className="ml-2 text-sm text-gray-500">(Advisor Documents)</span>}
             </h2>
             <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
               <span className="flex items-center">
@@ -264,7 +272,7 @@ ${document.extractedText}`;
                   type="text"
                   placeholder="Search documents..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -324,12 +332,10 @@ ${document.extractedText}`;
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value as DocumentCategory | 'all')}
+                  onChange={e => setSelectedCategory(e.target.value as DocumentCategory | 'all')}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Categories</option>
@@ -351,7 +357,9 @@ ${document.extractedText}`;
                 </label>
                 <select
                   value={selectedConfidentiality}
-                  onChange={(e) => setSelectedConfidentiality(e.target.value as ConfidentialityLevel | 'all')}
+                  onChange={e =>
+                    setSelectedConfidentiality(e.target.value as ConfidentialityLevel | 'all')
+                  }
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Levels</option>
@@ -363,12 +371,10 @@ ${document.extractedText}`;
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tags
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
                 <div className="relative">
                   <select
-                    onChange={(e) => {
+                    onChange={e => {
                       const tag = e.target.value;
                       if (tag && !selectedTags.includes(tag)) {
                         setSelectedTags([...selectedTags, tag]);
@@ -379,7 +385,9 @@ ${document.extractedText}`;
                   >
                     <option value="">Select tags...</option>
                     {allTags.map(tag => (
-                      <option key={tag} value={tag}>{tag}</option>
+                      <option key={tag} value={tag}>
+                        {tag}
+                      </option>
                     ))}
                   </select>
                   {selectedTags.length > 0 && (
@@ -414,9 +422,7 @@ ${document.extractedText}`;
                 <div>
                   <Folder className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No documents yet</h3>
-                  <p className="text-gray-600 mb-4">
-                    Upload your first document to get started
-                  </p>
+                  <p className="text-gray-600 mb-4">Upload your first document to get started</p>
                   <div
                     {...getRootProps()}
                     className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
@@ -430,19 +436,19 @@ ${document.extractedText}`;
                 <div>
                   <Search className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
-                  <p className="text-gray-600">
-                    Try adjusting your search or filters
-                  </p>
+                  <p className="text-gray-600">Try adjusting your search or filters</p>
                 </div>
               )}
             </div>
           ) : (
-            <div className={
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                : 'space-y-4'
-            }>
-              {filteredDocuments.map((document) => (
+            <div
+              className={
+                viewMode === 'grid'
+                  ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+                  : 'space-y-4'
+              }
+            >
+              {filteredDocuments.map(document => (
                 <DocumentCard
                   key={document.id}
                   document={document}
@@ -468,7 +474,13 @@ interface DocumentCardProps {
   onDownload: () => void;
 }
 
-const DocumentCard: React.FC<DocumentCardProps> = ({ document, viewMode, onDelete, onView, onDownload }) => {
+const DocumentCard: React.FC<DocumentCardProps> = ({
+  document,
+  viewMode,
+  onDelete,
+  onView,
+  onDownload,
+}) => {
   const [showActions, setShowActions] = useState(false);
 
   const getConfidentialityColor = (level: ConfidentialityLevel) => {
@@ -476,7 +488,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, viewMode, onDelet
       public: 'bg-green-100 text-green-800',
       internal: 'bg-blue-100 text-blue-800',
       confidential: 'bg-yellow-100 text-yellow-800',
-      restricted: 'bg-red-100 text-red-800'
+      restricted: 'bg-red-100 text-red-800',
     };
     return colors[level];
   };
@@ -484,14 +496,14 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, viewMode, onDelet
   const getCategoryColor = (category: DocumentCategory) => {
     const colors = {
       'meeting-minutes': 'bg-purple-100 text-purple-800',
-      'proposal': 'bg-orange-100 text-orange-800',
-      'report': 'bg-indigo-100 text-indigo-800',
-      'legal': 'bg-red-100 text-red-800',
-      'financial': 'bg-green-100 text-green-800',
+      proposal: 'bg-orange-100 text-orange-800',
+      report: 'bg-indigo-100 text-indigo-800',
+      legal: 'bg-red-100 text-red-800',
+      financial: 'bg-green-100 text-green-800',
       'strategic-plan': 'bg-blue-100 text-blue-800',
-      'presentation': 'bg-pink-100 text-pink-800',
-      'contract': 'bg-gray-100 text-gray-800',
-      'other': 'bg-gray-100 text-gray-800'
+      presentation: 'bg-pink-100 text-pink-800',
+      contract: 'bg-gray-100 text-gray-800',
+      other: 'bg-gray-100 text-gray-800',
     };
     return colors[category];
   };
@@ -506,16 +518,18 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, viewMode, onDelet
             </span>
 
             <div className="flex-1 min-w-0">
-              <h4 className="font-medium text-gray-900 truncate">
-                {document.filename}
-              </h4>
+              <h4 className="font-medium text-gray-900 truncate">{document.filename}</h4>
               <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
                 <span>{DocumentProcessor.formatFileSize(document.size)}</span>
                 <span>{new Date(document.uploadedAt).toLocaleDateString()}</span>
-                <span className={`px-2 py-1 rounded-full text-xs ${getCategoryColor(document.category)}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${getCategoryColor(document.category)}`}
+                >
                   {document.category}
                 </span>
-                <span className={`px-2 py-1 rounded-full text-xs ${getConfidentialityColor(document.confidentialityLevel)}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${getConfidentialityColor(document.confidentialityLevel)}`}
+                >
                   {document.confidentialityLevel}
                 </span>
               </div>
@@ -582,9 +596,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, viewMode, onDelet
       )}
 
       <div className="text-center mb-3">
-        <span className="text-3xl">
-          {DocumentProcessor.getFileIcon(document.metadata.type)}
-        </span>
+        <span className="text-3xl">{DocumentProcessor.getFileIcon(document.metadata.type)}</span>
       </div>
 
       <h4 className="font-medium text-gray-900 text-sm text-center mb-2 truncate">
@@ -601,7 +613,9 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, viewMode, onDelet
           <span className={`px-2 py-1 rounded-full text-xs ${getCategoryColor(document.category)}`}>
             {document.category}
           </span>
-          <span className={`px-2 py-1 rounded-full text-xs ${getConfidentialityColor(document.confidentialityLevel)}`}>
+          <span
+            className={`px-2 py-1 rounded-full text-xs ${getConfidentialityColor(document.confidentialityLevel)}`}
+          >
             {document.confidentialityLevel}
           </span>
         </div>

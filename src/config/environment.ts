@@ -15,18 +15,22 @@ class EnvironmentConfig {
 
   private constructor() {
     // Use current deployment URL in production
-    const defaultApiUrl = process.env.NODE_ENV === 'production'
-      ? (typeof window !== 'undefined' ? window.location.origin : '') // Use current deployment URL
-      : 'http://localhost:3000';
+    const defaultApiUrl =
+      process.env.NODE_ENV === 'production'
+        ? typeof window !== 'undefined'
+          ? window.location.origin
+          : '' // Use current deployment URL
+        : 'http://localhost:3000';
 
     this.env = {
       NODE_ENV: (process.env.NODE_ENV as Environment['NODE_ENV']) || 'development',
       API_BASE_URL: process.env.REACT_APP_API_BASE_URL || defaultApiUrl,
       USE_MOCK_AI: process.env.REACT_APP_USE_MOCK_AI === 'true',
-      ENABLE_ANALYTICS: process.env.REACT_APP_ENABLE_ANALYTICS === 'true' && process.env.NODE_ENV === 'production',
-      DEBUG_MODE: process.env.REACT_APP_DEBUG_MODE === 'true' || process.env.NODE_ENV === 'development'
+      ENABLE_ANALYTICS:
+        process.env.REACT_APP_ENABLE_ANALYTICS === 'true' && process.env.NODE_ENV === 'production',
+      DEBUG_MODE:
+        process.env.REACT_APP_DEBUG_MODE === 'true' || process.env.NODE_ENV === 'development',
     };
-
   }
 
   static getInstance(): EnvironmentConfig {
@@ -86,6 +90,6 @@ export function validateEnvironment(): { valid: boolean; errors: string[] } {
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }

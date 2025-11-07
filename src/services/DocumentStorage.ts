@@ -30,11 +30,7 @@ export type DocumentCategory =
   | 'contract'
   | 'other';
 
-export type ConfidentialityLevel =
-  | 'public'
-  | 'internal'
-  | 'confidential'
-  | 'restricted';
+export type ConfidentialityLevel = 'public' | 'internal' | 'confidential' | 'restricted';
 
 export interface DocumentSearchResult {
   document: StoredDocument;
@@ -104,7 +100,7 @@ export class DocumentStorage {
       category: options.category || 'other',
       confidentialityLevel: options.confidentialityLevel || 'internal',
       uploadedAt: timestamp,
-      updatedAt: timestamp
+      updatedAt: timestamp,
     };
 
     // Store document and chunks
@@ -125,8 +121,9 @@ export class DocumentStorage {
    * Get all documents
    */
   getAllDocuments(): StoredDocument[] {
-    return Array.from(this.documents.values())
-      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+    return Array.from(this.documents.values()).sort(
+      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+    );
   }
 
   /**
@@ -147,7 +144,6 @@ export class DocumentStorage {
       .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
   }
 
-
   /**
    * Search documents by text content
    */
@@ -161,7 +157,10 @@ export class DocumentStorage {
       tags?: string[];
     } = {}
   ): DocumentSearchResult[] {
-    const searchTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 2);
+    const searchTerms = query
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(term => term.length > 2);
     const results: DocumentSearchResult[] = [];
 
     let documentsToSearch = Array.from(this.documents.values());
@@ -177,7 +176,9 @@ export class DocumentStorage {
       documentsToSearch = documentsToSearch.filter(doc => doc.category === options.category);
     }
     if (options.confidentialityLevel) {
-      documentsToSearch = documentsToSearch.filter(doc => doc.confidentialityLevel === options.confidentialityLevel);
+      documentsToSearch = documentsToSearch.filter(
+        doc => doc.confidentialityLevel === options.confidentialityLevel
+      );
     }
     if (options.tags && options.tags.length > 0) {
       documentsToSearch = documentsToSearch.filter(doc =>
@@ -190,8 +191,10 @@ export class DocumentStorage {
         document.filename,
         document.extractedText,
         document.tags.join(' '),
-        document.metadata.title || ''
-      ].join(' ').toLowerCase();
+        document.metadata.title || '',
+      ]
+        .join(' ')
+        .toLowerCase();
 
       let relevanceScore = 0;
       const matchedChunks: string[] = [];
@@ -219,7 +222,7 @@ export class DocumentStorage {
         results.push({
           document,
           relevanceScore,
-          matchedChunks: matchedChunks.slice(0, 3) // Limit to top 3 chunks
+          matchedChunks: matchedChunks.slice(0, 3), // Limit to top 3 chunks
         });
       }
     }
@@ -240,7 +243,7 @@ export class DocumentStorage {
     const updatedDocument = {
       ...document,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     this.documents.set(documentId, updatedDocument);
@@ -259,7 +262,10 @@ export class DocumentStorage {
   /**
    * Get document statistics
    */
-  getDocumentStats(advisorId?: string, userId?: string): {
+  getDocumentStats(
+    advisorId?: string,
+    userId?: string
+  ): {
     totalDocuments: number;
     totalSize: number;
     byCategory: Record<DocumentCategory, number>;
@@ -283,9 +289,7 @@ export class DocumentStorage {
       totalSize: documents.reduce((sum, doc) => sum + doc.size, 0),
       byCategory: {} as Record<DocumentCategory, number>,
       byConfidentiality: {} as Record<ConfidentialityLevel, number>,
-      recentUploads: documents.filter(doc =>
-        new Date(doc.uploadedAt) > sevenDaysAgo
-      ).length
+      recentUploads: documents.filter(doc => new Date(doc.uploadedAt) > sevenDaysAgo).length,
     };
 
     // Count by category
@@ -384,10 +388,7 @@ export class DocumentStorage {
   /**
    * Import document data (for restore/migration)
    */
-  importDocuments(data: {
-    documents: StoredDocument[];
-    chunks: Record<string, string[]>;
-  }): void {
+  importDocuments(data: { documents: StoredDocument[]; chunks: Record<string, string[]> }): void {
     for (const doc of data.documents) {
       this.documents.set(doc.id, doc);
     }

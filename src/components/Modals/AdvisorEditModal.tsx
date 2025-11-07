@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Brain, Save, Plus, Trash2, Settings, Upload, Image, Folder, FileText } from 'lucide-react';
+import {
+  X,
+  Brain,
+  Save,
+  Plus,
+  Trash2,
+  Settings,
+  Upload,
+  Image,
+  Folder,
+  FileText,
+} from 'lucide-react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { Advisor, AdvisorExpertise, AdvisorRole } from '../../types';
@@ -13,23 +24,75 @@ interface AdvisorEditModalProps {
 }
 
 const availableExpertise: AdvisorExpertise[] = [
-  'Strategy', 'Finance', 'Marketing', 'Operations', 'Technology', 'Sales',
-  'Product Development', 'Legal', 'HR', 'International Business',
-  'Venture Capital', 'Private Equity', 'Investment Banking', 'Startups',
-  'Digital Transformation', 'Supply Chain', 'Manufacturing', 'Healthcare',
-  'Fintech', 'E-commerce', 'SaaS', 'AI/ML', 'Cybersecurity', 'Real Estate'
+  'Strategy',
+  'Finance',
+  'Marketing',
+  'Operations',
+  'Technology',
+  'Sales',
+  'Product Development',
+  'Legal',
+  'HR',
+  'International Business',
+  'Venture Capital',
+  'Private Equity',
+  'Investment Banking',
+  'Startups',
+  'Digital Transformation',
+  'Supply Chain',
+  'Manufacturing',
+  'Healthcare',
+  'Fintech',
+  'E-commerce',
+  'SaaS',
+  'AI/ML',
+  'Cybersecurity',
+  'Real Estate',
 ];
 
 const availableRoles: AdvisorRole[] = [
-  'CEO', 'CFO', 'CTO', 'CMO', 'COO', 'VP Strategy', 'VP Finance',
-  'VP Marketing', 'VP Operations', 'VP Technology', 'Managing Partner',
-  'Investment Partner', 'Board Member', 'Strategic Advisor', 'Consultant'
+  'CEO',
+  'CFO',
+  'CTO',
+  'CMO',
+  'COO',
+  'VP Strategy',
+  'VP Finance',
+  'VP Marketing',
+  'VP Operations',
+  'VP Technology',
+  'Managing Partner',
+  'Investment Partner',
+  'Board Member',
+  'Strategic Advisor',
+  'Consultant',
 ];
 
 const availableEmojis = [
-  '👨‍💼', '👩‍💼', '🧑‍💼', '👨‍💻', '👩‍💻', '🧑‍💻', '👨‍🔬', '👩‍🔬',
-  '🧑‍🔬', '👨‍🎓', '👩‍🎓', '🧑‍🎓', '🧠', '💡', '⚡', '🚀', '💼', '📊',
-  '💰', '🎯', '🔥', '⭐', '💎', '🏆'
+  '👨‍💼',
+  '👩‍💼',
+  '🧑‍💼',
+  '👨‍💻',
+  '👩‍💻',
+  '🧑‍💻',
+  '👨‍🔬',
+  '👩‍🔬',
+  '🧑‍🔬',
+  '👨‍🎓',
+  '👩‍🎓',
+  '🧑‍🎓',
+  '🧠',
+  '💡',
+  '⚡',
+  '🚀',
+  '💼',
+  '📊',
+  '💰',
+  '🎯',
+  '🔥',
+  '⭐',
+  '💎',
+  '🏆',
 ];
 
 export function AdvisorEditModal({ advisor, isOpen, onClose, onSave }: AdvisorEditModalProps) {
@@ -45,9 +108,9 @@ export function AdvisorEditModal({ advisor, isOpen, onClose, onSave }: AdvisorEd
     ai_service: 'claude',
     system_prompt: '',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   });
-  
+
   const [newExpertise, setNewExpertise] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -58,7 +121,7 @@ export function AdvisorEditModal({ advisor, isOpen, onClose, onSave }: AdvisorEd
     if (advisor) {
       setFormData({
         ...advisor,
-        expertise: advisor.expertise || []
+        expertise: advisor.expertise || [],
       });
       setAvatarMode(advisor.avatar_image ? 'image' : 'emoji');
       setIsCreating(false);
@@ -73,7 +136,7 @@ export function AdvisorEditModal({ advisor, isOpen, onClose, onSave }: AdvisorEd
         ai_service: 'claude',
         system_prompt: '',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       });
       setAvatarMode('emoji');
       setIsCreating(true);
@@ -96,12 +159,12 @@ export function AdvisorEditModal({ advisor, isOpen, onClose, onSave }: AdvisorEd
       }
 
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         const result = e.target?.result as string;
         setFormData(prev => ({
           ...prev,
           avatar_image: result,
-          avatar_emoji: '👤' // Set fallback emoji
+          avatar_emoji: '👤', // Set fallback emoji
         }));
         setAvatarMode('image');
       };
@@ -113,7 +176,7 @@ export function AdvisorEditModal({ advisor, isOpen, onClose, onSave }: AdvisorEd
     setFormData(prev => ({
       ...prev,
       avatar_image: undefined,
-      avatar_emoji: '👨‍💼'
+      avatar_emoji: '👨‍💼',
     }));
     setAvatarMode('emoji');
     if (fileInputRef.current) {
@@ -153,7 +216,7 @@ Always maintain your persona and provide advice that reflects your expertise are
       ai_service: formData.ai_service || 'claude',
       system_prompt: formData.system_prompt || '',
       created_at: formData.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (isCreating) {
@@ -184,7 +247,7 @@ Always maintain your persona and provide advice that reflects your expertise are
     if (expertise && !formData.expertise?.includes(expertise as AdvisorExpertise)) {
       setFormData(prev => ({
         ...prev,
-        expertise: [...(prev.expertise || []), expertise as AdvisorExpertise]
+        expertise: [...(prev.expertise || []), expertise as AdvisorExpertise],
       }));
     }
   };
@@ -192,7 +255,7 @@ Always maintain your persona and provide advice that reflects your expertise are
   const removeExpertise = (expertise: string) => {
     setFormData(prev => ({
       ...prev,
-      expertise: prev.expertise?.filter(e => e !== expertise) || []
+      expertise: prev.expertise?.filter(e => e !== expertise) || [],
     }));
   };
 
@@ -235,16 +298,14 @@ Always maintain your persona and provide advice that reflects your expertise are
               <h3 className="font-semibold text-gray-900 border-b border-gray-200 pb-2">
                 Basic Information
               </h3>
-              
+
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
                   value={formData.name || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="e.g., Sarah Chen"
                 />
@@ -252,25 +313,25 @@ Always maintain your persona and provide advice that reflects your expertise are
 
               {/* Role */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Role *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
                 <select
                   value={formData.role || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as AdvisorRole }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, role: e.target.value as AdvisorRole }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                 >
                   {availableRoles.map(role => (
-                    <option key={role} value={role}>{role}</option>
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
                   ))}
                 </select>
               </div>
 
               {/* Avatar */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Avatar
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
 
                 {/* Avatar Mode Toggle */}
                 <div className="flex space-x-1 mb-3 bg-gray-100 rounded-lg p-1">
@@ -310,7 +371,13 @@ Always maintain your persona and provide advice that reflects your expertise are
                       <button
                         key={emoji}
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, avatar_emoji: emoji, avatar_image: undefined }))}
+                        onClick={() =>
+                          setFormData(prev => ({
+                            ...prev,
+                            avatar_emoji: emoji,
+                            avatar_image: undefined,
+                          }))
+                        }
                         className={`w-10 h-10 text-xl rounded-lg border-2 transition-all ${
                           formData.avatar_emoji === emoji && !formData.avatar_image
                             ? 'border-purple-500 bg-purple-50'
@@ -373,12 +440,10 @@ Always maintain your persona and provide advice that reflects your expertise are
 
               {/* Background */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Background
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Background</label>
                 <textarea
                   value={formData.background || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, background: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, background: e.target.value }))}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Professional background, achievements, and experience..."
@@ -387,12 +452,10 @@ Always maintain your persona and provide advice that reflects your expertise are
 
               {/* Personality */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Personality
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Personality</label>
                 <textarea
                   value={formData.personality || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, personality: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, personality: e.target.value }))}
                   rows={2}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Communication style, approach, and personality traits..."
@@ -411,7 +474,7 @@ Always maintain your persona and provide advice that reflects your expertise are
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Areas of Expertise
                 </label>
-                
+
                 {/* Current Expertise */}
                 <div className="flex flex-wrap gap-2 mb-3">
                   {formData.expertise?.map(expertise => (
@@ -434,14 +497,16 @@ Always maintain your persona and provide advice that reflects your expertise are
                 <div className="space-y-2">
                   <select
                     value=""
-                    onChange={(e) => addExpertise(e.target.value)}
+                    onChange={e => addExpertise(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="">Select expertise to add...</option>
                     {availableExpertise
                       .filter(exp => !formData.expertise?.includes(exp))
                       .map(expertise => (
-                        <option key={expertise} value={expertise}>{expertise}</option>
+                        <option key={expertise} value={expertise}>
+                          {expertise}
+                        </option>
                       ))}
                   </select>
 
@@ -449,10 +514,10 @@ Always maintain your persona and provide advice that reflects your expertise are
                     <input
                       type="text"
                       value={newExpertise}
-                      onChange={(e) => setNewExpertise(e.target.value)}
+                      onChange={e => setNewExpertise(e.target.value)}
                       placeholder="Add custom expertise..."
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                      onKeyPress={(e) => e.key === 'Enter' && addCustomExpertise()}
+                      onKeyPress={e => e.key === 'Enter' && addCustomExpertise()}
                     />
                     <button
                       onClick={addCustomExpertise}
@@ -466,12 +531,12 @@ Always maintain your persona and provide advice that reflects your expertise are
 
               {/* AI Service */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  AI Service
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">AI Service</label>
                 <select
                   value={formData.ai_service || 'claude'}
-                  onChange={(e) => setFormData(prev => ({ ...prev, ai_service: e.target.value as any }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, ai_service: e.target.value as any }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="claude">Claude (Anthropic)</option>
@@ -480,8 +545,8 @@ Always maintain your persona and provide advice that reflects your expertise are
                   <option value="deepseek">DeepSeek</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {settings.aiServices[formData.ai_service || 'claude']?.apiKey 
-                    ? '✅ API key configured' 
+                  {settings.aiServices[formData.ai_service || 'claude']?.apiKey
+                    ? '✅ API key configured'
                     : '⚠️ API key needed'}
                 </p>
               </div>
@@ -489,9 +554,7 @@ Always maintain your persona and provide advice that reflects your expertise are
               {/* System Prompt */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    System Prompt
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">System Prompt</label>
                   <button
                     onClick={generateSystemPrompt}
                     className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200"
@@ -502,7 +565,7 @@ Always maintain your persona and provide advice that reflects your expertise are
                 </div>
                 <textarea
                   value={formData.system_prompt || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, system_prompt: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, system_prompt: e.target.value }))}
                   rows={6}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
                   placeholder="System prompt that defines how this advisor behaves and responds..."
@@ -520,7 +583,9 @@ Always maintain your persona and provide advice that reflects your expertise are
                       <input
                         type="checkbox"
                         checked={formData.mcp_enabled || false}
-                        onChange={(e) => setFormData(prev => ({ ...prev, mcp_enabled: e.target.checked }))}
+                        onChange={e =>
+                          setFormData(prev => ({ ...prev, mcp_enabled: e.target.checked }))
+                        }
                         className="sr-only peer"
                       />
                       <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
@@ -542,7 +607,9 @@ Always maintain your persona and provide advice that reflects your expertise are
                         <input
                           type="text"
                           value={formData.mcp_folder_path || ''}
-                          onChange={(e) => setFormData(prev => ({ ...prev, mcp_folder_path: e.target.value }))}
+                          onChange={e =>
+                            setFormData(prev => ({ ...prev, mcp_folder_path: e.target.value }))
+                          }
                           placeholder={`/documents/${formData.name?.toLowerCase().replace(/\s+/g, '-') || 'advisor'}`}
                           className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
@@ -597,7 +664,9 @@ Always maintain your persona and provide advice that reflects your expertise are
                   <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex items-center space-x-2 text-gray-600">
                       <Folder className="w-4 h-4" />
-                      <span className="text-sm">Enable MCP to provide this advisor with document knowledge</span>
+                      <span className="text-sm">
+                        Enable MCP to provide this advisor with document knowledge
+                      </span>
                     </div>
                   </div>
                 )}
@@ -619,7 +688,7 @@ Always maintain your persona and provide advice that reflects your expertise are
               </button>
             )}
           </div>
-          
+
           <div className="flex space-x-3">
             <button
               onClick={onClose}
@@ -643,7 +712,11 @@ Always maintain your persona and provide advice that reflects your expertise are
         onClose={() => setShowDeleteConfirmation(false)}
         onConfirm={confirmDelete}
         title="Delete Advisor"
-        message={advisor ? `Are you sure you want to delete ${advisor.name}? This action cannot be undone.` : 'Are you sure you want to delete this advisor?'}
+        message={
+          advisor
+            ? `Are you sure you want to delete ${advisor.name}? This action cannot be undone.`
+            : 'Are you sure you want to delete this advisor?'
+        }
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"

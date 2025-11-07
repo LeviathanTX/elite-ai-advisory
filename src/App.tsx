@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
   const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
   const [showTermsOfService, setShowTermsOfService] = useState(false);
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
       {isDemoMode && (
@@ -31,13 +31,12 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
       <div className="max-w-4xl mx-auto px-6 text-center">
         {/* Hero Section */}
         <div className="mb-12">
-          <h1 className="text-6xl font-bold text-gray-900 mb-6">
-            Bearable Advisors
-          </h1>
+          <h1 className="text-6xl font-bold text-gray-900 mb-6">Bearable Advisors</h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Transform your strategic decision-making with a virtual board of world-class business advisors powered by cutting-edge AI technology.
+            Transform your strategic decision-making with a virtual board of world-class business
+            advisors powered by cutting-edge AI technology.
           </p>
-          
+
           {/* Status Badge */}
           <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full font-medium mb-8">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
@@ -52,25 +51,31 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
               🎤
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Pitch Practice</h3>
-            <p className="text-sm text-gray-600">AI-powered pitch analysis with real-time feedback</p>
+            <p className="text-sm text-gray-600">
+              AI-powered pitch analysis with real-time feedback
+            </p>
           </div>
-          
+
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
               🧠
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Strategic Planning</h3>
-            <p className="text-sm text-gray-600">Multi-advisor discussions with celebrity insights</p>
+            <p className="text-sm text-gray-600">
+              Multi-advisor discussions with celebrity insights
+            </p>
           </div>
-          
+
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
               📊
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Due Diligence</h3>
-            <p className="text-sm text-gray-600">Investment-grade analysis and VC memo generation</p>
+            <p className="text-sm text-gray-600">
+              Investment-grade analysis and VC memo generation
+            </p>
           </div>
-          
+
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
               ⚡
@@ -85,9 +90,13 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Celebrity Advisory Board</h2>
           <div className="flex flex-wrap justify-center gap-4">
             {[
-              'Jeff', 'Gordon Daugherty', 'Mark Cuban', 'Reid Hoffman',
-              'Jason Calacanis', 'Barbara Corcoran'
-            ].map((name) => (
+              'Jeff',
+              'Gordon Daugherty',
+              'Mark Cuban',
+              'Reid Hoffman',
+              'Jason Calacanis',
+              'Barbara Corcoran',
+            ].map(name => (
               <div key={name} className="bg-gray-50 rounded-lg px-4 py-2">
                 <span className="font-medium text-gray-700">{name}</span>
               </div>
@@ -99,7 +108,10 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <h3 className="text-xl font-bold text-gray-900 mb-2">Founder</h3>
-            <div className="text-3xl font-bold text-blue-600 mb-4">{formatCurrency(97)}<span className="text-lg text-gray-500">/mo</span></div>
+            <div className="text-3xl font-bold text-blue-600 mb-4">
+              {formatCurrency(97)}
+              <span className="text-lg text-gray-500">/mo</span>
+            </div>
             <ul className="text-sm text-gray-600 space-y-2">
               <li>• 20 AI advisor hours</li>
               <li>• 10 document analyses</li>
@@ -107,13 +119,16 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
               <li>• Email support</li>
             </ul>
           </div>
-          
+
           <div className="bg-blue-50 rounded-xl p-6 shadow-sm border-2 border-blue-200 relative">
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
               Most Popular
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Scale-Up</h3>
-            <div className="text-3xl font-bold text-blue-600 mb-4">{formatCurrency(247)}<span className="text-lg text-gray-500">/mo</span></div>
+            <div className="text-3xl font-bold text-blue-600 mb-4">
+              {formatCurrency(247)}
+              <span className="text-lg text-gray-500">/mo</span>
+            </div>
             <ul className="text-sm text-gray-600 space-y-2">
               <li>• 50 AI advisor hours</li>
               <li>• Unlimited pitch practice</li>
@@ -121,10 +136,13 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
               <li>• External data integration</li>
             </ul>
           </div>
-          
+
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <h3 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h3>
-            <div className="text-3xl font-bold text-blue-600 mb-4">{formatCurrency(497)}<span className="text-lg text-gray-500">/mo</span></div>
+            <div className="text-3xl font-bold text-blue-600 mb-4">
+              {formatCurrency(497)}
+              <span className="text-lg text-gray-500">/mo</span>
+            </div>
             <ul className="text-sm text-gray-600 space-y-2">
               <li>• 150 AI advisor hours</li>
               <li>• Unlimited everything</li>
@@ -136,10 +154,14 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
 
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-          <h2 className="text-2xl font-bold mb-4">Ready to Transform Your Strategic Decision-Making?</h2>
-          <p className="text-blue-100 mb-6">Join thousands of entrepreneurs who've revolutionized their advisory experience</p>
+          <h2 className="text-2xl font-bold mb-4">
+            Ready to Transform Your Strategic Decision-Making?
+          </h2>
+          <p className="text-blue-100 mb-6">
+            Join thousands of entrepreneurs who've revolutionized their advisory experience
+          </p>
           <div className="space-x-4">
-            <button 
+            <button
               onClick={() => {
                 console.log('Start Free Trial clicked');
                 onGetStarted();
@@ -161,14 +183,16 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
               Bearable Advisors - Where strategy meets innovation ✨
             </p>
             <div className="flex space-x-6 text-sm">
-              <button 
+              <button
                 onClick={() => setShowTermsOfService(true)}
                 className="text-gray-600 hover:text-gray-900 transition-colors underline"
               >
                 Terms of Service
               </button>
-              <button 
-                onClick={() => {/* TODO: Add Privacy Policy */}}
+              <button
+                onClick={() => {
+                  /* TODO: Add Privacy Policy */
+                }}
                 className="text-gray-600 hover:text-gray-900 transition-colors underline"
               >
                 Privacy Policy
@@ -177,12 +201,9 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
           </div>
         </div>
       </div>
-      
+
       {/* Terms of Service Modal */}
-      <TermsOfService 
-        isOpen={showTermsOfService} 
-        onClose={() => setShowTermsOfService(false)} 
-      />
+      <TermsOfService isOpen={showTermsOfService} onClose={() => setShowTermsOfService(false)} />
     </div>
   );
 }
@@ -198,7 +219,7 @@ function AuthenticatedApp() {
     full_name: 'Developer User',
     subscription_tier: 'enterprise' as const,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
   if (loading) {
@@ -239,7 +260,10 @@ function AuthenticatedApp() {
                       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
                         <div className="max-w-4xl mx-auto px-6 text-center">
                           <h1 className="text-4xl font-bold text-gray-900 mb-6">
-                            {selectedMode ? (selectedMode as string).replace('_', ' ').toUpperCase() : ''} Mode
+                            {selectedMode
+                              ? (selectedMode as string).replace('_', ' ').toUpperCase()
+                              : ''}{' '}
+                            Mode
                           </h1>
                           <p className="text-xl text-gray-600 mb-8">
                             This mode is under development. Full implementation coming soon!
@@ -268,7 +292,7 @@ function AuthenticatedApp() {
 function AppContent() {
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
+
   console.log('AppContent render:', { user, showAuthModal });
 
   // DEVELOPMENT MODE: Bypass authentication
@@ -280,16 +304,18 @@ function AppContent() {
 
   return (
     <>
-      <LandingPage onGetStarted={() => {
-        console.log('Setting showAuthModal to true');
-        setShowAuthModal(true);
-      }} />
-      <AuthModal 
-        isOpen={showAuthModal} 
+      <LandingPage
+        onGetStarted={() => {
+          console.log('Setting showAuthModal to true');
+          setShowAuthModal(true);
+        }}
+      />
+      <AuthModal
+        isOpen={showAuthModal}
         onClose={() => {
           console.log('Closing auth modal');
           setShowAuthModal(false);
-        }} 
+        }}
       />
     </>
   );

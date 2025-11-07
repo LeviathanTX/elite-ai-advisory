@@ -5,7 +5,10 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware/persist';
-import { ConversationMessage, ConversationSettings } from '../components/Conversations/hooks/useConversationState';
+import {
+  ConversationMessage,
+  ConversationSettings,
+} from '../components/Conversations/hooks/useConversationState';
 import { ApplicationMode } from '../types';
 
 export interface ConversationState {
@@ -44,14 +47,24 @@ export interface ConversationActions {
   updateConversationTitle: (id: string, title: string) => void;
 
   // Message management
-  addMessage: (conversationId: string, message: Omit<ConversationMessage, 'id' | 'timestamp'>) => string;
-  updateMessage: (conversationId: string, messageId: string, updates: Partial<ConversationMessage>) => void;
+  addMessage: (
+    conversationId: string,
+    message: Omit<ConversationMessage, 'id' | 'timestamp'>
+  ) => string;
+  updateMessage: (
+    conversationId: string,
+    messageId: string,
+    updates: Partial<ConversationMessage>
+  ) => void;
   removeMessage: (conversationId: string, messageId: string) => void;
   clearMessages: (conversationId: string) => void;
 
   // Settings
   updateGlobalSettings: (updates: Partial<ConversationSettings>) => void;
-  updateConversationSettings: (conversationId: string, updates: Partial<ConversationSettings>) => void;
+  updateConversationSettings: (
+    conversationId: string,
+    updates: Partial<ConversationSettings>
+  ) => void;
 
   // UI state
   setIsGeneratingResponse: (isGenerating: boolean) => void;
@@ -152,7 +165,10 @@ export const useConversationStore = create<ConversationState & ConversationActio
             });
           },
 
-          addMessage: (conversationId: string, message: Omit<ConversationMessage, 'id' | 'timestamp'>) => {
+          addMessage: (
+            conversationId: string,
+            message: Omit<ConversationMessage, 'id' | 'timestamp'>
+          ) => {
             const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const newMessage: ConversationMessage = {
               ...message,
@@ -171,7 +187,11 @@ export const useConversationStore = create<ConversationState & ConversationActio
             return messageId;
           },
 
-          updateMessage: (conversationId: string, messageId: string, updates: Partial<ConversationMessage>) => {
+          updateMessage: (
+            conversationId: string,
+            messageId: string,
+            updates: Partial<ConversationMessage>
+          ) => {
             set(state => {
               const conversation = state.conversations.get(conversationId);
               if (conversation) {
@@ -210,7 +230,10 @@ export const useConversationStore = create<ConversationState & ConversationActio
             });
           },
 
-          updateConversationSettings: (conversationId: string, updates: Partial<ConversationSettings>) => {
+          updateConversationSettings: (
+            conversationId: string,
+            updates: Partial<ConversationSettings>
+          ) => {
             set(state => {
               const conversation = state.conversations.get(conversationId);
               if (conversation) {
@@ -274,7 +297,9 @@ export const useConversationStore = create<ConversationState & ConversationActio
             set(state => {
               const conversation = state.conversations.get(conversationId);
               if (conversation) {
-                conversation.selectedAdvisors = conversation.selectedAdvisors.filter(id => id !== advisorId);
+                conversation.selectedAdvisors = conversation.selectedAdvisors.filter(
+                  id => id !== advisorId
+                );
                 conversation.updatedAt = new Date();
               }
             });
@@ -313,21 +338,22 @@ export const useConversationStore = create<ConversationState & ConversationActio
             const { conversations } = get();
             const lowerQuery = query.toLowerCase();
 
-            return Array.from(conversations.values()).filter(conversation =>
-              conversation.title.toLowerCase().includes(lowerQuery) ||
-              conversation.messages.some(message =>
-                message.content.toLowerCase().includes(lowerQuery)
-              )
+            return Array.from(conversations.values()).filter(
+              conversation =>
+                conversation.title.toLowerCase().includes(lowerQuery) ||
+                conversation.messages.some(message =>
+                  message.content.toLowerCase().includes(lowerQuery)
+                )
             );
           },
         }),
         {
           name: 'elite-ai-conversations',
-          partialize: (state) => ({
+          partialize: state => ({
             conversations: Array.from(state.conversations.entries()),
             globalSettings: state.globalSettings,
           }),
-          onRehydrateStorage: () => (state) => {
+          onRehydrateStorage: () => state => {
             if (state && Array.isArray(state.conversations)) {
               // Convert array back to Map
               state.conversations = new Map(state.conversations as any);

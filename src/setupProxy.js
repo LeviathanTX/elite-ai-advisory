@@ -1,6 +1,6 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-module.exports = function(app) {
+module.exports = function (app) {
   app.use(
     '/api/anthropic',
     createProxyMiddleware({
@@ -12,7 +12,8 @@ module.exports = function(app) {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key, anthropic-version, anthropic-dangerous-direct-browser-access',
+        'Access-Control-Allow-Headers':
+          'Content-Type, Authorization, x-api-key, anthropic-version, anthropic-dangerous-direct-browser-access',
       },
     })
   );

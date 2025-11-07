@@ -20,7 +20,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  type = 'warning'
+  type = 'warning',
 }) => {
   if (!isOpen) return null;
 
@@ -36,28 +36,28 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           iconColor: 'text-red-600',
           iconBg: 'bg-red-100',
           confirmButton: 'bg-red-600 hover:bg-red-700 text-white',
-          border: 'border-red-200'
+          border: 'border-red-200',
         };
       case 'warning':
         return {
           iconColor: 'text-yellow-600',
           iconBg: 'bg-yellow-100',
           confirmButton: 'bg-yellow-600 hover:bg-yellow-700 text-white',
-          border: 'border-yellow-200'
+          border: 'border-yellow-200',
         };
       case 'info':
         return {
           iconColor: 'text-blue-600',
           iconBg: 'bg-blue-100',
           confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white',
-          border: 'border-blue-200'
+          border: 'border-blue-200',
         };
       default:
         return {
           iconColor: 'text-gray-600',
           iconBg: 'bg-gray-100',
           confirmButton: 'bg-gray-600 hover:bg-gray-700 text-white',
-          border: 'border-gray-200'
+          border: 'border-gray-200',
         };
     }
   };
@@ -69,16 +69,14 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <div className={`bg-white rounded-lg max-w-md w-full border-2 ${styles.border}`}>
         <div className="p-6">
           <div className="flex items-start">
-            <div className={`flex-shrink-0 w-10 h-10 rounded-full ${styles.iconBg} flex items-center justify-center mr-4`}>
+            <div
+              className={`flex-shrink-0 w-10 h-10 rounded-full ${styles.iconBg} flex items-center justify-center mr-4`}
+            >
               <AlertTriangle className={`w-6 h-6 ${styles.iconColor}`} />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {title}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {message}
-              </p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
+              <p className="text-gray-600 text-sm">{message}</p>
             </div>
             <button
               onClick={onClose}
@@ -88,7 +86,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             </button>
           </div>
         </div>
-        
+
         <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3 rounded-b-lg">
           <button
             onClick={onClose}

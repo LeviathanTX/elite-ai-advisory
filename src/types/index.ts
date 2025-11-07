@@ -166,48 +166,163 @@ export interface ConversationMessage {
   voice_url?: string;
 }
 
-export type ApplicationMode = 'pitch_practice' | 'advisory_conversation' | 'advisor_management' | 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'test_document';
+export type ApplicationMode =
+  | 'pitch_practice'
+  | 'advisory_conversation'
+  | 'advisor_management'
+  | 'strategic_planning'
+  | 'due_diligence'
+  | 'quick_consultation'
+  | 'test_document';
 
 export type AIService = 'claude' | 'gemini' | 'chatgpt' | 'deepseek' | 'groq';
 
 // Unified Advisor Types
 export type AdvisorRole =
   // Platform Roles
-  | 'Platform Host & Guide' | 'Startup Advisor'
+  | 'Platform Host & Guide'
+  | 'Startup Advisor'
   // Tier 1: Core Strategic Advisors
-  | 'Chief Strategy Advisor' | 'Due Diligence Director' | 'Market Intelligence Advisor' | 'Financial Architecture Advisor' | 'Operational Excellence Advisor'
+  | 'Chief Strategy Advisor'
+  | 'Due Diligence Director'
+  | 'Market Intelligence Advisor'
+  | 'Financial Architecture Advisor'
+  | 'Operational Excellence Advisor'
   // Tier 2: Functional Specialists
-  | 'Technology & Innovation Advisor' | 'Human Capital Advisor' | 'Legal & Regulatory Advisor' | 'ESG & Sustainability Advisor' | 'Customer Experience Advisor' | 'Supply Chain & Procurement Advisor' | 'Data & Analytics Advisor' | 'International & Expansion Advisor'
+  | 'Technology & Innovation Advisor'
+  | 'Human Capital Advisor'
+  | 'Legal & Regulatory Advisor'
+  | 'ESG & Sustainability Advisor'
+  | 'Customer Experience Advisor'
+  | 'Supply Chain & Procurement Advisor'
+  | 'Data & Analytics Advisor'
+  | 'International & Expansion Advisor'
   // Tier 3: Industry Specialists
-  | 'Technology/SaaS Specialist' | 'Healthcare/Biotech Specialist' | 'Financial Services Specialist' | 'Manufacturing/Industrial Specialist' | 'Consumer/Retail Specialist' | 'Energy/Sustainability Specialist'
+  | 'Technology/SaaS Specialist'
+  | 'Healthcare/Biotech Specialist'
+  | 'Financial Services Specialist'
+  | 'Manufacturing/Industrial Specialist'
+  | 'Consumer/Retail Specialist'
+  | 'Energy/Sustainability Specialist'
   // Traditional Roles (Legacy Support)
-  | 'CEO' | 'CFO' | 'CTO' | 'CMO' | 'COO' | 'VP Strategy' | 'VP Finance' | 'VP Marketing' | 'VP Operations' | 'VP Technology' | 'Managing Partner' | 'Investment Partner' | 'Board Member' | 'Strategic Advisor' | 'Consultant';
+  | 'CEO'
+  | 'CFO'
+  | 'CTO'
+  | 'CMO'
+  | 'COO'
+  | 'VP Strategy'
+  | 'VP Finance'
+  | 'VP Marketing'
+  | 'VP Operations'
+  | 'VP Technology'
+  | 'Managing Partner'
+  | 'Investment Partner'
+  | 'Board Member'
+  | 'Strategic Advisor'
+  | 'Consultant';
 
 export type AdvisorExpertise =
   // Strategic & Financial
-  | 'Corporate Strategy' | 'M&A Strategy' | 'Transformation' | 'Board Governance' | 'Financial Modeling' | 'Valuation' | 'Capital Structure' | 'Transaction Structuring' | 'Risk Assessment' | 'Due Diligence'
+  | 'Corporate Strategy'
+  | 'M&A Strategy'
+  | 'Transformation'
+  | 'Board Governance'
+  | 'Financial Modeling'
+  | 'Valuation'
+  | 'Capital Structure'
+  | 'Transaction Structuring'
+  | 'Risk Assessment'
+  | 'Due Diligence'
   // Market & Competitive Intelligence
-  | 'Market Sizing' | 'Competitive Analysis' | 'Trend Forecasting' | 'Customer Insights' | 'Industry Research' | 'Business Intelligence'
+  | 'Market Sizing'
+  | 'Competitive Analysis'
+  | 'Trend Forecasting'
+  | 'Customer Insights'
+  | 'Industry Research'
+  | 'Business Intelligence'
   // Operational Excellence
-  | 'Process Optimization' | 'Technology Implementation' | 'Scaling Operations' | 'Performance Management' | 'Supply Chain' | 'Procurement'
+  | 'Process Optimization'
+  | 'Technology Implementation'
+  | 'Scaling Operations'
+  | 'Performance Management'
+  | 'Supply Chain'
+  | 'Procurement'
   // Technology & Innovation
-  | 'Digital Transformation' | 'AI/ML Implementation' | 'Cybersecurity' | 'Tech Due Diligence' | 'Innovation Pipeline' | 'Technology Architecture'
+  | 'Digital Transformation'
+  | 'AI/ML Implementation'
+  | 'Cybersecurity'
+  | 'Tech Due Diligence'
+  | 'Innovation Pipeline'
+  | 'Technology Architecture'
   // Human Capital & Organization
-  | 'Executive Assessment' | 'Organizational Design' | 'Culture Evaluation' | 'Talent Acquisition' | 'Leadership Development' | 'Succession Planning'
+  | 'Executive Assessment'
+  | 'Organizational Design'
+  | 'Culture Evaluation'
+  | 'Talent Acquisition'
+  | 'Leadership Development'
+  | 'Succession Planning'
   // Legal & Regulatory
-  | 'Corporate Law' | 'Regulatory Compliance' | 'Intellectual Property' | 'Litigation Risk' | 'Contract Analysis' | 'Legal Structure'
+  | 'Corporate Law'
+  | 'Regulatory Compliance'
+  | 'Intellectual Property'
+  | 'Litigation Risk'
+  | 'Contract Analysis'
+  | 'Legal Structure'
   // ESG & Sustainability
-  | 'Environmental Compliance' | 'Social Impact' | 'Governance Frameworks' | 'Sustainability Strategy' | 'ESG Risk Assessment'
+  | 'Environmental Compliance'
+  | 'Social Impact'
+  | 'Governance Frameworks'
+  | 'Sustainability Strategy'
+  | 'ESG Risk Assessment'
   // Customer & Market
-  | 'Customer Research' | 'Brand Strategy' | 'Digital Marketing' | 'Customer Experience' | 'Market Positioning' | 'Growth Strategy'
+  | 'Customer Research'
+  | 'Brand Strategy'
+  | 'Digital Marketing'
+  | 'Customer Experience'
+  | 'Market Positioning'
+  | 'Growth Strategy'
   // Data & Analytics
-  | 'Data Strategy' | 'Analytics Implementation' | 'Business Intelligence' | 'Data Governance' | 'Insights Generation'
+  | 'Data Strategy'
+  | 'Analytics Implementation'
+  | 'Business Intelligence'
+  | 'Data Governance'
+  | 'Insights Generation'
   // International & Expansion
-  | 'Global Markets' | 'International Business' | 'Cross-Border Risk' | 'Cultural Considerations' | 'Regulatory Environments'
+  | 'Global Markets'
+  | 'International Business'
+  | 'Cross-Border Risk'
+  | 'Cultural Considerations'
+  | 'Regulatory Environments'
   // Industry Specializations
-  | 'SaaS Metrics' | 'Healthcare Economics' | 'Banking Regulations' | 'Manufacturing Processes' | 'Consumer Behavior' | 'Energy Markets'
+  | 'SaaS Metrics'
+  | 'Healthcare Economics'
+  | 'Banking Regulations'
+  | 'Manufacturing Processes'
+  | 'Consumer Behavior'
+  | 'Energy Markets'
   // Legacy Support
-  | 'Strategy' | 'Finance' | 'Marketing' | 'Operations' | 'Technology' | 'Sales' | 'Product Development' | 'Legal' | 'HR' | 'International Business' | 'Venture Capital' | 'Private Equity' | 'Investment Banking' | 'Startups' | 'Manufacturing' | 'Healthcare' | 'Fintech' | 'E-commerce' | 'Real Estate' | 'Cybersecurity' | 'SaaS' | 'AI/ML';
+  | 'Strategy'
+  | 'Finance'
+  | 'Marketing'
+  | 'Operations'
+  | 'Technology'
+  | 'Sales'
+  | 'Product Development'
+  | 'Legal'
+  | 'HR'
+  | 'International Business'
+  | 'Venture Capital'
+  | 'Private Equity'
+  | 'Investment Banking'
+  | 'Startups'
+  | 'Manufacturing'
+  | 'Healthcare'
+  | 'Fintech'
+  | 'E-commerce'
+  | 'Real Estate'
+  | 'Cybersecurity'
+  | 'SaaS'
+  | 'AI/ML';
 
 export interface Advisor {
   id: string;

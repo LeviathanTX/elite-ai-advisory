@@ -26,7 +26,6 @@
     "mammoth": "^1.10.0",
     "openai": "^4.20.1",
     "pdfjs-dist": "^5.4.149",
-    "puppeteer": "^24.23.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-dropzone": "^14.3.8",
@@ -43,16 +42,32 @@
   "scripts": {
     "start": "npm run copy-pdf-worker && react-scripts start",
     "build": "npm run copy-pdf-worker && react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --passWithNoTests",
+    "test:ci": "react-scripts test --passWithNoTests --watchAll=false --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "eject": "react-scripts eject",
     "copy-pdf-worker": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.js",
-    "postinstall": "npm run copy-pdf-worker"
+    "postinstall": "npm run copy-pdf-worker",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "type-check": "tsc --noEmit",
+    "verify": "npm run format:check && npm run lint && npm run type-check && npm run test:ci",
+    "prepare": "husky install",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "prettier"
+    ],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -67,9 +82,18 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/uuid": "^9.0.0",
     "autoprefixer": "^10.4.21",
+    "dotenv-cli": "^11.0.0",
+    "envalid": "^8.1.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
     "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17"
+    "prettier": "^3.6.2",
+    "tailwindcss": "^3.4.17",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }

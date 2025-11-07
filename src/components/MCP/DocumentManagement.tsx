@@ -15,7 +15,7 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
   advisor,
   isOpen,
   onClose,
-  onDocumentsChange
+  onDocumentsChange,
 }) => {
   const [documents, setDocuments] = useState<MCPDocument[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -42,19 +42,25 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
       type: convertToMCPType(doc.metadata.type),
       size: doc.size,
       uploaded_at: doc.uploadedAt,
-      advisor_id: doc.advisorId
+      advisor_id: doc.advisorId,
     }));
 
     setDocuments(mcpDocs);
-    console.log(`📄 MCP DocumentManagement: Loaded ${mcpDocs.length} existing documents for ${advisor.name}`);
+    console.log(
+      `📄 MCP DocumentManagement: Loaded ${mcpDocs.length} existing documents for ${advisor.name}`
+    );
   };
 
   const convertToMCPType = (type: string): MCPDocument['type'] => {
     switch (type) {
-      case 'pdf': return 'pdf';
-      case 'docx': return 'docx';
-      case 'md': return 'markdown';
-      default: return 'text';
+      case 'pdf':
+        return 'pdf';
+      case 'docx':
+        return 'docx';
+      case 'md':
+        return 'markdown';
+      default:
+        return 'text';
     }
   };
 
@@ -73,9 +79,15 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         'application/vnd.ms-powerpoint',
-        'text/markdown'
+        'text/markdown',
       ];
-      if (!allowedTypes.includes(file.type) && !file.name.endsWith('.md') && !file.name.endsWith('.pptx') && !file.name.endsWith('.ppt') && !file.name.endsWith('.xlsx')) {
+      if (
+        !allowedTypes.includes(file.type) &&
+        !file.name.endsWith('.md') &&
+        !file.name.endsWith('.pptx') &&
+        !file.name.endsWith('.ppt') &&
+        !file.name.endsWith('.xlsx')
+      ) {
         alert(`Unsupported file type: ${file.name}`);
         continue;
       }
@@ -99,7 +111,7 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
           {
             category: 'other',
             confidentialityLevel: 'internal',
-            tags: ['mcp', 'advisor-specific']
+            tags: ['mcp', 'advisor-specific'],
           }
         );
 
@@ -115,7 +127,7 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
           type: getFileType(file),
           size: file.size,
           uploaded_at: new Date().toISOString(),
-          advisor_id: advisor.id
+          advisor_id: advisor.id,
         };
         newDocuments.push(doc);
       } catch (error) {
@@ -138,7 +150,7 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
   const readFileContent = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onload = e => resolve(e.target?.result as string);
       reader.onerror = reject;
       reader.readAsText(file);
     });
@@ -146,7 +158,8 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
 
   const getFileType = (file: File): MCPDocument['type'] => {
     if (file.type === 'application/pdf') return 'pdf';
-    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'docx';
+    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      return 'docx';
     if (file.type === 'text/markdown' || file.name.endsWith('.md')) return 'markdown';
     return 'text';
   };
@@ -167,10 +180,14 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
 
   const getFileIcon = (type: MCPDocument['type']) => {
     switch (type) {
-      case 'pdf': return '📄';
-      case 'docx': return '📝';
-      case 'markdown': return '📋';
-      default: return '📄';
+      case 'pdf':
+        return '📄';
+      case 'docx':
+        return '📝';
+      case 'markdown':
+        return '📋';
+      default:
+        return '📄';
     }
   };
 
@@ -200,7 +217,8 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
             <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">MCP Not Enabled</h3>
             <p className="text-gray-600 mb-4">
-              Document management is not enabled for this advisor. Enable MCP in the advisor settings to upload documents.
+              Document management is not enabled for this advisor. Enable MCP in the advisor
+              settings to upload documents.
             </p>
             <button
               onClick={onClose}
@@ -241,28 +259,24 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
           {/* Upload Area */}
           <div
             className={`border-2 border-dashed rounded-lg p-6 mb-6 transition-colors ${
-              dragOver
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+              dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
             <div className="text-center">
-              <Upload className={`w-8 h-8 mx-auto mb-4 ${dragOver ? 'text-blue-600' : 'text-gray-400'}`} />
-              <p className="text-lg font-medium text-gray-900 mb-2">
-                Upload Documents
-              </p>
-              <p className="text-gray-600 mb-4">
-                Drag and drop files here, or click to browse
-              </p>
+              <Upload
+                className={`w-8 h-8 mx-auto mb-4 ${dragOver ? 'text-blue-600' : 'text-gray-400'}`}
+              />
+              <p className="text-lg font-medium text-gray-900 mb-2">Upload Documents</p>
+              <p className="text-gray-600 mb-4">Drag and drop files here, or click to browse</p>
               <input
                 ref={fileInputRef}
                 type="file"
                 multiple
                 accept=".txt,.pdf,.docx,.md"
-                onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                onChange={e => e.target.files && handleFileUpload(e.target.files)}
                 className="hidden"
               />
               <button
@@ -297,14 +311,18 @@ export const DocumentManagement: React.FC<DocumentManagementProps> = ({
               </div>
             ) : (
               <div className="space-y-3">
-                {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                {documents.map(doc => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+                  >
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">{getFileIcon(doc.type)}</span>
                       <div>
                         <h4 className="font-medium text-gray-900">{doc.filename}</h4>
                         <p className="text-sm text-gray-500">
-                          {formatFileSize(doc.size)} • {new Date(doc.uploaded_at).toLocaleDateString()}
+                          {formatFileSize(doc.size)} •{' '}
+                          {new Date(doc.uploaded_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
