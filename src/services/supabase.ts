@@ -1,11 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Environment variables - these will be set in production
-const supabaseUrl = (process.env.REACT_APP_SUPABASE_URL || 'https://demo.supabase.co').trim();
-const supabaseAnonKey = (process.env.REACT_APP_SUPABASE_ANON_KEY || 'demo-key').trim();
+const supabaseUrl = (process.env.REACT_APP_SUPABASE_URL || 'https://placeholder.supabase.co').trim();
+const supabaseAnonKey = (process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTIwMDAsImV4cCI6MTk2MDc2ODAwMH0.placeholder').trim();
 
-// Demo mode flag
-const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
+// Demo mode flag - check for both missing URL and bypass auth
+const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
 
 // Debug logging with more details
 console.log('🔧 Supabase initialization:', {
@@ -27,8 +27,8 @@ if (isDemoMode) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
-    persistSession: true,
+    autoRefreshToken: !isDemoMode, // Disable auto-refresh in demo/bypass mode
+    persistSession: !isDemoMode,    // Disable session persistence in demo/bypass mode
     detectSessionInUrl: false,
   },
 });

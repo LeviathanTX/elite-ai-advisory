@@ -206,6 +206,16 @@ export function AdvisoryConversation({
   const extractTextFromFile = async (file: File): Promise<string> => {
     console.log('📄 Extracting text from file:', file.name, 'type:', file.type);
 
+    // Safety check for undefined file.type
+    if (!file || !file.type) {
+      console.warn('File or file.type is undefined, using default handler');
+      try {
+        return await file.text();
+      } catch (error) {
+        return `[Unable to extract text from file: ${file?.name || 'unknown'}]`;
+      }
+    }
+
     if (file.type === 'text/plain' || file.type === 'text/csv') {
       // Plain text files
       return await file.text();
@@ -213,7 +223,7 @@ export function AdvisoryConversation({
       // JSON files
       const text = await file.text();
       return `JSON Content:\n${text}`;
-    } else if (file.type.includes('text/')) {
+    } else if (file.type && file.type.includes('text/')) {
       // Other text files
       return await file.text();
     } else if (file.type === 'application/pdf') {
