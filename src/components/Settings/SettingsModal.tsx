@@ -14,7 +14,7 @@ const AI_SERVICE_OPTIONS = [
     id: 'claude' as AIService,
     name: 'Claude (Anthropic)',
     baseUrl: 'https://api.anthropic.com',
-    model: 'claude-3-5-sonnet-20241022',
+    model: 'claude-sonnet-4-20250514',
     placeholder: 'sk-ant-api03-...',
   },
   {
