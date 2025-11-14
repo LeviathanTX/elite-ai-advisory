@@ -3,7 +3,7 @@
 ## Pre-Demo Setup (5 minutes before)
 
 ### Technical Checks
-- [ ] Open app in browser: https://elite-ai-advisory-clean.vercel.app
+- [ ] Open app in browser: https://ai-bod-clean.vercel.app
 - [ ] Verify you're logged in (demo user or test account)
 - [ ] Test microphone permissions (for pitch practice)
 - [ ] Have sample documents ready (business plan, pitch deck)

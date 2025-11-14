@@ -98,7 +98,7 @@ Required environment variables:
 ## Project Structure
 
 ```
-elite-ai-advisory/
+ai-bod/
 ├── public/               # Static assets
 │   ├── avatars/         # Advisor profile images
 │   └── pdf.worker.min.js # PDF.js worker

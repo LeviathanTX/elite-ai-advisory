@@ -140,7 +140,7 @@ If using social login:
 3. **Verify Production Site**
    ```bash
    # Open production URL
-   open https://elite-ai-advisory-clean.vercel.app
+   open https://ai-bod-clean.vercel.app
    ```
 
 4. **Test Critical Paths**
@@ -180,10 +180,10 @@ Run this script after deployment:
 
 ```bash
 # Check production health
-curl https://elite-ai-advisory-clean.vercel.app
+curl https://ai-bod-clean.vercel.app
 
 # Verify API proxy
-curl https://elite-ai-advisory-clean.vercel.app/api/generate
+curl https://ai-bod-clean.vercel.app/api/generate
 
 # Check Sentry for errors
 # Visit: https://sentry.io/organizations/your-org/issues/

@@ -55,13 +55,13 @@ Anon Key: Configured in .env.local ✅
 
 5. **Set "Site URL" to:**
    ```
-   https://elite-ai-advisory-clean.vercel.app
+   https://ai-bod-clean.vercel.app
    ```
 
 6. **Add "Redirect URLs":**
    ```
    http://localhost:3000/**
-   https://elite-ai-advisory-clean.vercel.app/**
+   https://ai-bod-clean.vercel.app/**
    ```
 
 7. **Click "Save"**
@@ -73,7 +73,7 @@ Anon Key: Configured in .env.local ✅
 **After completing Tasks 1 & 2, run this from your Mac:**
 
 ```bash
-cd ~/elite-ai-advisory
+cd ~/ai-bod
 node scripts/test-supabase-connection.js
 ```
 
@@ -161,7 +161,7 @@ npm start
    ```
 
 3. **Test production:**
-   - Visit: https://elite-ai-advisory-clean.vercel.app
+   - Visit: https://ai-bod-clean.vercel.app
    - Sign up with a test account
    - Verify everything works
 

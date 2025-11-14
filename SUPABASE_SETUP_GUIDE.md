@@ -82,7 +82,7 @@
 
 3. **Set to your production URL:**
    ```
-   https://elite-ai-advisory-clean.vercel.app
+   https://ai-bod-clean.vercel.app
    ```
 
 4. **Find "Redirect URLs"** section
@@ -90,7 +90,7 @@
 5. **Add these URLs** (one per line):
    ```
    http://localhost:3000/**
-   https://elite-ai-advisory-clean.vercel.app/**
+   https://ai-bod-clean.vercel.app/**
    ```
 
 6. **Save changes**

@@ -28,7 +28,7 @@
 
 ```bash
 # 1. Get latest code
-cd ~/elite-ai-advisory
+cd ~/ai-bod
 git pull
 
 # 2. Install dependencies (if needed)

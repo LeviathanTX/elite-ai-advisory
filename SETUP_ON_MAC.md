@@ -15,7 +15,7 @@ Since I can't connect to external services from the Claude environment, **you ne
 
 Make sure you're in the project directory:
 ```bash
-cd ~/elite-ai-advisory
+cd ~/ai-bod
 git pull  # Get latest changes with all the scripts I created
 ```
 
@@ -71,7 +71,7 @@ The script can't set API keys (you need to add them yourself):
 
 1. **Go to Vercel Dashboard:**
    - https://vercel.com/dashboard
-   - Select your project: `elite-ai-advisory-clean`
+   - Select your project: `ai-bod-clean`
    - Go to Settings → Environment Variables
 
 2. **Add these API keys:**
@@ -142,7 +142,7 @@ npx vercel --prod
 ## Step 6: Verify Production (3 min)
 
 1. **Visit your production site:**
-   - https://elite-ai-advisory-clean.vercel.app
+   - https://ai-bod-clean.vercel.app
 
 2. **Test critical paths:**
    - [ ] Site loads (no errors in console)
@@ -257,7 +257,7 @@ git push origin main
 - Supabase Dashboard: https://app.supabase.com/project/tgzqffemrymlyioguflb
 - Supabase SQL Editor: https://app.supabase.com/project/tgzqffemrymlyioguflb/sql/new
 - Vercel Dashboard: https://vercel.com/dashboard
-- Production Site: https://elite-ai-advisory-clean.vercel.app
+- Production Site: https://ai-bod-clean.vercel.app
 
 **Your Credentials:**
 - Supabase URL: https://tgzqffemrymlyioguflb.supabase.co

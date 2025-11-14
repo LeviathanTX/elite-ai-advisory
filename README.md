@@ -1,6 +1,6 @@
-# Elite AI Advisory
+# AI-BoD (AI Board of Directors)
 
-AI-powered business advisory platform providing intelligent analysis, recommendations, and business planning services.
+AI-powered business advisory platform providing intelligent analysis, recommendations, and business planning services through virtual board members.
 
 ## Features
 
@@ -70,7 +70,7 @@ npm test
 ## Project Structure
 
 ```
-elite-ai-advisory/
+ai-bod/
 ├── src/
 │   ├── components/    # React components
 │   ├── services/      # API services

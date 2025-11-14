@@ -1,4 +1,4 @@
-# Elite AI Advisory - Project Instructions
+# AI-BoD (AI Board of Directors) - Project Instructions
 
 ## Multi-Interface Development Model
 
@@ -48,7 +48,7 @@ Fix in this order to avoid cascade failures:
 ## Project-Specific Behavior
 
 ### File System
-- Working directory: `/Users/jeffl/projects/elite-ai-advisory/`
+- Working directory: `/Users/jeffl/projects/ai-bod/`
 - Never use `git add -A` from home directory
 - Avoid operations requiring sudo
 - Ask before workarounds if blocked
