@@ -242,13 +242,13 @@ export class AIServiceClient {
       url: apiUrl,
       isProduction,
       environment: process.env.NODE_ENV,
-      model: this.config.model || 'claude-3-5-sonnet-20240620',
+      model: this.config.model || 'claude-3-5-sonnet-20241022',
       messageCount: messages.length,
       hasSystemMessage: messages.some(m => m.role === 'system'),
     });
 
     const requestBody = {
-      model: this.config.model || 'claude-3-5-sonnet-20240620',
+      model: this.config.model || 'claude-3-5-sonnet-20241022',
       max_tokens: options?.maxTokens || 2000,
       temperature: options?.temperature || 0.7,
       messages: messages.filter(m => m.role !== 'system'),

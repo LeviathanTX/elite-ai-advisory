@@ -37,3 +37,7 @@ Thumbs.db
 
 # Claude AI
 .claude/
+
+# Claude context files (optional - remove if you want to commit them)
+CLAUDE.md
+.claude/

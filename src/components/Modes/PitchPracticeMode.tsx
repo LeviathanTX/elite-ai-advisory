@@ -73,7 +73,7 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
       id: 'claude' as const,
       name: 'Claude',
       apiKey: '', // Will use backend proxy
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'claude-3-5-sonnet-20241022',
     };
     advisorAIRef.current = createAdvisorAI(aiConfig);
 

@@ -1,15 +1,41 @@
-# Elite AI Advisory - Agent Instructions
+# Elite AI Advisory - Project Instructions
 
-## Core Philosophy
+## Multi-Interface Development Model
+
+This project uses our enhanced vibe coding architecture:
+
+### Interface Responsibilities
+
+**Claude Code (Browser):**
+- Document analysis and business strategy planning
+- Complex multi-file architectural refactoring
+- Business advisor AI logic and knowledge framework design
+- Reviewing uploaded business plans and financial documents
+
+**Claude Code (CLI):**
+- Rapid feature implementation
+- File operations and code generation
+- Git workflows and deployment
+- Testing and debugging
+- Database migrations
+
+**Claude GitHub App:**
+- PR reviews for code quality
+- Automated CI error fixes
+- Security vulnerability detection
+- Documentation updates
+
+### Core Philosophy
 **Never assume success without verification.** Build ≠ deploy ≠ functionality working.
 
 ## Quality Verification Protocol
-Before marking complete:
+Before marking any task complete:
 1. Run `npm run verify` (lint, type-check, test all pass)
-2. Deploy to production and wait for bundle hash to change
+2. Deploy to production and verify bundle hash changed
 3. Test live URL with actual user actions
-4. Check browser console for errors
-5. Report specific evidence (not "should work")
+4. Check browser console clean (no errors/warnings)
+5. Verify document processing works (upload test PDF)
+6. Report specific evidence (not "should work")
 
 ## Error Handling Priority
 Fix in this order to avoid cascade failures:
@@ -21,31 +47,48 @@ Fix in this order to avoid cascade failures:
 
 ## Project-Specific Behavior
 
-### File System Constraints
-- Stay within `/Users/jeffl/elite-ai-advisory/`
+### File System
+- Working directory: `/Users/jeffl/projects/elite-ai-advisory/`
 - Never use `git add -A` from home directory
-- Avoid operations requiring sudo/elevated permissions
+- Avoid operations requiring sudo
 - Ask before workarounds if blocked
 
-### Deployment Verification (Vercel)
-- Manual deployments may be needed (`vercel --prod --force`)
-- After push, verify Vercel actually deployed (check bundle filename changed)
-- Check deployment logs for errors
-- Test live site, not just local build
+### Deployment (Vercel)
+- Auto-deploy on push to main
+- PR preview deployments automatic
+- Manual: `vercel --prod --force` if needed
+- Verify deployment: check bundle hash changed
+- Test live URL before marking complete
+
+### Document Processing
+- PDF.js worker must be in public/
+- Test with actual file uploads
+- Verify Supabase storage working
+- Check OpenAI API responses
 
 ### API Testing
-- Test with actual HTTP requests (curl/fetch/test scripts)
-- Check response status AND body content
-- Verify API keys are valid and working
-- Don't assume environment variables are set correctly
+- Test with actual HTTP requests
+- Verify OpenAI API key valid
+- Check Supabase connection
+- Don't assume env vars set
 
 ## When Blocked
-1. Don't repeat failing approaches (e.g., npm cache permission issues)
+1. Don't repeat failing approaches
 2. Suggest concrete alternatives
-3. Ask for help with permissions/access
-4. Report what verified works, not what "should work"
+3. Ask for help with permissions
+4. Report verified results only
 
-## Tech Stack Context
-- React 19 + TypeScript + Zustand + TanStack Query
-- Supabase (backend) + OpenAI (AI capabilities)
-- Multi-format document processing (PDF, Word, Excel)
+## Tech Stack
+- **Frontend**: React 19 + TypeScript + Tailwind
+- **State**: Zustand + TanStack Query
+- **Backend**: Supabase (PostgreSQL + Storage + Auth)
+- **AI**: OpenAI API (GPT-4, embeddings)
+- **Documents**: PDF.js, Mammoth (Word), XLSX
+- **Deploy**: Vercel (main + PR previews)
+- **Monitoring**: Sentry
+
+## Project-Specific Agents
+- `document-processor` - PDF/Word/Excel analysis
+- `business-advisor` - AI business consulting logic
+- `deployment-verifier` - Production validation
+- See `.claude/agents/` directory

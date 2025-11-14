@@ -158,7 +158,7 @@ export const OptimizedAdvisoryConversation = memo(function OptimizedAdvisoryConv
               id: advisor.ai_service || 'claude',
               name: `${advisor.name} AI`,
               apiKey: '', // Handled securely by new architecture
-              model: 'claude-3-5-sonnet-20240620',
+              model: 'claude-3-5-sonnet-20241022',
             };
 
             const advisorAI = new AdvisorAI(aiConfig);

@@ -99,26 +99,43 @@ Production errors are tracked in [Sentry](https://sentry.io) with:
 
 ## Development Workflow
 
-1. **Create feature branch**
+### Multi-Interface Vibe Coding
+
+This project leverages our enhanced development architecture:
+
+**Three Development Interfaces:**
+- **Claude Code (Browser)**: Strategic planning, document review, architectural decisions
+- **Claude Code (CLI)**: Implementation, file operations, git workflows, testing
+- **Claude GitHub App**: Automated PR reviews, issue resolution, CI fixes
+
+**Workflow:**
+1. **Create feature branch** (via CLI or browser)
    ```bash
    git checkout -b feature/your-feature
    ```
 
-2. **Make changes and commit**
-   ```bash
-   git add .
-   git commit -m "feat: your feature description"
-   ```
+2. **Implement with Claude** (any interface)
+   - Browser: Complex architecture, refactoring multi-file systems
+   - CLI: Rapid implementation, debugging, file operations
+   - GitHub: Review and iterate on PRs with `@claude` mentions
 
-3. **Push and create PR**
+3. **Automated deployment**
    ```bash
    git push -u origin feature/your-feature
-   gh pr create
+   gh pr create  # Auto-generates preview deployment
    ```
 
-4. **Review preview deployment** (posted in PR comments)
+4. **Review & verify**
+   - Preview URL posted in PR comments
+   - Browser console clean (verified)
+   - Tests pass (automated CI)
+   - `@claude please review this PR` for code review
 
 5. **Merge to main** → Auto-deploys to production
+
+**Project-Specific Agents:**
+- See `.claude/agents/` for specialized subagents (document processing, business analysis, etc.)
+- Agents share knowledge base via `.claude/CLAUDE.md`
 
 ## Contributing
 

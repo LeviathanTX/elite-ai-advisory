@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS: AppSettings = {
       name: 'Claude (Anthropic)',
       apiKey: process.env.REACT_APP_CLAUDE_API_KEY || '',
       baseUrl: 'https://api.anthropic.com',
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'claude-3-5-sonnet-20241022',
     },
     gemini: {
       id: 'gemini',
