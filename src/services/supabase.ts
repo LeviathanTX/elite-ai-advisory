@@ -29,7 +29,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: !isDemoMode, // Disable auto-refresh in demo/bypass mode
     persistSession: !isDemoMode,    // Disable session persistence in demo/bypass mode
-    detectSessionInUrl: false,
+    detectSessionInUrl: true,       // Enable OAuth callback detection
   },
 });
 
