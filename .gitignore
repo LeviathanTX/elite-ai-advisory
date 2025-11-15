@@ -41,3 +41,4 @@ Thumbs.db
 # Claude context files (optional - remove if you want to commit them)
 CLAUDE.md
 .claude/
+supabase/.temp/

@@ -1,9 +1,6 @@
 -- Supabase Database Setup for Elite AI Advisory
 -- Run this in Supabase SQL Editor if tables don't exist
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create users table
 CREATE TABLE IF NOT EXISTS public.users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -33,7 +30,7 @@ CREATE POLICY "Users can insert own data" ON public.users
 
 -- Create custom_advisors table
 CREATE TABLE IF NOT EXISTS public.custom_advisors (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   title TEXT NOT NULL,
@@ -66,7 +63,7 @@ CREATE POLICY "Users can delete own advisors" ON public.custom_advisors
 
 -- Create conversations table
 CREATE TABLE IF NOT EXISTS public.conversations (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   advisor_id UUID NOT NULL,
   advisor_type TEXT NOT NULL CHECK (advisor_type IN ('celebrity', 'custom')),
@@ -91,7 +88,7 @@ CREATE POLICY "Users can update own conversations" ON public.conversations
 
 -- Create documents table
 CREATE TABLE IF NOT EXISTS public.documents (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   filename TEXT NOT NULL,
   file_type TEXT NOT NULL,
@@ -114,7 +111,7 @@ CREATE POLICY "Users can create own documents" ON public.documents
 
 -- Create usage_stats table
 CREATE TABLE IF NOT EXISTS public.usage_stats (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   ai_advisor_hours_used NUMERIC DEFAULT 0,
   document_analyses_used INTEGER DEFAULT 0,
