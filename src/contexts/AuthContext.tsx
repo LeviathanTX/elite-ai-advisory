@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, [bypassAuth]);
 
-  const fetchUserProfile = async (userId: string, retryCount = 0) => {
+  const fetchUserProfile = async (userId: string, retryCount = 0): Promise<void> => {
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 500; // ms
 
