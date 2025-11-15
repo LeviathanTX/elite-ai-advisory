@@ -114,7 +114,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching user profile for:', userId);
 
-      const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+      // Add timeout protection (5 seconds)
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Profile fetch timed out after 5 seconds')), 5000)
+      );
+
+      const profilePromise = supabase.from('users').select('*').eq('id', userId).single();
+
+      const { data, error } = (await Promise.race([
+        profilePromise,
+        timeoutPromise,
+      ])) as any;
 
       if (error) {
         // If user doesn't exist in our users table, create them
@@ -150,8 +160,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       console.log('✅ User profile loaded');
       setUser(data);
-    } catch (error) {
-      console.error('❌ Exception in fetchUserProfile:', error);
+    } catch (error: any) {
+      if (error?.message?.includes('timed out')) {
+        console.error('⚠️ Profile fetch timed out - database may not be configured');
+        console.error('   Please check: https://supabase.com/dashboard/project/*/editor');
+        console.error('   Ensure the users table exists with proper RLS policies');
+      } else {
+        console.error('❌ Exception in fetchUserProfile:', error);
+      }
     } finally {
       setLoading(false);
     }
