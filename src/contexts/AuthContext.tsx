@@ -110,16 +110,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, [bypassAuth]);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string, retryCount = 0) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 500; // ms
+
     try {
-      console.log('👤 Fetching user profile for:', userId);
+      console.log('👤 Fetching user profile for:', userId, retryCount > 0 ? `(retry ${retryCount})` : '');
 
       const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
       if (error) {
-        // If user doesn't exist in our users table, create them
+        // If user doesn't exist in our users table
         if (error.code === 'PGRST116') {
-          console.log('📝 User not found in database, creating new user profile...');
+          // Database trigger should have created the profile automatically
+          // If not found, might be a race condition - retry a few times
+          if (retryCount < MAX_RETRIES) {
+            console.log(`⏳ User profile not found yet, retrying in ${RETRY_DELAY}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            return fetchUserProfile(userId, retryCount + 1);
+          }
+
+          // If still not found after retries, try to create manually as fallback
+          console.log('📝 User not found after retries, creating profile manually...');
           const { data: authUser } = await supabase.auth.getUser();
           if (authUser.user) {
             const newUser: Partial<User> = {
@@ -136,22 +148,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
 
             if (!createError && createdUser) {
-              console.log('✅ New user profile created');
+              console.log('✅ User profile created manually');
               setUser(createdUser);
             } else {
-              console.error('❌ Failed to create user profile:', createError);
+              console.error('❌ Failed to create user profile:', createError?.message || createError);
+              // Log more details about the error
+              if (createError) {
+                console.error('Error details:', {
+                  code: createError.code,
+                  message: createError.message,
+                  details: createError.details,
+                  hint: createError.hint,
+                });
+              }
             }
           }
         } else {
-          console.error('❌ Error fetching user profile:', error);
+          console.error('❌ Error fetching user profile:', {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+          });
         }
         return; // Don't throw, just return
       }
 
-      console.log('✅ User profile loaded');
+      console.log('✅ User profile loaded successfully');
       setUser(data);
-    } catch (error) {
-      console.error('❌ Exception in fetchUserProfile:', error);
+    } catch (error: any) {
+      console.error('❌ Exception in fetchUserProfile:', {
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack,
+      });
     } finally {
       setLoading(false);
     }
