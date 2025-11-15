@@ -1,183 +1,146 @@
-# Supabase CLI
+# AI-BoD (AI Board of Directors)
 
-[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
-](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
+AI-powered business advisory platform providing intelligent analysis, recommendations, and business planning services through virtual board members.
 
-[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
+## Features
 
-This repository contains all the functionality for Supabase CLI.
+- **Document Processing**: Upload and analyze PDFs, Word documents, and Excel files
+- **AI-Powered Analysis**: Leverage OpenAI for intelligent business insights
+- **Business Plan Generation**: Automated advisory and planning services
+- **Multi-format Support**: Process various document types seamlessly
+- **Secure Authentication**: Supabase-powered user management
+- **Real-time Processing**: Fast document analysis and recommendations
 
-- [x] Running Supabase locally
-- [x] Managing database migrations
-- [x] Creating and deploying Supabase Functions
-- [x] Generating types directly from your database schema
-- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
+## Tech Stack
 
-## Getting started
+- **Frontend**: React 19 + TypeScript
+- **State Management**: Zustand
+- **Data Fetching**: TanStack Query
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase
+- **AI**: OpenAI API
+- **Deployment**: Vercel
+- **Error Tracking**: Sentry
+- **CI/CD**: GitHub Actions
 
-### Install the CLI
+## Getting Started
 
-Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
+### Prerequisites
 
-```bash
-npm i supabase --save-dev
-```
+- Node.js 16+
+- npm 10+
 
-To install the beta release channel:
-
-```bash
-npm i supabase@beta --save-dev
-```
-
-When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
-
-```
-NODE_OPTIONS=--no-experimental-fetch yarn add supabase
-```
-
-> **Note**
-For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
-
-<details>
-  <summary><b>macOS</b></summary>
-
-  Available via [Homebrew](https://brew.sh). To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To install the beta release channel:
-  
-  ```sh
-  brew install supabase/tap/supabase-beta
-  brew link --overwrite supabase-beta
-  ```
-  
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Windows</b></summary>
-
-  Available via [Scoop](https://scoop.sh). To install:
-
-  ```powershell
-  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
-  scoop install supabase
-  ```
-
-  To upgrade:
-
-  ```powershell
-  scoop update supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Linux</b></summary>
-
-  Available via [Homebrew](https://brew.sh) and Linux packages.
-
-  #### via Homebrew
-
-  To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-
-  #### via Linux packages
-
-  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
-
-  ```sh
-  sudo apk add --allow-untrusted <...>.apk
-  ```
-
-  ```sh
-  sudo dpkg -i <...>.deb
-  ```
-
-  ```sh
-  sudo rpm -i <...>.rpm
-  ```
-
-  ```sh
-  sudo pacman -U <...>.pkg.tar.zst
-  ```
-</details>
-
-<details>
-  <summary><b>Other Platforms</b></summary>
-
-  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
-
-  ```sh
-  go install github.com/supabase/cli@latest
-  ```
-
-  Add a symlink to the binary in `$PATH` for easier access:
-
-  ```sh
-  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
-  ```
-
-  This works on other non-standard Linux distros.
-</details>
-
-<details>
-  <summary><b>Community Maintained Packages</b></summary>
-
-  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
-  To install in your working directory:
-
-  ```bash
-  pkgx install supabase
-  ```
-
-  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
-</details>
-
-### Run the CLI
+### Installation
 
 ```bash
-supabase bootstrap
+npm install
 ```
 
-Or using npx:
+### Environment Variables
+
+Create a `.env.local` file:
 
 ```bash
-npx supabase bootstrap
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+REACT_APP_OPENAI_API_KEY=your_openai_key
+REACT_APP_SENTRY_DSN=your_sentry_dsn  # Optional: for error tracking
 ```
 
-The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+### Development
 
-## Docs
-
-Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
-
-## Breaking changes
-
-We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
-
-However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
-
-## Developing
-
-To run from source:
-
-```sh
-# Go >= 1.22
-go run . help
+```bash
+npm start
 ```
+
+Runs on [http://localhost:3000](http://localhost:3000)
+
+### Build
+
+```bash
+npm run build
+```
+
+### Testing
+
+```bash
+npm test
+```
+
+## Project Structure
+
+```
+ai-bod/
+├── src/
+│   ├── components/    # React components
+│   ├── services/      # API services
+│   ├── stores/        # Zustand stores
+│   ├── types/         # TypeScript types
+│   └── utils/         # Helper functions
+├── public/            # Static assets
+└── api/              # API endpoints
+```
+
+## Deployment
+
+**Production:** [https://elite-ai-advisory-clean.vercel.app](https://elite-ai-advisory-clean.vercel.app)
+
+### Automated Deployments
+- **Main branch** → Auto-deploys to production
+- **Pull Requests** → Auto-generates preview deployments
+- **GitHub Actions** → Runs tests, linting, and type-checking
+
+### Error Monitoring
+Production errors are tracked in [Sentry](https://sentry.io) with:
+- Real-time error alerts
+- Session replay for debugging
+- Performance monitoring
+- User context tracking
+
+## Development Workflow
+
+### Multi-Interface Vibe Coding
+
+This project leverages our enhanced development architecture:
+
+**Three Development Interfaces:**
+- **Claude Code (Browser)**: Strategic planning, document review, architectural decisions
+- **Claude Code (CLI)**: Implementation, file operations, git workflows, testing
+- **Claude GitHub App**: Automated PR reviews, issue resolution, CI fixes
+
+**Workflow:**
+1. **Create feature branch** (via CLI or browser)
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+2. **Implement with Claude** (any interface)
+   - Browser: Complex architecture, refactoring multi-file systems
+   - CLI: Rapid implementation, debugging, file operations
+   - GitHub: Review and iterate on PRs with `@claude` mentions
+
+3. **Automated deployment**
+   ```bash
+   git push -u origin feature/your-feature
+   gh pr create  # Auto-generates preview deployment
+   ```
+
+4. **Review & verify**
+   - Preview URL posted in PR comments
+   - Browser console clean (verified)
+   - Tests pass (automated CI)
+   - `@claude please review this PR` for code review
+
+5. **Merge to main** → Auto-deploys to production
+
+**Project-Specific Agents:**
+- See `.claude/agents/` for specialized subagents (document processing, business analysis, etc.)
+- Agents share knowledge base via `.claude/CLAUDE.md`
+
+## Contributing
+
+See [CLAUDE.md](./CLAUDE.md) for development guidelines and best practices.
+
+## License
+
+Private - All Rights Reserved
