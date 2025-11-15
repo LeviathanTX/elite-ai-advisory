@@ -64,20 +64,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    // Check active sessions and sets the user
-    getCurrentUser().then(({ user: currentUser }) => {
-      setSupabaseUser(currentUser);
-      if (currentUser) {
-        fetchUserProfile(currentUser.id);
-      } else {
-        setLoading(false);
+    console.log('🔐 Initializing authentication...');
+
+    // Check active sessions with timeout protection
+    const initAuth = async () => {
+      try {
+        const { user: currentUser, error } = await getCurrentUser();
+
+        if (error) {
+          console.error('❌ Auth initialization error:', error.message);
+          // If auth check fails, set loading to false so app can still load
+          setLoading(false);
+          return;
+        }
+
+        setSupabaseUser(currentUser);
+        if (currentUser) {
+          await fetchUserProfile(currentUser.id);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('❌ Auth initialization failed:', err);
+        setLoading(false); // Always set loading false to prevent infinite spinner
       }
-    });
+    };
+
+    initAuth();
 
     // Listen for changes on auth state
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth state changed:', event);
       setSupabaseUser(session?.user ?? null);
 
       if (session?.user) {
@@ -93,11 +112,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('👤 Fetching user profile for:', userId);
+
       const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
       if (error) {
         // If user doesn't exist in our users table, create them
         if (error.code === 'PGRST116') {
+          console.log('📝 User not found in database, creating new user profile...');
           const { data: authUser } = await supabase.auth.getUser();
           if (authUser.user) {
             const newUser: Partial<User> = {
@@ -114,16 +136,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
 
             if (!createError && createdUser) {
+              console.log('✅ New user profile created');
               setUser(createdUser);
+            } else {
+              console.error('❌ Failed to create user profile:', createError);
             }
           }
+        } else {
+          console.error('❌ Error fetching user profile:', error);
         }
-        throw error;
+        return; // Don't throw, just return
       }
 
+      console.log('✅ User profile loaded');
       setUser(data);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('❌ Exception in fetchUserProfile:', error);
     } finally {
       setLoading(false);
     }

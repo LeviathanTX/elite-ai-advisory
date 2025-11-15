@@ -148,27 +148,49 @@ export interface Database {
   };
 }
 
-// Test connectivity to Supabase
-export const testSupabaseConnectivity = async () => {
-  console.log('Testing basic Supabase connectivity...');
+// Test connectivity to Supabase with timeout
+export const testSupabaseConnectivity = async (timeoutMs: number = 3000) => {
+  console.log('🔌 Testing Supabase connectivity...');
+
+  if (isDemoMode) {
+    console.log('ℹ️ Demo mode - skipping connectivity test');
+    return true;
+  }
+
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     const response = await fetch(`${supabaseUrl}/rest/v1/`, {
       method: 'GET',
       headers: {
         apikey: supabaseAnonKey,
         Authorization: `Bearer ${supabaseAnonKey}`,
       },
+      signal: controller.signal,
     });
 
-    console.log('Supabase connectivity test:', {
+    clearTimeout(timeoutId);
+
+    const result = {
       status: response.status,
       statusText: response.statusText,
       ok: response.ok,
-    });
+    };
+
+    if (response.ok) {
+      console.log('✅ Supabase connectivity: OK', result);
+    } else {
+      console.warn('⚠️ Supabase connectivity: DEGRADED', result);
+    }
 
     return response.ok;
-  } catch (error) {
-    console.error('Supabase connectivity test failed:', error);
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('❌ Supabase connectivity: TIMEOUT (>3s)');
+    } else {
+      console.error('❌ Supabase connectivity: FAILED', error.message);
+    }
     return false;
   }
 };
@@ -389,9 +411,32 @@ export const getCurrentUser = async () => {
     return { user: null, error: null };
   }
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  return { user, error };
+  try {
+    console.log('🔍 Checking current user session...');
+
+    // Add timeout protection (5 seconds)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Auth check timed out after 5 seconds')), 5000)
+    );
+
+    const authPromise = supabase.auth.getUser();
+
+    const {
+      data: { user },
+      error,
+    } = await Promise.race([authPromise, timeoutPromise]) as any;
+
+    if (error) {
+      console.error('❌ Auth check error:', error.message);
+    } else if (user) {
+      console.log('✅ User session found:', user.email);
+    } else {
+      console.log('ℹ️ No active user session');
+    }
+
+    return { user, error };
+  } catch (err: any) {
+    console.error('❌ Auth check failed:', err.message);
+    return { user: null, error: { message: err.message } };
+  }
 };

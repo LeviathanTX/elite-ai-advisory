@@ -42,3 +42,5 @@ Thumbs.db
 CLAUDE.md
 .claude/
 supabase/.temp/
+.env.vercel.check
+.env.prod.test
