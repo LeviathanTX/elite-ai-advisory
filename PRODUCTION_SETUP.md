@@ -30,7 +30,7 @@
    https://vercel.com/dashboard
    ```
 
-2. **Select your project** (elite-ai-advisory or ai-bod)
+2. **Select your project:** **elite-ai-advisory-clean**
 
 3. **Go to Settings → Environment Variables**
 

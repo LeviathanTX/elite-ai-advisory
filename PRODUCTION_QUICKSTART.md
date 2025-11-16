@@ -26,7 +26,7 @@
 
 **Go to Vercel Dashboard:**
 1. https://vercel.com/dashboard
-2. Select your project (elite-ai-advisory or ai-bod)
+2. Select your project: **elite-ai-advisory-clean**
 3. Click **Settings** → **Environment Variables**
 
 **Add these 6 critical variables:**
