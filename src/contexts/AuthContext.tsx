@@ -58,9 +58,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   useEffect(() => {
-    // Skip auth initialization if bypass is enabled
-    if (bypassAuth) {
-      console.log('🔓 Auth bypass enabled - skipping Supabase initialization');
+    // Skip auth initialization if bypass is enabled OR if no Supabase configuration
+    const hasSupabaseConfig = appConfig.hasSupabase;
+
+    if (bypassAuth || !hasSupabaseConfig) {
+      console.log('🔓 Auth bypass enabled or no Supabase config - skipping initialization');
+      setLoading(false);
       return;
     }
 
@@ -69,7 +72,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check active sessions with timeout protection
     const initAuth = async () => {
       try {
-        const { user: currentUser, error } = await getCurrentUser();
+        // Add a timeout wrapper for the entire auth initialization
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth initialization timeout')), 8000)
+        );
+
+        const authPromise = getCurrentUser();
+
+        const { user: currentUser, error } = await Promise.race([
+          authPromise,
+          timeoutPromise
+        ]) as any;
 
         if (error) {
           console.error('❌ Auth initialization error:', error.message);
@@ -84,8 +97,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setLoading(false);
         }
-      } catch (err) {
-        console.error('❌ Auth initialization failed:', err);
+      } catch (err: any) {
+        console.error('❌ Auth initialization failed:', err?.message || err);
         setLoading(false); // Always set loading false to prevent infinite spinner
       }
     };
