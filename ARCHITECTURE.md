@@ -1,4 +1,4 @@
-# Elite AI Advisory - Architecture Documentation
+# Bearable AI Advisors - Architecture Documentation
 
 ## Technology Stack
 

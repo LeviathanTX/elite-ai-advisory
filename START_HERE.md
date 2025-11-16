@@ -1,6 +1,6 @@
 # 🎯 START HERE - Your 20-Minute Setup Guide
 
-**Welcome!** I've created everything you need to get Elite AI Advisory production-ready for Capital Factory test users.
+**Welcome!** I've created everything you need to get Bearable AI Advisors production-ready for Capital Factory test users.
 
 ---
 

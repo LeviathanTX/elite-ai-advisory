@@ -178,7 +178,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
   const steps = [
     {
       id: 'welcome',
-      title: 'Welcome to Elite AI Advisory!',
+      title: 'Welcome to Bearable AI Advisors!',
       subtitle: "Let's personalize your experience",
       component: <WelcomeStep onNext={() => setCurrentStep(1)} />,
     },
@@ -278,7 +278,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose,
                   <span className="text-xl">🚀</span>
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">Elite AI Advisory</h1>
+                  <h1 className="text-xl font-bold text-gray-900">Bearable AI Advisors</h1>
                   <p className="text-sm text-gray-500">
                     Step {currentStep + 1} of {steps.length}
                   </p>

@@ -46,7 +46,7 @@ const HELP_SECTIONS: HelpSection[] = [
     items: [
       {
         id: 'setup-account',
-        question: 'How do I set up my Elite AI Advisory account?',
+        question: 'How do I set up my Bearable AI Advisors account?',
         answer:
           "Getting started is easy! Sign up with your email and password, choose your subscription tier (Founder, Scale-Up, or Enterprise), and you'll have immediate access to our AI advisory board. In demo mode, you can explore all features without any setup.",
         tags: ['account', 'setup', 'subscription'],
@@ -69,7 +69,7 @@ const HELP_SECTIONS: HelpSection[] = [
         id: 'demo-mode',
         question: 'What is Demo Mode and how does it work?',
         answer:
-          'Demo Mode lets you explore the full Elite AI Advisory experience without requiring real API keys or payment. All features are simulated, conversations work with sample responses, and you can test document analysis with demo files.',
+          'Demo Mode lets you explore the full Bearable AI Advisors experience without requiring real API keys or payment. All features are simulated, conversations work with sample responses, and you can test document analysis with demo files.',
         tags: ['demo', 'testing', 'trial'],
       },
     ],
@@ -456,8 +456,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
                 Need more help? Contact our support team at{' '}
-                <a href="mailto:support@eliteai.com" className="text-blue-600 hover:underline">
-                  support@eliteai.com
+                <a href="mailto:support@bearableadvisors.com" className="text-blue-600 hover:underline">
+                  support@bearableadvisors.com
                 </a>
               </div>
               <div className="flex space-x-3">

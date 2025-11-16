@@ -96,7 +96,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
 
   // Load completed steps from localStorage
   React.useEffect(() => {
-    const saved = localStorage.getItem('elite-ai-quick-start-progress');
+    const saved = localStorage.getItem('bearable-quick-start-progress');
     if (saved) {
       try {
         const progress = JSON.parse(saved);
@@ -113,7 +113,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
       completedSteps: Array.from(completedSteps),
       lastUpdated: new Date().toISOString(),
     };
-    localStorage.setItem('elite-ai-quick-start-progress', JSON.stringify(progress));
+    localStorage.setItem('bearable-quick-start-progress', JSON.stringify(progress));
   }, [completedSteps]);
 
   const markStepComplete = (stepId: string) => {
@@ -122,7 +122,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
 
   const resetProgress = () => {
     setCompletedSteps(new Set());
-    localStorage.removeItem('elite-ai-quick-start-progress');
+    localStorage.removeItem('bearable-quick-start-progress');
   };
 
   const progressPercentage = (completedSteps.size / QUICK_START_STEPS.length) * 100;
@@ -342,7 +342,7 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Congratulations!</h3>
                 <p className="text-gray-600 mb-4">
                   You've completed the quick start guide and earned the Power User badge. You're now
-                  ready to get the most out of Elite AI Advisory!
+                  ready to get the most out of Bearable AI Advisors!
                 </p>
                 <button
                   onClick={onClose}

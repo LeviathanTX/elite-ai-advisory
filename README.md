@@ -1,4 +1,4 @@
-# AI-BoD (AI Board of Directors)
+# Bearable AI Advisors (AI-BoD)
 
 AI-powered business advisory platform providing intelligent analysis, recommendations, and business planning services through virtual board members.
 
@@ -84,6 +84,7 @@ ai-bod/
 ## Deployment
 
 **Production:** [https://elite-ai-advisory-clean.vercel.app](https://elite-ai-advisory-clean.vercel.app)
+**Brand Name:** Bearable AI Advisors
 
 ### Automated Deployments
 - **Main branch** → Auto-deploys to production

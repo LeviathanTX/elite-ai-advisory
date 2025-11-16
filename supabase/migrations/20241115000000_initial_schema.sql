@@ -1,4 +1,4 @@
--- Supabase Database Setup for Elite AI Advisory
+-- Supabase Database Setup for Bearable AI Advisors
 -- Run this in Supabase SQL Editor if tables don't exist
 
 -- Create users table
