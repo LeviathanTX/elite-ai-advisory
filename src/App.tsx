@@ -17,17 +17,32 @@ import { formatCurrency } from './utils';
 // Create a client
 const queryClient = new QueryClient();
 
-function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
+function LandingPage({
+  onGetStarted,
+  onLogin
+}: {
+  onGetStarted: () => void;
+  onLogin: (email?: string, password?: string) => void;
+}) {
   const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
   const [showTermsOfService, setShowTermsOfService] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center relative">
       {isDemoMode && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 text-sm font-medium z-50">
           🚀 DEMO MODE - Try the full experience! Sign up with any email/password.
         </div>
       )}
+
+      {/* Top Right Login Button */}
+      <button
+        onClick={() => onLogin()}
+        className="absolute top-6 right-6 bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
+      >
+        Login
+      </button>
+
       <div className="max-w-4xl mx-auto px-6 text-center">
         {/* Hero Section */}
         <div className="mb-12">
@@ -82,25 +97,6 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Quick Consultation</h3>
             <p className="text-sm text-gray-600">Instant expert advice for immediate decisions</p>
-          </div>
-        </div>
-
-        {/* Celebrity Advisors */}
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Celebrity Advisory Board</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {[
-              'Jeff',
-              'Gordon Daugherty',
-              'Mark Cuban',
-              'Reid Hoffman',
-              'Jason Calacanis',
-              'Barbara Corcoran',
-            ].map(name => (
-              <div key={name} className="bg-gray-50 rounded-lg px-4 py-2">
-                <span className="font-medium text-gray-700">{name}</span>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -173,6 +169,12 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
               Pre-loaded with sample data • Full founder-tier access
             </p>
           </div>
+          <button
+            onClick={() => onLogin('founder@demo.com', 'demo123')}
+            className="mt-4 w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Try It Now →
+          </button>
         </div>
 
         {/* CTA Section */}
@@ -186,15 +188,18 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
           <div className="space-x-4">
             <button
               onClick={() => {
-                console.log('Start Free Trial clicked');
+                console.log('Start Free Trial clicked - 7 days free');
                 onGetStarted();
               }}
               className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
-              Start Free Trial
+              Start 7-Day Free Trial
             </button>
-            <button className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-              Watch Demo
+            <button
+              onClick={() => onLogin()}
+              className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+            >
+              Login
             </button>
           </div>
         </div>
@@ -315,6 +320,8 @@ function AuthenticatedApp() {
 function AppContent() {
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [prefilledEmail, setPrefilledEmail] = useState<string | undefined>();
+  const [prefilledPassword, setPrefilledPassword] = useState<string | undefined>();
 
   console.log('AppContent render:', { user, showAuthModal });
 
@@ -325,20 +332,34 @@ function AppContent() {
     return <AuthenticatedApp />;
   }
 
+  const handleLogin = (email?: string, password?: string) => {
+    console.log('Opening login modal', { email, hasPassword: !!password });
+    setPrefilledEmail(email);
+    setPrefilledPassword(password);
+    setShowAuthModal(true);
+  };
+
   return (
     <>
       <LandingPage
         onGetStarted={() => {
-          console.log('Setting showAuthModal to true');
+          console.log('Setting showAuthModal to true for signup');
+          setPrefilledEmail(undefined);
+          setPrefilledPassword(undefined);
           setShowAuthModal(true);
         }}
+        onLogin={handleLogin}
       />
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => {
           console.log('Closing auth modal');
           setShowAuthModal(false);
+          setPrefilledEmail(undefined);
+          setPrefilledPassword(undefined);
         }}
+        initialEmail={prefilledEmail}
+        initialPassword={prefilledPassword}
       />
     </>
   );

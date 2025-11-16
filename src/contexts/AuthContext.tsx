@@ -126,7 +126,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               id: authUser.user.id,
               email: authUser.user.email!,
               full_name: authUser.user.user_metadata?.full_name,
-              subscription_tier: 'founder', // Default tier
+              subscription_tier: 'founder', // Default tier - 7-day free trial
+              // TODO: Add trial_end_date field to track trial expiration
+              // trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
             };
 
             const { data: createdUser, error: createError } = await supabase

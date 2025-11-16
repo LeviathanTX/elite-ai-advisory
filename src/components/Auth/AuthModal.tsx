@@ -5,18 +5,31 @@ import { cn } from '../../utils';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialEmail?: string;
+  initialPassword?: string;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  console.log('AuthModal render:', { isOpen });
+export const AuthModal: React.FC<AuthModalProps> = ({
+  isOpen,
+  onClose,
+  initialEmail,
+  initialPassword
+}) => {
+  console.log('AuthModal render:', { isOpen, initialEmail, hasInitialPassword: !!initialPassword });
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(initialEmail || '');
+  const [password, setPassword] = useState(initialPassword || '');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const { signIn, signUp } = useAuth();
+
+  // Update email and password when initialEmail/initialPassword change
+  React.useEffect(() => {
+    if (initialEmail) setEmail(initialEmail);
+    if (initialPassword) setPassword(initialPassword);
+  }, [initialEmail, initialPassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
