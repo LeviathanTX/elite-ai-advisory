@@ -152,6 +152,29 @@ function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
           </div>
         </div>
 
+        {/* Demo Account Info */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+          <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+            <span className="mr-2">🎯</span>
+            Try Our Demo Account
+          </h3>
+          <div className="bg-white rounded-lg p-4 border border-blue-100">
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600 font-medium">Email:</span>
+                <code className="bg-gray-100 px-3 py-1 rounded text-blue-600">founder@demo.com</code>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600 font-medium">Password:</span>
+                <code className="bg-gray-100 px-3 py-1 rounded text-blue-600">demo123</code>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              Pre-loaded with sample data • Full founder-tier access
+            </p>
+          </div>
+        </div>
+
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
           <h2 className="text-2xl font-bold mb-4">

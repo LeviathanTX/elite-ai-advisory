@@ -1,6 +1,6 @@
-# Elite AI Advisory Help & FAQ System
+# Bearable AI Advisors Help & FAQ System
 
-A comprehensive help and support system designed to guide users through the Elite AI Advisory platform with interactive tutorials, contextual help, and structured FAQ content.
+A comprehensive help and support system designed to guide users through the Bearable AI Advisors platform with interactive tutorials, contextual help, and structured FAQ content.
 
 ## 🏗️ System Architecture
 
@@ -154,9 +154,9 @@ interface HelpContextType {
 ### Data Persistence
 
 - **LocalStorage Keys**:
-  - `elite-ai-help-state`: Core help system state
-  - `elite-ai-onboarding-preferences`: User onboarding choices
-  - `elite-ai-quick-start-progress`: Quick start completion status
+  - `bearable-help-state`: Core help system state
+  - `bearable-onboarding-preferences`: User onboarding choices
+  - `bearable-quick-start-progress`: Quick start completion status
 
 ### Styling & UI
 
@@ -285,4 +285,4 @@ function YourComponent() {
 - Help system engagement
 - Preference analysis
 
-This comprehensive help system provides a professional, user-friendly experience that guides users through the Elite AI Advisory platform while maintaining flexibility for future enhancements and customizations.
+This comprehensive help system provides a professional, user-friendly experience that guides users through the Bearable AI Advisors platform while maintaining flexibility for future enhancements and customizations.

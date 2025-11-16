@@ -461,11 +461,14 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                 </a>
               </div>
               <div className="flex space-x-3">
-                <button className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200">
+                <button
+                  onClick={() => {
+                    onClose();
+                    // Demo tour will be triggered from Dashboard
+                  }}
+                  className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200"
+                >
                   Start Demo Tour
-                </button>
-                <button className="px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg">
-                  View Video Tutorials
                 </button>
               </div>
             </div>

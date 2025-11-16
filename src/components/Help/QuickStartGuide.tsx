@@ -222,16 +222,6 @@ export const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                 <div className="text-sm text-gray-500">Talk to an AI advisor now</div>
               </div>
             </button>
-            <button
-              onClick={() => window.open('https://example.com/video-tutorials', '_blank')}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left flex items-center space-x-3"
-            >
-              <Play className="w-8 h-8 text-purple-600" />
-              <div>
-                <div className="font-medium text-gray-900">Video Tutorials</div>
-                <div className="text-sm text-gray-500">Watch step-by-step guides</div>
-              </div>
-            </button>
           </div>
         </div>
 
