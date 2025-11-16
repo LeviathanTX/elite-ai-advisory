@@ -16,7 +16,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialPassword
 }) => {
   console.log('AuthModal render:', { isOpen, initialEmail, hasInitialPassword: !!initialPassword });
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+
+  // Set initial mode based on whether we have pre-filled credentials
+  const [mode, setMode] = useState<'signin' | 'signup'>(initialEmail ? 'signin' : 'signup');
   const [email, setEmail] = useState(initialEmail || '');
   const [password, setPassword] = useState(initialPassword || '');
   const [fullName, setFullName] = useState('');
@@ -27,6 +29,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   // Update email and password when initialEmail/initialPassword change
   React.useEffect(() => {
+    console.log('AuthModal useEffect - updating credentials:', { initialEmail, initialPassword: !!initialPassword });
     if (initialEmail) {
       setEmail(initialEmail);
       setMode('signin'); // Switch to signin mode when credentials are pre-filled
@@ -100,6 +103,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ? 'Welcome back to Bearable Advisors'
               : 'Join thousands of entrepreneurs using AI advisory'}
           </p>
+          {initialEmail && initialPassword && (
+            <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                ✨ Demo credentials loaded - click Sign In below
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
