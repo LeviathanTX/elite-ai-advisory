@@ -24,8 +24,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [storageBlocked, setStorageBlocked] = useState(false);
 
   const { signIn, signUp } = useAuth();
+
+  // Check if localStorage is available
+  React.useEffect(() => {
+    try {
+      const test = '__storage_test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      setStorageBlocked(false);
+    } catch (e) {
+      setStorageBlocked(true);
+    }
+  }, []);
 
   // Update email and password when initialEmail/initialPassword change
   React.useEffect(() => {
@@ -107,6 +120,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
                 ✨ Demo credentials loaded - click Sign In below
+              </p>
+            </div>
+          )}
+          {storageBlocked && (
+            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
+              <p className="text-sm text-yellow-900 font-semibold mb-1">
+                ⚠️ Browser Storage Blocked
+              </p>
+              <p className="text-xs text-yellow-800">
+                Your browser settings are blocking localStorage. Login will work, but you'll need to sign in each time you visit.
+                Try disabling privacy extensions or use a different browser for persistent sessions.
               </p>
             </div>
           )}

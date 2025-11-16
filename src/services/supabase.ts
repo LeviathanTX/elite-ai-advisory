@@ -7,6 +7,21 @@ const supabaseAnonKey = (process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJ
 // Demo mode flag - check for both missing URL and bypass auth
 const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
 
+// Detect if browser storage is available
+function isStorageAvailable(): boolean {
+  try {
+    const test = '__storage_test__';
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch (e) {
+    console.warn('⚠️ localStorage is blocked or unavailable:', e);
+    return false;
+  }
+}
+
+const storageAvailable = isStorageAvailable();
+
 // Debug logging with more details
 console.log('🔧 Supabase initialization:', {
   url: supabaseUrl,
@@ -16,6 +31,7 @@ console.log('🔧 Supabase initialization:', {
   keySource: process.env.REACT_APP_SUPABASE_ANON_KEY ? 'env var' : 'fallback',
   isDemoMode,
   envVarPresent: !!process.env.REACT_APP_SUPABASE_URL,
+  storageAvailable,
 });
 
 // Alert if using fallback values
@@ -25,11 +41,35 @@ if (isDemoMode) {
   console.log('✅ Production mode - Using real Supabase at:', supabaseUrl);
 }
 
+// If storage is blocked, warn the user
+if (!storageAvailable && !isDemoMode) {
+  console.error(`
+    ❌ Browser storage is blocked!
+
+    This browser has localStorage disabled or blocked. This may be due to:
+    - Private/Incognito browsing mode
+    - Browser privacy settings (e.g., Safari's "Prevent cross-site tracking")
+    - Browser extensions (ad blockers, privacy tools)
+    - Corporate firewall or security policies
+
+    Authentication will work but sessions won't persist between page refreshes.
+    You'll need to log in each time you visit the site.
+
+    To fix: Enable localStorage in your browser settings or use a different browser.
+  `);
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: !isDemoMode, // Disable auto-refresh in demo/bypass mode
-    persistSession: !isDemoMode,    // Disable session persistence in demo/bypass mode
+    autoRefreshToken: !isDemoMode && storageAvailable,
+    persistSession: !isDemoMode && storageAvailable,
     detectSessionInUrl: false,
+    storage: storageAvailable ? undefined : {
+      // Memory-only storage fallback for when localStorage is blocked
+      getItem: (key: string) => null,
+      setItem: (key: string, value: string) => {},
+      removeItem: (key: string) => {},
+    },
   },
 });
 
