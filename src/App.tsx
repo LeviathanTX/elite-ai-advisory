@@ -129,7 +129,6 @@ function LandingPage({
               <li>• 50 AI advisor hours</li>
               <li>• Unlimited pitch practice</li>
               <li>• Custom advisor creation</li>
-              <li>• External data integration</li>
             </ul>
           </div>
 
@@ -142,8 +141,7 @@ function LandingPage({
             <ul className="text-sm text-gray-600 space-y-2">
               <li>• 150 AI advisor hours</li>
               <li>• Unlimited everything</li>
-              <li>• API access</li>
-              <li>• White-label options</li>
+              <li>• Ask about White-label options</li>
             </ul>
           </div>
         </div>

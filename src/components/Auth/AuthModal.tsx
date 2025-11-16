@@ -27,8 +27,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   // Update email and password when initialEmail/initialPassword change
   React.useEffect(() => {
-    if (initialEmail) setEmail(initialEmail);
-    if (initialPassword) setPassword(initialPassword);
+    if (initialEmail) {
+      setEmail(initialEmail);
+      setMode('signin'); // Switch to signin mode when credentials are pre-filled
+    }
+    if (initialPassword) {
+      setPassword(initialPassword);
+    }
   }, [initialEmail, initialPassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
