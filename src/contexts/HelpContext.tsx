@@ -97,7 +97,7 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
 
     // Save preferences if provided
     if (preferences) {
-      localStorage.setItem('elite-ai-onboarding-preferences', JSON.stringify(preferences));
+      localStorage.setItem('bearable-onboarding-preferences', JSON.stringify(preferences));
     }
 
     // Optionally show demo tour after onboarding
@@ -120,8 +120,8 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
     setShowHelpModalState(false);
     setShowOnboardingState(false);
     setShowDemoTourState(false);
-    localStorage.removeItem('elite-ai-help-state');
-    localStorage.removeItem('elite-ai-onboarding-preferences');
+    localStorage.removeItem('bearable-help-state');
+    localStorage.removeItem('bearable-onboarding-preferences');
   };
 
   const value: HelpContextType = {
