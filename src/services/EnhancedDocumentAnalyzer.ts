@@ -481,12 +481,12 @@ export const initializeEnhancedAnalyzer = async (
 ): Promise<EnhancedDocumentAnalyzer> => {
   // Use environment variables if not provided
   const config: EnhancedDocumentAnalyzerConfig = {
-    supabaseUrl: supabaseUrl || import.meta.env.VITE_SUPABASE_URL || '',
-    supabaseKey: supabaseKey || import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-    openaiApiKey: openaiApiKey || import.meta.env.VITE_OPENAI_API_KEY || '',
+    supabaseUrl: supabaseUrl || process.env.REACT_APP_SUPABASE_URL || '',
+    supabaseKey: supabaseKey || process.env.REACT_APP_SUPABASE_ANON_KEY || '',
+    openaiApiKey: openaiApiKey || process.env.REACT_APP_OPENAI_API_KEY || '',
     aiServiceConfig: {
       provider: 'openai',
-      apiKey: openaiApiKey || import.meta.env.VITE_OPENAI_API_KEY || '',
+      apiKey: openaiApiKey || process.env.REACT_APP_OPENAI_API_KEY || '',
       model: 'gpt-4',
       backendUrl: '/api/generate',
     },

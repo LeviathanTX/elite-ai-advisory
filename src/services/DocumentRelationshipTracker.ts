@@ -282,10 +282,12 @@ Preview: ${doc2.content_text.substring(0, 500)}
       if (error) throw error;
 
       // Get relationship types
-      const { data: relationships } = await supabase
+      const { data: relationshipsData } = await supabase
         .from('document_relationships')
         .select('*')
         .or(`source_document_id.eq.${rootDocumentId},target_document_id.eq.${rootDocumentId}`);
+
+      const relationships = relationshipsData ?? [];
 
       // Build network structure
       const network: DocumentNetwork = {
