@@ -59,7 +59,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     // Load settings from localStorage
-    const savedSettings = localStorage.getItem('elite-ai-advisory-settings');
+    const savedSettings = localStorage.getItem('bearable-settings');
     if (savedSettings) {
       try {
         const parsedSettings = JSON.parse(savedSettings);
@@ -73,7 +73,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const saveSettings = (newSettings: AppSettings) => {
     setSettings(newSettings);
-    localStorage.setItem('elite-ai-advisory-settings', JSON.stringify(newSettings));
+    localStorage.setItem('bearable-settings', JSON.stringify(newSettings));
   };
 
   const updateSettings = (newSettings: AppSettings) => {
@@ -127,9 +127,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return settings.aiServices[serviceId];
   };
 
-  const isConfigured =
+  // Check if AI is configured:
+  // - User has entered their own API keys, OR
+  // - We're in production (platform keys available on backend)
+  const hasUserKeys =
     Object.keys(settings.aiServices).length > 0 &&
     Object.values(settings.aiServices).some(service => service.apiKey.trim().length > 0);
+
+  // Assume platform keys are configured in production
+  const hasPlatformKeys = process.env.NODE_ENV === 'production' ||
+    process.env.REACT_APP_USE_PLATFORM_KEYS === 'true';
+
+  const isConfigured = hasUserKeys || hasPlatformKeys;
 
   return (
     <SettingsContext.Provider

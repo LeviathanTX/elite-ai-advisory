@@ -181,7 +181,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
               >
                 Settings
               </button>
-              <button onClick={signOut} className="text-gray-500 hover:text-gray-700">
+              <button
+                onClick={() => signOut()}
+                className="text-gray-500 hover:text-gray-700"
+              >
                 Sign Out
               </button>
             </div>

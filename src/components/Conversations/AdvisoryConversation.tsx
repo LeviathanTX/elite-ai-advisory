@@ -978,12 +978,18 @@ The committee unanimously recommends proceeding with measured optimism while sys
   };
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className={cn("h-screen flex bg-gray-50", !isConfigured && "pt-10")}>
       {/* Development Mode Banner */}
       {!isConfigured && (
         <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium z-50">
-          🔧 DEVELOPMENT MODE - Using simulated AI responses. Configure API keys in Settings for
-          real AI integration.
+          🔧 DEVELOPMENT MODE - Using simulated AI responses.{' '}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="underline hover:text-orange-100 font-semibold"
+          >
+            Configure API keys in Settings
+          </button>{' '}
+          for real AI integration.
         </div>
       )}
 

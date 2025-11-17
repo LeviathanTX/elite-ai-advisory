@@ -7,6 +7,7 @@ export default async function handler(req, res) {
     'https://elite-ai-advisory-clean.vercel.app',
     'https://bearable-ai-advisors.vercel.app',
     'https://elite-ai-advisory.vercel.app',
+    'https://ai-bod.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001'
   ];

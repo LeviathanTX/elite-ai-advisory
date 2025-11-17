@@ -348,7 +348,7 @@ export const useConversationStore = create<ConversationState & ConversationActio
           },
         }),
         {
-          name: 'elite-ai-conversations',
+          name: 'bearable-conversations',
           partialize: state => ({
             conversations: Array.from(state.conversations.entries()),
             globalSettings: state.globalSettings,
