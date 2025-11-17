@@ -22,7 +22,7 @@ interface TourStep {
 const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to Elite AI Advisory',
+    title: 'Welcome to Bearable Advisors',
     description: 'Your AI-powered strategic advisory board platform',
     position: 'center',
     action: 'none',
@@ -31,7 +31,7 @@ const TOUR_STEPS: TourStep[] = [
         <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl">🚀</span>
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to Elite AI Advisory!</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to Bearable Advisors!</h3>
         <p className="text-gray-600 mb-6">
           Let's take a quick tour of your new AI-powered advisory board. You'll learn how to:
         </p>

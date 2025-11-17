@@ -51,7 +51,7 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
 
   // Load help state from localStorage on mount
   useEffect(() => {
-    const savedState = localStorage.getItem('elite-ai-help-state');
+    const savedState = localStorage.getItem('bearable-help-state');
     if (savedState) {
       try {
         const state = JSON.parse(savedState);
@@ -63,11 +63,8 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
       }
     }
 
-    // Show onboarding for first-time users
-    const shouldShowOnboarding = localStorage.getItem('elite-ai-help-state') === null;
-    if (shouldShowOnboarding) {
-      setShowOnboardingState(true);
-    }
+    // Onboarding is now optional - users go directly to dashboard
+    // Users can manually access help via the help button if needed
   }, []);
 
   // Save help state to localStorage whenever it changes
@@ -77,7 +74,7 @@ export const HelpProvider: React.FC<HelpProviderProps> = ({ children }) => {
       hasCompletedOnboarding,
       hasSeenDemoTour,
     };
-    localStorage.setItem('elite-ai-help-state', JSON.stringify(state));
+    localStorage.setItem('bearable-help-state', JSON.stringify(state));
   }, [isFirstVisit, hasCompletedOnboarding, hasSeenDemoTour]);
 
   const setShowHelpModal = (show: boolean, section: string = 'getting-started') => {

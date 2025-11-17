@@ -1,4 +1,4 @@
-// Core Types for Elite AI Advisory Platform
+// Core Types for Bearable Advisors Platform
 
 export interface User {
   id: string;
