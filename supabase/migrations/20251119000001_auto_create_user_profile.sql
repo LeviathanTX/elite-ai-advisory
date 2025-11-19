@@ -14,7 +14,8 @@ BEGIN
   -- Calculate trial end date (7 days from now)
   trial_end_date := NOW() + INTERVAL '7 days';
 
-  -- Insert new user profile
+  -- Insert new user profile (only insert if doesn't exist)
+  -- This prevents duplicate key errors on email if the profile already exists
   INSERT INTO public.users (
     id,
     email,
@@ -41,6 +42,17 @@ BEGIN
     updated_at = NOW();
 
   RETURN NEW;
+EXCEPTION
+  WHEN unique_violation THEN
+    -- If there's a unique constraint violation (e.g., on email),
+    -- just return NEW and let the auth signup succeed
+    -- The user will still be created in auth.users
+    RAISE NOTICE 'User profile already exists for email: %', NEW.email;
+    RETURN NEW;
+  WHEN OTHERS THEN
+    -- Log other errors but don't prevent auth user creation
+    RAISE NOTICE 'Error creating user profile: %', SQLERRM;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

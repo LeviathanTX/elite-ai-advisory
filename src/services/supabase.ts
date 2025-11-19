@@ -441,6 +441,25 @@ export const signUp = async (email: string, password: string, fullName?: string)
 
     if (error) {
       console.error('Signup error details:', error);
+
+      // Provide user-friendly error messages
+      if (error.code === '23505' || error.message?.includes('duplicate key')) {
+        return {
+          data: null,
+          error: {
+            message: 'This email is already registered. Please sign in instead or use a different email.'
+          }
+        };
+      }
+
+      if (error.message?.includes('already registered')) {
+        return {
+          data: null,
+          error: {
+            message: 'This email is already registered. Please sign in instead.'
+          }
+        };
+      }
     }
 
     return { data, error };
