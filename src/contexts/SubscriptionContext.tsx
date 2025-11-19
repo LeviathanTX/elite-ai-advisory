@@ -43,6 +43,11 @@ interface SubscriptionContextType {
   pricing: typeof SUBSCRIPTION_PRICING;
   loading: boolean;
 
+  // Trial management
+  isTrialActive: boolean;
+  trialDaysRemaining: number;
+  trialEndDate: Date | null;
+
   // Usage tracking
   incrementUsage: (type: keyof UsageStats, amount?: number) => Promise<boolean>;
   resetUsage: () => Promise<boolean>;
@@ -81,6 +86,18 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const currentTier = user?.subscription_tier || 'founder';
   const limits = SUBSCRIPTION_LIMITS[currentTier];
+
+  // Calculate trial status
+  const isTrialActive = user?.is_trial_active ?? false;
+  const trialEndDate = user?.trial_end_date ? new Date(user.trial_end_date) : null;
+
+  const trialDaysRemaining = React.useMemo(() => {
+    if (!trialEndDate) return 0;
+    const now = new Date();
+    const diffMs = trialEndDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  }, [trialEndDate]);
 
   useEffect(() => {
     if (user) {
@@ -260,6 +277,9 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     usage,
     pricing: SUBSCRIPTION_PRICING,
     loading,
+    isTrialActive,
+    trialDaysRemaining,
+    trialEndDate,
     incrementUsage,
     resetUsage,
     canUseFeature,

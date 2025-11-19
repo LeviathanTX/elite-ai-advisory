@@ -7,13 +7,15 @@ interface AuthModalProps {
   onClose: () => void;
   initialEmail?: string;
   initialPassword?: string;
+  onForgotPassword?: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   initialEmail,
-  initialPassword
+  initialPassword,
+  onForgotPassword,
 }) => {
   console.log('AuthModal render:', { isOpen, initialEmail, hasInitialPassword: !!initialPassword });
 
@@ -25,6 +27,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [storageBlocked, setStorageBlocked] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [signupEmail, setSignupEmail] = useState('');
 
   const { signIn, signUp } = useAuth();
 
@@ -68,8 +72,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (result.error) {
         setError(result.error.message);
       } else {
-        onClose();
-        resetForm();
+        if (mode === 'signup') {
+          // Show verification message for signup
+          setSignupSuccess(true);
+          setSignupEmail(email);
+        } else {
+          // Close modal immediately for sign-in
+          onClose();
+          resetForm();
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -83,6 +94,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setPassword('');
     setFullName('');
     setError('');
+    setSignupSuccess(false);
+    setSignupEmail('');
   };
 
   const switchMode = () => {
@@ -107,15 +120,47 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }}
     >
       <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 relative">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {mode === 'signin' ? 'Sign In' : 'Create Account'}
-          </h2>
-          <p className="text-gray-600">
-            {mode === 'signin'
-              ? 'Welcome back to Bearable Advisors'
-              : 'Join thousands of entrepreneurs using AI advisory'}
-          </p>
+        {signupSuccess ? (
+          // Success screen after signup
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">✅</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Check Your Email!</h2>
+            <p className="text-gray-600 mb-4">
+              We've sent a verification email to <strong>{signupEmail}</strong>
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+              <p className="text-sm text-blue-900 mb-2">
+                <strong>Next steps:</strong>
+              </p>
+              <ol className="text-sm text-blue-800 list-decimal list-inside space-y-1">
+                <li>Check your inbox (and spam folder)</li>
+                <li>Click the verification link in the email</li>
+                <li>Return here to sign in</li>
+              </ol>
+            </div>
+            <button
+              onClick={() => {
+                onClose();
+                resetForm();
+              }}
+              className="w-full py-3 px-4 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+            >
+              Got It!
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {mode === 'signin' ? 'Sign In' : 'Create Account'}
+              </h2>
+              <p className="text-gray-600">
+                {mode === 'signin'
+                  ? 'Welcome back to Bearable Advisors'
+                  : 'Join thousands of entrepreneurs using AI advisory'}
+              </p>
           {initialEmail && initialPassword && (
             <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
@@ -168,9 +213,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              {mode === 'signin' && onForgotPassword && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onForgotPassword();
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
+              )}
+            </div>
             <input
               type="password"
               id="password"
@@ -215,6 +274,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </button>
           </p>
         </div>
+        </>
+        )}
 
         <button
           onClick={onClose}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AdvisorProvider } from './contexts/AdvisorContext';
@@ -6,6 +6,8 @@ import { SubscriptionProvider } from './contexts/SubscriptionContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { HelpProvider } from './contexts/HelpContext';
 import { AuthModal } from './components/Auth/AuthModal';
+import { PasswordResetModal } from './components/Auth/PasswordResetModal';
+import { PasswordResetConfirmation } from './components/Auth/PasswordResetConfirmation';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { PitchPracticeMode } from './components/Modes/PitchPracticeMode';
 import { ConversationManager } from './components/Conversations/ConversationManager';
@@ -318,13 +320,42 @@ function AuthenticatedApp() {
 function AppContent() {
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
   const [prefilledEmail, setPrefilledEmail] = useState<string | undefined>();
   const [prefilledPassword, setPrefilledPassword] = useState<string | undefined>();
 
   console.log('AppContent render:', { user, showAuthModal });
 
+  // Check if we're on the password reset page
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('type=recovery')) {
+      setIsPasswordReset(true);
+    }
+  }, []);
+
   // DEVELOPMENT MODE: Bypass authentication
   const isDevelopmentMode = false; // Disabled to test real authentication
+
+  // Show password reset page if that's what the user is doing
+  if (isPasswordReset) {
+    return (
+      <PasswordResetConfirmation
+        onSuccess={() => {
+          setIsPasswordReset(false);
+          setShowAuthModal(true);
+          // Clear the hash from URL
+          window.history.replaceState(null, '', window.location.pathname);
+        }}
+        onCancel={() => {
+          setIsPasswordReset(false);
+          // Clear the hash from URL
+          window.history.replaceState(null, '', window.location.pathname);
+        }}
+      />
+    );
+  }
 
   if (user || isDevelopmentMode) {
     return <AuthenticatedApp />;
@@ -358,6 +389,13 @@ function AppContent() {
         }}
         initialEmail={prefilledEmail}
         initialPassword={prefilledPassword}
+        onForgotPassword={() => {
+          setShowPasswordResetModal(true);
+        }}
+      />
+      <PasswordResetModal
+        isOpen={showPasswordResetModal}
+        onClose={() => setShowPasswordResetModal(false)}
       />
     </>
   );

@@ -84,6 +84,10 @@ export interface Database {
           full_name: string | null;
           avatar_url: string | null;
           subscription_tier: 'founder' | 'scale-up' | 'enterprise';
+          trial_start_date: string | null;
+          trial_end_date: string | null;
+          is_trial_active: boolean | null;
+          email_verified: boolean | null;
           created_at: string;
           updated_at: string;
         };
@@ -93,6 +97,10 @@ export interface Database {
           full_name?: string | null;
           avatar_url?: string | null;
           subscription_tier?: 'founder' | 'scale-up' | 'enterprise';
+          trial_start_date?: string | null;
+          trial_end_date?: string | null;
+          is_trial_active?: boolean | null;
+          email_verified?: boolean | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -102,6 +110,10 @@ export interface Database {
           full_name?: string | null;
           avatar_url?: string | null;
           subscription_tier?: 'founder' | 'scale-up' | 'enterprise';
+          trial_start_date?: string | null;
+          trial_end_date?: string | null;
+          is_trial_active?: boolean | null;
+          email_verified?: boolean | null;
           updated_at?: string;
         };
       };
@@ -421,10 +433,15 @@ export const signUp = async (email: string, password: string, fullName?: string)
       data: !!data,
       error: !!error,
       errorMessage: error?.message,
+      errorDetails: error,
       duration: `${duration}ms`,
       hasUser: !!data?.user,
       hasSession: !!data?.session,
     });
+
+    if (error) {
+      console.error('Signup error details:', error);
+    }
 
     return { data, error };
   } catch (err: any) {

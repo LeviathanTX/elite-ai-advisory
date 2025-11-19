@@ -55,7 +55,25 @@ export class AuthService {
   }
 
   static async resetPassword(email: string) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+  }
+
+  static async resendVerificationEmail() {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: (await supabase.auth.getUser()).data.user?.email || '',
+    });
+    if (error) throw error;
+  }
+
+  static async verifyEmail(token: string) {
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: token,
+      type: 'email',
+    });
     if (error) throw error;
   }
 

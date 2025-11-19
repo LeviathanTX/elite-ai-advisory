@@ -13,6 +13,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<{ error: any }>;
+  resendVerificationEmail: () => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,6 +37,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: 'LeviathanTX@gmail.com',
           full_name: 'Jeff (Demo Mode)',
           subscription_tier: 'founder',
+          trial_start_date: new Date().toISOString(),
+          trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          is_trial_active: true,
+          email_verified: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
@@ -127,43 +132,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching user profile for:', userId);
 
-      const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+      // Check email verification status from Supabase auth
+      const { data: authUser } = await supabase.auth.getUser();
+      const isEmailVerified = !!authUser.user?.email_confirmed_at;
+
+      // Wait a moment for the database trigger to create the profile
+      // (the trigger runs AFTER INSERT on auth.users)
+      let retries = 3;
+      let data = null;
+      let error = null;
+
+      while (retries > 0) {
+        const result = await supabase.from('users').select('*').eq('id', userId).single();
+        data = result.data;
+        error = result.error;
+
+        if (!error && data) {
+          break;
+        }
+
+        if (error?.code === 'PGRST116') {
+          // Profile doesn't exist yet, wait and retry
+          console.log(`⏳ Profile not found, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          retries--;
+        } else {
+          // Different error, don't retry
+          break;
+        }
+      }
 
       if (error) {
-        // If user doesn't exist in our users table, create them
-        if (error.code === 'PGRST116') {
-          console.log('📝 User not found in database, creating new user profile...');
-          const { data: authUser } = await supabase.auth.getUser();
-          if (authUser.user) {
-            const newUser: Partial<User> = {
-              id: authUser.user.id,
-              email: authUser.user.email!,
-              full_name: authUser.user.user_metadata?.full_name,
-              subscription_tier: 'founder', // Default tier - 7-day free trial
-              // TODO: Add trial_end_date field to track trial expiration
-              // trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-            };
+        console.error('❌ Error fetching user profile:', error);
+        setLoading(false);
+        return;
+      }
 
-            const { data: createdUser, error: createError } = await supabase
-              .from('users')
-              .insert([newUser])
-              .select()
-              .single();
-
-            if (!createError && createdUser) {
-              console.log('✅ New user profile created');
-              setUser(createdUser);
-            } else {
-              console.error('❌ Failed to create user profile:', createError);
-            }
-          }
-        } else {
-          console.error('❌ Error fetching user profile:', error);
-        }
-        return; // Don't throw, just return
+      if (!data) {
+        console.error('❌ User profile not found after retries');
+        setLoading(false);
+        return;
       }
 
       console.log('✅ User profile loaded');
+
+      // Sync email verification status if it has changed
+      if (data.email_verified !== isEmailVerified) {
+        console.log('📧 Syncing email verification status:', isEmailVerified);
+        await supabase
+          .from('users')
+          .update({ email_verified: isEmailVerified })
+          .eq('id', userId);
+        data.email_verified = isEmailVerified;
+      }
+
       setUser(data);
     } catch (error) {
       console.error('❌ Exception in fetchUserProfile:', error);
@@ -182,6 +204,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: data.user.email!,
         full_name: data.user.user_metadata?.full_name || 'Demo User',
         subscription_tier: 'founder',
+        trial_start_date: new Date().toISOString(),
+        trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        is_trial_active: true,
+        email_verified: false,
         created_at: data.user.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -197,11 +223,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // In demo mode, manually set the user
     if (!error && data?.user) {
+      const now = new Date();
+      const trialEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
       const demoUser: User = {
         id: data.user.id,
         email: data.user.email!,
         full_name: data.user.user_metadata?.full_name || fullName || 'Demo User',
         subscription_tier: 'founder',
+        trial_start_date: now.toISOString(),
+        trial_end_date: trialEnd.toISOString(),
+        is_trial_active: true,
+        email_verified: false,
         created_at: data.user.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -235,6 +268,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
+  const handleResendVerificationEmail = async () => {
+    if (!supabaseUser?.email) {
+      return { error: 'No user email found' };
+    }
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: supabaseUser.email,
+      });
+
+      if (error) {
+        console.error('Error resending verification email:', error);
+        return { error: error.message };
+      }
+
+      console.log('✅ Verification email resent successfully');
+      return { error: null };
+    } catch (err: any) {
+      console.error('Exception resending verification email:', err);
+      return { error: err.message || 'Failed to resend verification email' };
+    }
+  };
+
   const value = {
     user,
     supabaseUser,
@@ -243,6 +300,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp: handleSignUp,
     signOut: handleSignOut,
     updateProfile,
+    resendVerificationEmail: handleResendVerificationEmail,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

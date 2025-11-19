@@ -10,6 +10,8 @@ import { HelpModal } from '../Help/HelpModal';
 import { DemoTour } from '../Help/DemoTour';
 import { OnboardingFlow } from '../Help/OnboardingFlow';
 import { QuickStartGuide } from '../Help/QuickStartGuide';
+import { TrialBanner } from '../Subscription/TrialBanner';
+import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
 import { cn, formatCurrency, calculatePercentage } from '../../utils';
 import { ApplicationMode } from '../../types';
 
@@ -193,6 +195,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Email Verification Banner */}
+        <EmailVerificationBanner className="mb-4" />
+
+        {/* Trial Banner */}
+        <TrialBanner className="mb-6" onUpgradeClick={() => setShowSettings(true)} />
+
         {/* Usage Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 usage-stats">
           <div className="bg-white rounded-xl p-6 shadow-sm">

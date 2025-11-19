@@ -6,6 +6,10 @@ export interface User {
   full_name?: string;
   avatar_url?: string;
   subscription_tier: SubscriptionTier;
+  trial_start_date?: string;
+  trial_end_date?: string;
+  is_trial_active?: boolean;
+  email_verified?: boolean;
   created_at: string;
   updated_at: string;
 }
