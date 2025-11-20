@@ -72,7 +72,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     }
   }, [isOpen, settings.aiServices]);
 
-  // Check service status
+  // Check service status with REAL API call
   const checkServiceStatus = async (serviceId: string, service: AIServiceConfig) => {
     setServiceStatuses(prev => ({ ...prev, [serviceId]: 'checking' }));
 
@@ -82,23 +82,105 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         throw new Error('Invalid API key format');
       }
 
-      // For demo purposes, we'll simulate a connection check
-      // In a real implementation, you'd make an actual API call to validate
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+      // Make a REAL API call to test the connection
+      const testMessage = {
+        role: 'user' as const,
+        content: 'Hello, this is a connection test. Please respond with "Connection successful".'
+      };
 
-      // Simulate success/failure based on API key format
-      const isValid =
-        service.apiKey.startsWith('sk-') ||
-        service.apiKey.startsWith('AIza') ||
-        service.apiKey.includes('demo');
+      // Try backend proxy first
+      try {
+        const proxyResponse = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            service: serviceId,
+            model: service.model,
+            messages: [testMessage],
+            options: { maxTokens: 50, temperature: 0 }
+          }),
+        });
 
-      if (isValid) {
-        setServiceStatuses(prev => ({ ...prev, [serviceId]: 'connected' }));
-      } else {
-        throw new Error('Authentication failed');
+        if (proxyResponse.ok) {
+          const data = await proxyResponse.json();
+          console.log(`✅ ${service.name} connected via backend proxy:`, data);
+          setServiceStatuses(prev => ({ ...prev, [serviceId]: 'connected' }));
+          return;
+        } else {
+          console.log(`Backend proxy failed for ${service.name}, trying direct API call...`);
+        }
+      } catch (proxyError) {
+        console.log(`Backend proxy error for ${service.name}:`, proxyError);
       }
-    } catch (error) {
-      console.error(`Failed to validate ${service.name}:`, error);
+
+      // Fallback to direct API call if proxy fails
+      let apiUrl: string;
+      let headers: Record<string, string>;
+      let body: any;
+
+      switch (serviceId) {
+        case 'claude':
+          apiUrl = 'https://api.anthropic.com/v1/messages';
+          headers = {
+            'Content-Type': 'application/json',
+            'x-api-key': service.apiKey,
+            'anthropic-version': '2023-06-01',
+          };
+          body = {
+            model: service.model || 'claude-sonnet-4-20250514',
+            messages: [testMessage],
+            max_tokens: 50,
+          };
+          break;
+
+        case 'chatgpt':
+          apiUrl = 'https://api.openai.com/v1/chat/completions';
+          headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${service.apiKey}`,
+          };
+          body = {
+            model: service.model || 'gpt-4',
+            messages: [testMessage],
+            max_tokens: 50,
+          };
+          break;
+
+        case 'gemini':
+          apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${service.model || 'gemini-1.5-flash'}:generateContent?key=${service.apiKey}`;
+          headers = {
+            'Content-Type': 'application/json',
+          };
+          body = {
+            contents: [{
+              parts: [{ text: testMessage.content }]
+            }]
+          };
+          break;
+
+        default:
+          throw new Error(`Unsupported service: ${serviceId}`);
+      }
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log(`✅ ${service.name} connected via direct API:`, data);
+      setServiceStatuses(prev => ({ ...prev, [serviceId]: 'connected' }));
+
+    } catch (error: any) {
+      console.error(`❌ Failed to validate ${service.name}:`, error);
       setServiceStatuses(prev => ({ ...prev, [serviceId]: 'error' }));
     }
   };
