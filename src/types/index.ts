@@ -47,6 +47,8 @@ export interface CelebrityAdvisor {
   investment_thesis?: string;
   system_prompt?: string; // Advanced AI system prompt for world-class advisory
   aiService?: AIService;
+  mcp_folder_path?: string; // Path to MCP documents folder for this advisor
+  mcp_enabled?: boolean; // Whether MCP functionality is enabled for this advisor
   // Additional properties for compatibility
   role?: AdvisorRole;
   avatar_emoji?: string;

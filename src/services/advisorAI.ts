@@ -382,10 +382,34 @@ ${vocalInsights.strengths.map(s => `- ${s}`).join('\n')}
 Vocal Improvement Areas:
 ${vocalInsights.improvement_areas.map(a => `- ${a}`).join('\n')}
 
-Detailed Voice Metrics:
+Voice Quality Profile:
+- Tone: ${audioFeatures.vocal_qualities.tone_description}
+- Strength: ${audioFeatures.vocal_qualities.strength_level}
+- Authority: ${audioFeatures.vocal_qualities.authority_level}
+- Richness: ${audioFeatures.vocal_qualities.richness}
+- Steadiness: ${audioFeatures.vocal_qualities.steadiness}
+
+Credibility & Persuasiveness Metrics:
+- Vocal Authority: ${audioFeatures.emotional_markers.authority.toFixed(1)}% (how commanding and confident)
+- Credibility: ${audioFeatures.emotional_markers.credibility.toFixed(1)}% (how believable and trustworthy)
+- Persuasiveness: ${audioFeatures.emotional_markers.persuasiveness.toFixed(1)}% (overall convincing power)
+- Authenticity: ${audioFeatures.emotional_markers.authenticity.toFixed(1)}% (genuineness)
+- Warmth: ${audioFeatures.emotional_markers.warmth.toFixed(1)}% (approachability)
+
+Filler Word Analysis:
+- Total Filler Words: ${audioFeatures.filler_words.total_count} (${audioFeatures.filler_words.filler_rate} per minute)
+- "Um/Uh": ${audioFeatures.filler_words.um_uh_count} times
+- "Like" (as filler): ${audioFeatures.filler_words.like_count} times
+- "You know": ${audioFeatures.filler_words.you_know_count} times
+- "Basically/Actually": ${audioFeatures.filler_words.basically_count} times
+- Most Common Filler: "${audioFeatures.filler_words.most_common}"
+${audioFeatures.filler_words.filler_rate > 5 ? '⚠️ HIGH FILLER USAGE - Major credibility concern!' : audioFeatures.filler_words.filler_rate > 2 ? '⚠️ Moderate filler usage' : '✓ Good filler control'}
+
+Delivery Metrics:
 - Speaking Rate: ${audioFeatures.rhythm.speaking_rate.toFixed(1)} WPM (ideal: 140-160)
 - Confidence Level: ${audioFeatures.emotional_markers.confidence_level.toFixed(1)}%
 - Stress Level: ${audioFeatures.emotional_markers.stress_level.toFixed(1)}%
+- Nervousness: ${audioFeatures.emotional_markers.nervousness.toFixed(1)}%
 - Energy Level: ${audioFeatures.emotional_markers.energy_level.toFixed(1)}%
 - Clarity Score: ${audioFeatures.coaching_metrics.clarity_score.toFixed(1)}%
 - Professional Tone: ${audioFeatures.coaching_metrics.professional_tone.toFixed(1)}%
