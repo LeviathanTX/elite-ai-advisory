@@ -4,6 +4,9 @@
 export default async function handler(req, res) {
   // Enable CORS with specific origin for security
   const allowedOrigins = [
+    'https://ai-knplbtfme-jeff-levines-projects.vercel.app',
+    'https://ai-ravb4eg8z-jeff-levines-projects.vercel.app',
+    'https://ai-pc4tzo81c-jeff-levines-projects.vercel.app',
     'https://elite-ai-advisory-clean.vercel.app',
     'https://bearable-ai-advisors.vercel.app',
     'https://elite-ai-advisory.vercel.app',
