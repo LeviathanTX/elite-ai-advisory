@@ -142,6 +142,12 @@ async function callClaudeAPI(model, messages, options = {}) {
 
 async function callOpenAIAPI(model, messages, options = {}) {
   const apiKey = process.env.OPENAI_API_KEY;
+  console.log('OpenAI API Key check:', {
+    exists: !!apiKey,
+    type: typeof apiKey,
+    length: apiKey?.length,
+    prefix: apiKey?.substring(0, 7)
+  });
   if (!apiKey) {
     throw new Error('OpenAI API key not configured');
   }
