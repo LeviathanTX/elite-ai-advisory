@@ -196,7 +196,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Email Verification Banner */}
-        <EmailVerificationBanner className="mb-4" />
+        <EmailVerificationBanner />
 
         {/* Trial Banner */}
         <TrialBanner className="mb-6" onUpgradeClick={() => setShowSettings(true)} />

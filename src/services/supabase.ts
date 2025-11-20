@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { AuthResponse, SignUpData, SignInData, AuthError, AuthErrorCode } from '../types/auth';
 
 // Environment variables - these will be set in production
 const supabaseUrl = (process.env.REACT_APP_SUPABASE_URL || 'https://placeholder.supabase.co').trim();
@@ -247,8 +248,53 @@ export const testSupabaseConnectivity = async (timeoutMs: number = 3000) => {
   }
 };
 
+// Helper function to categorize auth errors
+const categorizeAuthError = (error: any): AuthError => {
+  const message = error?.message || '';
+
+  if (message.includes('Invalid login credentials')) {
+    return {
+      message: 'Invalid email or password. Please check your credentials or sign up for a new account.',
+      code: AuthErrorCode.INVALID_CREDENTIALS,
+    };
+  }
+
+  if (message.includes('Email not confirmed')) {
+    return {
+      message: 'Please check your email to confirm your account before signing in.',
+      code: AuthErrorCode.EMAIL_NOT_CONFIRMED,
+    };
+  }
+
+  if (message.includes('timeout') || message.includes('timed out')) {
+    return {
+      message: 'Authentication timed out. Please check your connection and try again.',
+      code: AuthErrorCode.TIMEOUT,
+    };
+  }
+
+  if (message.includes('duplicate key') || message.includes('already registered')) {
+    return {
+      message: 'This email is already registered. Please sign in instead.',
+      code: AuthErrorCode.EMAIL_EXISTS,
+    };
+  }
+
+  if (error.code === '23505') {
+    return {
+      message: 'This email is already registered. Please sign in instead or use a different email.',
+      code: AuthErrorCode.EMAIL_EXISTS,
+    };
+  }
+
+  return {
+    message: message || 'An unexpected error occurred. Please try again.',
+    code: AuthErrorCode.UNKNOWN,
+  };
+};
+
 // Helper functions for authentication
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string): Promise<AuthResponse<SignInData>> => {
   console.log('signIn called:', { email, isDemoMode, supabaseUrl });
 
   if (isDemoMode) {
@@ -259,7 +305,7 @@ export const signIn = async (email: string, password: string) => {
       email,
       user_metadata: { full_name: 'Demo User' },
       created_at: new Date().toISOString(),
-    };
+    } as any;
     return {
       data: {
         user: demoUser,
@@ -310,26 +356,15 @@ export const signIn = async (email: string, password: string) => {
       hasSession: !!data?.session,
     });
 
-    // Check for common errors and provide helpful messages
+    // Check for errors and categorize them
     if (error) {
-      if (error.message?.includes('Invalid login credentials')) {
-        return {
-          data: null,
-          error: {
-            message:
-              'Invalid email or password. Please check your credentials or sign up for a new account.',
-          },
-        };
-      }
-      if (error.message?.includes('Email not confirmed')) {
-        return {
-          data: null,
-          error: { message: 'Please check your email to confirm your account before signing in.' },
-        };
-      }
+      return {
+        data: null,
+        error: categorizeAuthError(error),
+      };
     }
 
-    return { data, error };
+    return { data, error: null };
   } catch (err: any) {
     console.error('Supabase auth exception:', {
       message: err.message,
@@ -338,15 +373,14 @@ export const signIn = async (email: string, password: string) => {
     });
 
     // Provide user-friendly error message
-    const userMessage = err.message?.includes('timeout')
-      ? 'Sign-in timed out. This may be due to network issues or Supabase configuration. Please try again or contact support.'
-      : err.message || 'Authentication failed. Please try again.';
-
-    return { data: null, error: { message: userMessage } };
+    return {
+      data: null,
+      error: categorizeAuthError(err),
+    };
   }
 };
 
-export const signUp = async (email: string, password: string, fullName?: string) => {
+export const signUp = async (email: string, password: string, fullName?: string): Promise<AuthResponse<SignUpData>> => {
   console.log('signUp called:', { email, fullName, isDemoMode });
 
   if (isDemoMode) {
@@ -357,7 +391,7 @@ export const signUp = async (email: string, password: string, fullName?: string)
       email,
       user_metadata: { full_name: fullName || 'Demo User' },
       created_at: new Date().toISOString(),
-    };
+    } as any;
     return {
       data: {
         user: demoUser,
@@ -441,35 +475,20 @@ export const signUp = async (email: string, password: string, fullName?: string)
 
     if (error) {
       console.error('Signup error details:', error);
-
-      // Provide user-friendly error messages
-      if (error.code === '23505' || error.message?.includes('duplicate key')) {
-        return {
-          data: null,
-          error: {
-            message: 'This email is already registered. Please sign in instead or use a different email.'
-          }
-        };
-      }
-
-      if (error.message?.includes('already registered')) {
-        return {
-          data: null,
-          error: {
-            message: 'This email is already registered. Please sign in instead.'
-          }
-        };
-      }
+      return {
+        data: null,
+        error: categorizeAuthError(error),
+      };
     }
 
-    return { data, error };
+    return { data, error: null };
   } catch (err: any) {
     console.error('Supabase signup exception:', {
       message: err.message,
       stack: err.stack,
       name: err.name,
     });
-    return { data: null, error: { message: err.message || 'Signup failed' } };
+    return { data: null, error: categorizeAuthError(err) };
   }
 };
 

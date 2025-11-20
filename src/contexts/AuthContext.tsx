@@ -1,19 +1,22 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User as SupabaseUser } from '@supabase/supabase-js';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import { supabase, signIn, signUp, signOut, getCurrentUser } from '../services/supabase';
 import { User } from '../types';
 import { setUser as setSentryUser } from '../sentry';
 import { appConfig } from '../config/env';
+import { AuthResponse, SignInData, SignUpData, SessionInfo, UserProfile } from '../types/auth';
 
 interface AuthContextType {
   user: User | null;
   supabaseUser: SupabaseUser | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
+  sessionInfo: SessionInfo | null;
+  signIn: (email: string, password: string) => Promise<AuthResponse<SignInData>>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<AuthResponse<SignUpData>>;
   signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => Promise<{ error: any }>;
-  resendVerificationEmail: () => Promise<{ error: any }>;
+  updateProfile: (updates: Partial<User>) => Promise<AuthResponse<UserProfile>>;
+  resendVerificationEmail: () => Promise<AuthResponse<void>>;
+  refreshSession: () => Promise<AuthResponse<void>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,6 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(bypassAuth ? false : true);
+  const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
 
   // Update Sentry user context whenever user changes
   useEffect(() => {
@@ -194,65 +198,105 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const handleSignIn = async (email: string, password: string) => {
-    const { data, error } = await signIn(email, password);
+  // Calculate session info from current session
+  const calculateSessionInfo = (session: Session | null): SessionInfo => {
+    if (!session) {
+      return {
+        isValid: false,
+        expiresAt: null,
+        expiresIn: null,
+        needsRefresh: false,
+      };
+    }
+
+    const expiresAt = session.expires_at ? session.expires_at * 1000 : null;
+    const now = Date.now();
+    const expiresIn = expiresAt ? Math.floor((expiresAt - now) / 1000) : null;
+    const needsRefresh = expiresIn !== null && expiresIn < 300; // Refresh if < 5 minutes
+
+    return {
+      isValid: expiresIn !== null && expiresIn > 0,
+      expiresAt,
+      expiresIn,
+      needsRefresh,
+    };
+  };
+
+  const handleSignIn = async (email: string, password: string): Promise<AuthResponse<SignInData>> => {
+    const result = await signIn(email, password);
 
     // In demo mode, manually set the user
-    if (!error && data?.user) {
+    if (!result.error && result.data?.user) {
       const demoUser: User = {
-        id: data.user.id,
-        email: data.user.email!,
-        full_name: data.user.user_metadata?.full_name || 'Demo User',
+        id: result.data.user.id,
+        email: result.data.user.email!,
+        full_name: result.data.user.user_metadata?.full_name || 'Demo User',
         subscription_tier: 'founder',
         trial_start_date: new Date().toISOString(),
         trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         is_trial_active: true,
         email_verified: false,
-        created_at: data.user.created_at || new Date().toISOString(),
+        created_at: result.data.user.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
       setUser(demoUser);
-      setSupabaseUser(data.user as any);
+      setSupabaseUser(result.data.user as any);
+
+      // Update session info
+      if (result.data.session) {
+        setSessionInfo(calculateSessionInfo(result.data.session));
+      }
     }
 
-    return { error };
+    return result;
   };
 
-  const handleSignUp = async (email: string, password: string, fullName?: string) => {
-    const { data, error } = await signUp(email, password, fullName);
+  const handleSignUp = async (email: string, password: string, fullName?: string): Promise<AuthResponse<SignUpData>> => {
+    const result = await signUp(email, password, fullName);
 
     // In demo mode, manually set the user
-    if (!error && data?.user) {
+    if (!result.error && result.data?.user) {
       const now = new Date();
       const trialEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
       const demoUser: User = {
-        id: data.user.id,
-        email: data.user.email!,
-        full_name: data.user.user_metadata?.full_name || fullName || 'Demo User',
+        id: result.data.user.id,
+        email: result.data.user.email!,
+        full_name: result.data.user.user_metadata?.full_name || fullName || 'Demo User',
         subscription_tier: 'founder',
         trial_start_date: now.toISOString(),
         trial_end_date: trialEnd.toISOString(),
         is_trial_active: true,
         email_verified: false,
-        created_at: data.user.created_at || new Date().toISOString(),
+        created_at: result.data.user.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
       setUser(demoUser);
-      setSupabaseUser(data.user as any);
+      setSupabaseUser(result.data.user as any);
+
+      // Update session info
+      if (result.data.session) {
+        setSessionInfo(calculateSessionInfo(result.data.session));
+      }
     }
 
-    return { error };
+    return result;
   };
 
   const handleSignOut = async () => {
     await signOut();
     setUser(null);
     setSupabaseUser(null);
+    setSessionInfo(null);
   };
 
-  const updateProfile = async (updates: Partial<User>) => {
-    if (!user) return { error: 'No user logged in' };
+  const updateProfile = async (updates: Partial<User>): Promise<AuthResponse<UserProfile>> => {
+    if (!user) {
+      return {
+        data: null,
+        error: { message: 'No user logged in', code: 'no_user' }
+      };
+    }
 
     const { data, error } = await supabase
       .from('users')
@@ -263,14 +307,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (!error && data) {
       setUser(data);
+      return { data, error: null };
     }
 
-    return { error };
+    return {
+      data: null,
+      error: error ? { message: error.message } : { message: 'Update failed' }
+    };
   };
 
-  const handleResendVerificationEmail = async () => {
+  const handleResendVerificationEmail = async (): Promise<AuthResponse<void>> => {
     if (!supabaseUser?.email) {
-      return { error: 'No user email found' };
+      return {
+        data: null,
+        error: { message: 'No user email found', code: 'no_email' }
+      };
     }
 
     try {
@@ -281,26 +332,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error resending verification email:', error);
-        return { error: error.message };
+        return { data: null, error: { message: error.message } };
       }
 
       console.log('✅ Verification email resent successfully');
-      return { error: null };
+      return { data: null, error: null };
     } catch (err: any) {
       console.error('Exception resending verification email:', err);
-      return { error: err.message || 'Failed to resend verification email' };
+      return {
+        data: null,
+        error: { message: err.message || 'Failed to resend verification email' }
+      };
     }
   };
+
+  const handleRefreshSession = async (): Promise<AuthResponse<void>> => {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+
+      if (error) {
+        console.error('Error refreshing session:', error);
+        return { data: null, error: { message: error.message } };
+      }
+
+      if (data.session) {
+        setSessionInfo(calculateSessionInfo(data.session));
+      }
+
+      console.log('✅ Session refreshed successfully');
+      return { data: null, error: null };
+    } catch (err: any) {
+      console.error('Exception refreshing session:', err);
+      return {
+        data: null,
+        error: { message: err.message || 'Failed to refresh session' }
+      };
+    }
+  };
+
+  // Monitor session and auto-refresh if needed
+  useEffect(() => {
+    if (!sessionInfo || bypassAuth) return;
+
+    // Check session every minute
+    const interval = setInterval(async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        const info = calculateSessionInfo(data.session);
+        setSessionInfo(info);
+
+        // Auto-refresh if needed
+        if (info.needsRefresh) {
+          console.log('⚠️ Session expiring soon, auto-refreshing...');
+          await handleRefreshSession();
+        }
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [sessionInfo, bypassAuth]);
 
   const value = {
     user,
     supabaseUser,
     loading,
+    sessionInfo,
     signIn: handleSignIn,
     signUp: handleSignUp,
     signOut: handleSignOut,
     updateProfile,
     resendVerificationEmail: handleResendVerificationEmail,
+    refreshSession: handleRefreshSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
