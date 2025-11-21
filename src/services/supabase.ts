@@ -329,12 +329,7 @@ export const signIn = async (email: string, password: string): Promise<AuthRespo
 
     // Create a promise that resolves when auth state changes
     const authStatePromise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        subscription.unsubscribe();
-        reject(new Error('Authentication timed out after 30 seconds'));
-      }, 30000);
-
-      const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' && session) {
           clearTimeout(timeout);
           subscription.unsubscribe();
@@ -345,6 +340,11 @@ export const signIn = async (email: string, password: string): Promise<AuthRespo
           reject(new Error('Sign in failed'));
         }
       });
+
+      const timeout = setTimeout(() => {
+        subscription.unsubscribe();
+        reject(new Error('Authentication timed out after 30 seconds'));
+      }, 30000);
     });
 
     // Fire the sign-in request (don't wait for it)
