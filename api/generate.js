@@ -4,13 +4,14 @@
 export default async function handler(req, res) {
   // Enable CORS with specific origin for security
   const allowedOrigins = [
+    'https://ai-bod.vercel.app',
+    'https://ai-bod-ochre.vercel.app',
     'https://ai-knplbtfme-jeff-levines-projects.vercel.app',
     'https://ai-ravb4eg8z-jeff-levines-projects.vercel.app',
     'https://ai-pc4tzo81c-jeff-levines-projects.vercel.app',
     'https://elite-ai-advisory-clean.vercel.app',
     'https://bearable-ai-advisors.vercel.app',
     'https://elite-ai-advisory.vercel.app',
-    'https://ai-bod.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001'
   ];
@@ -142,6 +143,12 @@ async function callClaudeAPI(model, messages, options = {}) {
 
 async function callOpenAIAPI(model, messages, options = {}) {
   const apiKey = process.env.OPENAI_API_KEY;
+  console.log('OpenAI API Key check:', {
+    exists: !!apiKey,
+    type: typeof apiKey,
+    length: apiKey?.length,
+    prefix: apiKey?.substring(0, 7)
+  });
   if (!apiKey) {
     throw new Error('OpenAI API key not configured');
   }

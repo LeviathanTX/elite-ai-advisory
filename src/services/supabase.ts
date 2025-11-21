@@ -324,27 +324,36 @@ export const signIn = async (email: string, password: string): Promise<AuthRespo
     console.log('Has anon key:', !!supabaseAnonKey);
     const startTime = Date.now();
 
-    // Attempt authentication with shorter timeout
+    // Use auth state listener instead of waiting for promise (more reliable)
     console.log('Calling supabase.auth.signInWithPassword...');
-    const signinPromise = supabase.auth.signInWithPassword({
-      email,
-      password,
+
+    // Create a promise that resolves when auth state changes
+    const authStatePromise = new Promise((resolve, reject) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          clearTimeout(timeout);
+          subscription.unsubscribe();
+          resolve({ data: { user: session.user, session }, error: null });
+        } else if (event === 'SIGNED_OUT') {
+          clearTimeout(timeout);
+          subscription.unsubscribe();
+          reject(new Error('Sign in failed'));
+        }
+      });
+
+      const timeout = setTimeout(() => {
+        subscription.unsubscribe();
+        reject(new Error('Authentication timed out after 30 seconds'));
+      }, 30000);
     });
 
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(
-        () =>
-          reject(
-            new Error(
-              'Authentication timed out. Please check your internet connection or try again later.'
-            )
-          ),
-        15000
-      )
-    );
+    // Fire the sign-in request (don't wait for it)
+    supabase.auth.signInWithPassword({ email, password }).catch(err => {
+      console.warn('signInWithPassword promise error (ignored):', err);
+    });
 
-    console.log('Starting authentication request...');
-    const { data, error } = (await Promise.race([signinPromise, timeoutPromise])) as any;
+    console.log('Waiting for auth state change...');
+    const { data, error } = (await authStatePromise) as any;
     const duration = Date.now() - startTime;
 
     console.log('Supabase auth response:', {
@@ -509,9 +518,9 @@ export const getCurrentUser = async () => {
   try {
     console.log('🔍 Checking current user session...');
 
-    // Add timeout protection (5 seconds)
+    // Add timeout protection (15 seconds)
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Auth check timed out after 5 seconds')), 5000)
+      setTimeout(() => reject(new Error('Auth check timed out after 15 seconds')), 15000)
     );
 
     const authPromise = supabase.auth.getUser();

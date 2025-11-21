@@ -60,7 +60,11 @@ export class AIServiceClient {
         return await this.callViaProxy(messages, options);
       } catch (error) {
         console.error(`🚨 PROXY API ERROR:`, error);
-        console.log('⚠️ FALLING BACK TO MOCK RESPONSE due to proxy error');
+        // In production, throw the error instead of falling back to mock
+        if (process.env.NODE_ENV === 'production') {
+          throw error;
+        }
+        console.log('⚠️ FALLING BACK TO MOCK RESPONSE due to proxy error (development only)');
         return this.generateMockResponse(messages, options);
       }
     }
@@ -87,7 +91,11 @@ export class AIServiceClient {
         errorStack: error instanceof Error ? error.stack : 'No stack trace',
         timestamp: new Date().toISOString(),
       });
-      console.log('🔄 FALLING BACK TO MOCK RESPONSE due to API error');
+      // In production, throw the error instead of falling back to mock
+      if (process.env.NODE_ENV === 'production') {
+        throw error;
+      }
+      console.log('🔄 FALLING BACK TO MOCK RESPONSE due to API error (development only)');
       return this.generateMockResponse(messages, options);
     }
   }

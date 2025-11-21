@@ -77,18 +77,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     setServiceStatuses(prev => ({ ...prev, [serviceId]: 'checking' }));
 
     try {
-      // Basic API key format validation
-      if (!service.apiKey || service.apiKey.length < 10) {
-        throw new Error('Invalid API key format');
-      }
-
       // Make a REAL API call to test the connection
       const testMessage = {
         role: 'user' as const,
-        content: 'Hello, this is a connection test. Please respond with "Connection successful".'
+        content: 'Say OK'
       };
 
-      // Try backend proxy first
+      // Try backend proxy first (uses server-side API keys)
       try {
         const proxyResponse = await fetch('/api/generate', {
           method: 'POST',
@@ -115,7 +110,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         console.log(`Backend proxy error for ${service.name}:`, proxyError);
       }
 
-      // Fallback to direct API call if proxy fails
+      // Fallback to direct API call if proxy fails and user has their own key
+      if (!service.apiKey || service.apiKey.length < 10) {
+        throw new Error('Backend proxy failed and no user API key configured');
+      }
+
       let apiUrl: string;
       let headers: Record<string, string>;
       let body: any;

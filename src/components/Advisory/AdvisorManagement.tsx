@@ -91,7 +91,8 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
   };
 
   const getAIServiceStatus = (service: string) => {
-    return settings.aiServices[service as AIService]?.apiKey ? 'configured' : 'needs-key';
+    // Always return 'configured' since we're using server-side API keys
+    return 'configured';
   };
 
   return (

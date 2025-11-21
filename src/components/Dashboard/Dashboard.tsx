@@ -184,7 +184,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                 Settings
               </button>
               <button
-                onClick={() => signOut()}
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    window.location.href = '/';
+                  } catch (error) {
+                    console.error('Sign out error:', error);
+                  }
+                }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 Sign Out
