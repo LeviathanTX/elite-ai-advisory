@@ -339,7 +339,7 @@ export const signIn = async (email: string, password: string): Promise<AuthRespo
               'Authentication timed out. Please check your internet connection or try again later.'
             )
           ),
-        15000
+        30000
       )
     );
 
@@ -509,9 +509,9 @@ export const getCurrentUser = async () => {
   try {
     console.log('🔍 Checking current user session...');
 
-    // Add timeout protection (5 seconds)
+    // Add timeout protection (15 seconds)
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Auth check timed out after 5 seconds')), 5000)
+      setTimeout(() => reject(new Error('Auth check timed out after 15 seconds')), 15000)
     );
 
     const authPromise = supabase.auth.getUser();
