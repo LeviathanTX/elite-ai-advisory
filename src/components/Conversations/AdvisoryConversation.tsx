@@ -31,6 +31,7 @@ import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
 import { CelebrityAdvisorCustomizationModal } from '../Modals/CelebrityAdvisorCustomizationModal';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
+import { VoiceChatButton } from '../Voice/VoiceChatButton';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -1196,6 +1197,10 @@ The committee unanimously recommends proceeding with measured optimism while sys
               <span className="text-sm text-gray-600">
                 {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''} selected
               </span>
+              {selectedAdvisors.length === 1 && (() => {
+                const advisor = celebrityAdvisors.find(a => a.id === selectedAdvisors[0]);
+                return advisor ? <VoiceChatButton advisor={advisor} /> : null;
+              })()}
               <button
                 onClick={() => {
                   // Share functionality
