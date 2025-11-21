@@ -1294,11 +1294,17 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                 </div>
               )}
               <div className="space-y-4">
-                {analysis.feedback.map((comment: string, index: number) => (
-                  <div key={index} className="p-3 bg-white rounded-lg border-l-4 border-purple-500">
-                    <p className="text-gray-700">{comment}</p>
+                {analysis.feedback && analysis.feedback.length > 0 ? (
+                  analysis.feedback.map((comment: string, index: number) => (
+                    <div key={index} className="p-3 bg-white rounded-lg border-l-4 border-purple-500">
+                      <p className="text-gray-700">{comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-3 bg-white rounded-lg border-l-4 border-gray-400">
+                    <p className="text-gray-600">Advisory board feedback is being generated... Please check your pitch analysis above for detailed insights.</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

@@ -8,8 +8,9 @@ export const EmailVerificationBanner: React.FC = () => {
   const [error, setError] = useState('');
   const [dismissed, setDismissed] = useState(false);
 
-  // Don't show if user is verified, doesn't exist, or was dismissed
-  if (!user || user.email_verified || dismissed) {
+  // Don't show if user is verified, doesn't exist, was dismissed, or is demo account
+  const isDemoAccount = user?.email?.endsWith('@demo.com');
+  if (!user || user.email_verified || dismissed || isDemoAccount) {
     return null;
   }
 

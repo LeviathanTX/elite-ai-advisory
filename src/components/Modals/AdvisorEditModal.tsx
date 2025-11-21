@@ -545,9 +545,7 @@ Always maintain your persona and provide advice that reflects your expertise are
                   <option value="deepseek">DeepSeek</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {settings.aiServices[formData.ai_service || 'claude']?.apiKey
-                    ? '✅ API key configured'
-                    : '⚠️ API key needed'}
+                  ✅ Using platform API
                 </p>
               </div>
 
