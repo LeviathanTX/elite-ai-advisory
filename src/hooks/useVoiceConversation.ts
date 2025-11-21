@@ -41,7 +41,7 @@ export function useVoiceConversation(options: UseVoiceConversationOptions): UseV
   const currentTextRef = useRef<string>('');
 
   // Get API key from environment
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
 
   const connect = useCallback(async () => {
     if (!apiKey) {
