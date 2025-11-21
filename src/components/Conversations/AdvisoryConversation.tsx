@@ -665,93 +665,86 @@ export function AdvisoryConversation({
 
     try {
       console.log('Advisor response debug:', {
-        isConfigured,
         hasClaudeService: !!settings.aiServices.claude,
-        hasApiKey: !!settings.aiServices.claude?.apiKey,
       });
-      if (isConfigured) {
-        const aiService = settings.aiServices.claude; // Default to Claude
-        if (aiService?.apiKey) {
-          console.log(
-            'Attempting to use real AI service for',
-            advisor.name,
-            'with API key:',
-            aiService.apiKey.substring(0, 10) + '...'
-          );
-          const advisorAI = createAdvisorAI(aiService);
 
-          // Enhanced prompt generation based on mode and advisor role
-          const hasDocumentContext =
-            documentContextString.length > 0 || uploadedFileContent.length > 0;
-          let enhancedPrompt = systemPrompt;
+      // Always use AI service - it will automatically use server-side proxy in production
+      const aiService = settings.aiServices.claude || { id: 'claude', name: 'Claude', model: 'claude-3-sonnet-20240229', apiKey: '' };
+      console.log('Using AI service for', advisor.name, '(will use server-side proxy if no local key)');
+      const advisorAI = createAdvisorAI(aiService);
 
-          // Generate specialized prompts for due diligence and strategic thinking
-          if (selectedMode === 'due_diligence' && advisor.role) {
-            const contextInfo = hasDocumentContext
-              ? `${documentContextString}\n\n${uploadedFileContent}`
-              : '';
-            enhancedPrompt = generateDueDiligencePrompt(
-              advisor.role,
-              `User Question: ${userInput}`,
-              contextInfo || undefined
-            );
-          } else if (selectedMode === 'strategic_planning') {
-            const contextInfo = hasDocumentContext
-              ? `${documentContextString}\n\n${uploadedFileContent}`
-              : '';
-            // Determine business stage based on conversation context (default to growth)
-            const businessStage = userInput.toLowerCase().includes('startup')
-              ? 'startup'
-              : userInput.toLowerCase().includes('mature')
-                ? 'mature'
-                : 'growth';
-            enhancedPrompt = generateStrategicThinkingPrompt(
-              businessStage,
-              userInput,
-              contextInfo || undefined
-            );
-          } else if (hasDocumentContext) {
-            // Use document-enhanced system prompt
-            enhancedPrompt = `${systemPrompt}
+      // Enhanced prompt generation based on mode and advisor role
+      const hasDocumentContext =
+        documentContextString.length > 0 || uploadedFileContent.length > 0;
+      let enhancedPrompt = systemPrompt;
+
+      // Generate specialized prompts for due diligence and strategic thinking
+      if (selectedMode === 'due_diligence' && advisor.role) {
+        const contextInfo = hasDocumentContext
+          ? `${documentContextString}\n\n${uploadedFileContent}`
+          : '';
+        enhancedPrompt = generateDueDiligencePrompt(
+          advisor.role,
+          `User Question: ${userInput}`,
+          contextInfo || undefined
+        );
+      } else if (selectedMode === 'strategic_planning') {
+        const contextInfo = hasDocumentContext
+          ? `${documentContextString}\n\n${uploadedFileContent}`
+          : '';
+        // Determine business stage based on conversation context (default to growth)
+        const businessStage = userInput.toLowerCase().includes('startup')
+          ? 'startup'
+          : userInput.toLowerCase().includes('mature')
+            ? 'mature'
+            : 'growth';
+        enhancedPrompt = generateStrategicThinkingPrompt(
+          businessStage,
+          userInput,
+          contextInfo || undefined
+        );
+      } else if (hasDocumentContext) {
+        // Use document-enhanced system prompt
+        enhancedPrompt = `${systemPrompt}
 
 DOCUMENT CONTEXT:
 ${documentContextString}
 ${uploadedFileContent}
 
 Based on the documents provided and your expertise, please analyze and respond to the user's question or request.`;
-          }
+      }
 
-          const response = await advisorAI.generateResponseWithCustomPrompt(
-            enhancedPrompt,
-            userInput, // Always pass user input as the message content
-            { maxTokens: 2000 } // Increased for more detailed analysis
-          );
+      const response = await advisorAI.generateResponseWithCustomPrompt(
+        enhancedPrompt,
+        userInput, // Always pass user input as the message content
+        { maxTokens: 2000 } // Increased for more detailed analysis
+      );
 
-          if (response && response.trim().length > 0) {
-            console.log(
-              'Successfully got AI response for',
-              advisor.name,
-              'Document analysis:',
-              hasDocumentContext
-            );
-            return response;
-          } else {
-            console.log('AI response was empty or null');
-          }
-        } else {
-          console.log('No Claude API key found');
-        }
+      if (response && response.trim().length > 0) {
+        console.log(
+          'Successfully got AI response for',
+          advisor.name,
+          'Document analysis:',
+          hasDocumentContext
+        );
+        return response;
       } else {
-        console.log('isConfigured is false, using mock response');
+        console.log('AI response was empty or null');
+        throw new Error('Empty response from AI service');
       }
     } catch (error) {
       console.error('AI Service error:', error);
-      console.log('Using mock response due to API error');
+      // In production, throw the error so the UI can show it
+      if (process.env.NODE_ENV === 'production') {
+        throw error;
+      }
+      // In development, fall back to mock response
+      console.log('Using mock response due to API error (development only)');
+      return generateMockAdvisorResponse(advisor, userInput, selectedMode, context);
     }
 
-    // Fallback to mock responses only if AI failed
-    console.log('Falling back to mock response');
-    return generateMockAdvisorResponse(advisor, userInput, selectedMode, context);
+    // Should never reach here - either return response or throw error
+    throw new Error('Unexpected: reached end of getAdvisorResponse without returning');
   };
 
   const generateMockAdvisorResponse = (
