@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { AdvisoryConversation } from './AdvisoryConversation';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
+import { useAdvisor } from '../../contexts/AdvisorContext';
 import { cn, formatDate } from '../../utils';
 
 interface SavedConversation {
@@ -43,7 +44,8 @@ interface ConversationManagerProps {
 }
 
 export function ConversationManager({ onBack }: ConversationManagerProps) {
-  const [conversations, setConversations] = useState<SavedConversation[]>([]);
+  const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations } = useAdvisor();
+  const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [showNewConversation, setShowNewConversation] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,6 +53,9 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   const [sortBy, setSortBy] = useState<'recent' | 'alphabetical' | 'mode'>('recent');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+
+  // Check if we're in demo mode (no Supabase configured)
+  const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
 
   const conversationModes = [
     {
@@ -84,13 +89,15 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   ];
 
   useEffect(() => {
-    loadConversations();
-  }, []);
+    if (isDemoMode) {
+      loadLocalStorageConversations();
+    }
+  }, [isDemoMode]);
 
-  const loadConversations = () => {
+  const loadLocalStorageConversations = () => {
     const saved: SavedConversation[] = [];
 
-    // Load from localStorage
+    // Load from localStorage (demo mode only)
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith('conversation-')) {
@@ -115,8 +122,29 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
       }
     }
 
-    setConversations(saved);
+    setLocalConversations(saved);
   };
+
+  // Get conversations from the appropriate source
+  const conversations: SavedConversation[] = React.useMemo(() => {
+    if (isDemoMode) {
+      return localConversations;
+    }
+
+    return supabaseConversations.map(conv => ({
+      id: conv.id,
+      title: `Conversation with ${conv.advisor_id}`, // You can enhance this
+      mode: conv.mode as 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general',
+      advisors: [conv.advisor_id],
+      lastMessage: conv.messages?.[conv.messages.length - 1]?.content || 'No messages',
+      lastUpdated: conv.updated_at,
+      messageCount: conv.messages?.length || 0,
+      hasAttachments: false, // You can enhance this
+      tags: [],
+      isStarred: false,
+      isArchived: false,
+    }));
+  }, [isDemoMode, localConversations, supabaseConversations]);
 
   const filteredAndSortedConversations = conversations
     .filter(conv => {
@@ -152,26 +180,37 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
 
   const confirmDelete = () => {
     if (conversationToDelete) {
-      localStorage.removeItem(`conversation-${conversationToDelete}`);
-      setConversations(prev => prev.filter(conv => conv.id !== conversationToDelete));
+      if (isDemoMode) {
+        localStorage.removeItem(`conversation-${conversationToDelete}`);
+        setLocalConversations(prev => prev.filter(conv => conv.id !== conversationToDelete));
+      } else {
+        // TODO: Implement Supabase conversation deletion
+        console.warn('Supabase conversation deletion not yet implemented');
+      }
       setConversationToDelete(null);
     }
   };
 
   const toggleStar = (id: string) => {
-    const key = `conversation-${id}`;
-    const data = JSON.parse(localStorage.getItem(key) || '{}');
-    data.isStarred = !data.isStarred;
-    localStorage.setItem(key, JSON.stringify(data));
-    loadConversations();
+    if (isDemoMode) {
+      const key = `conversation-${id}`;
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      data.isStarred = !data.isStarred;
+      localStorage.setItem(key, JSON.stringify(data));
+      loadLocalStorageConversations();
+    }
+    // TODO: Implement Supabase star toggle
   };
 
   const archiveConversation = (id: string) => {
-    const key = `conversation-${id}`;
-    const data = JSON.parse(localStorage.getItem(key) || '{}');
-    data.isArchived = !data.isArchived;
-    localStorage.setItem(key, JSON.stringify(data));
-    loadConversations();
+    if (isDemoMode) {
+      const key = `conversation-${id}`;
+      const data = JSON.parse(localStorage.getItem(key) || '{}');
+      data.isArchived = !data.isArchived;
+      localStorage.setItem(key, JSON.stringify(data));
+      loadLocalStorageConversations();
+    }
+    // TODO: Implement Supabase archive toggle
   };
 
   const getModeInfo = (mode: string) => {
@@ -184,7 +223,12 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         onBack={() => {
           setSelectedConversation(null);
           setShowNewConversation(false);
-          loadConversations(); // Refresh list when returning
+          // Refresh list when returning
+          if (isDemoMode) {
+            loadLocalStorageConversations();
+          } else {
+            reloadSupabaseConversations();
+          }
         }}
         conversationId={selectedConversation || undefined}
         initialMode={showNewConversation ? 'general' : undefined}

@@ -93,6 +93,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     }
   }, [isDemoMode]);
 
+  // Reload conversations from AdvisorContext when returning to Dashboard
+  useEffect(() => {
+    console.log('Dashboard mounted - conversations:', conversations.length);
+    // Conversations are automatically loaded by AdvisorContext when user is available
+  }, [conversations]);
+
   const modes: {
     id: ApplicationMode;
     title: string;

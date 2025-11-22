@@ -19,9 +19,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   console.log('AuthModal render:', { isOpen, initialEmail, hasInitialPassword: !!initialPassword });
 
-  // Set initial mode based on whether we have pre-filled credentials
-  const [mode, setMode] = useState<'signin' | 'signup'>(initialEmail ? 'signin' : 'signup');
-  const [email, setEmail] = useState(initialEmail || '');
+  // Set initial mode: if initialEmail is 'LOGIN_MODE', it's a login request
+  const isLoginMode = initialEmail === 'LOGIN_MODE';
+  const [mode, setMode] = useState<'signin' | 'signup'>(isLoginMode || (initialEmail && initialEmail !== 'LOGIN_MODE') ? 'signin' : 'signup');
+  const [email, setEmail] = useState(isLoginMode ? '' : (initialEmail || ''));
   const [password, setPassword] = useState(initialPassword || '');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   // Update email and password when initialEmail/initialPassword change
   React.useEffect(() => {
     console.log('AuthModal useEffect - updating credentials:', { initialEmail, initialPassword: !!initialPassword });
-    if (initialEmail) {
+    const isLogin = initialEmail === 'LOGIN_MODE';
+    if (isLogin) {
+      setEmail('');
+      setMode('signin');
+    } else if (initialEmail) {
       setEmail(initialEmail);
       setMode('signin'); // Switch to signin mode when credentials are pre-filled
     }
