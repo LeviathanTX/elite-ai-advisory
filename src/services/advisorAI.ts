@@ -240,6 +240,7 @@ Respond as the Host, providing facilitation guidance, process suggestions, or be
     options?: {
       temperature?: number;
       maxTokens?: number;
+      conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>;
     }
   ): Promise<string> {
     const messages: AIMessage[] = [
@@ -247,13 +248,28 @@ Respond as the Host, providing facilitation guidance, process suggestions, or be
         role: 'system',
         content: customSystemPrompt,
       },
-      {
-        role: 'user',
-        content: userMessage,
-      },
     ];
 
-    console.log('AdvisorAI: About to call generateResponse with custom prompt');
+    // Include conversation history to maintain context across turns
+    if (options?.conversationHistory && options.conversationHistory.length > 0) {
+      console.log(`AdvisorAI: Including ${options.conversationHistory.length} previous conversation turns for context`);
+
+      // Add previous conversation turns (user and assistant exchanges)
+      for (const turn of options.conversationHistory) {
+        messages.push({
+          role: turn.role,
+          content: turn.content,
+        });
+      }
+    }
+
+    // Add current user message
+    messages.push({
+      role: 'user',
+      content: userMessage,
+    });
+
+    console.log(`AdvisorAI: About to call generateResponse with custom prompt (${messages.length} total messages including system prompt and ${options?.conversationHistory?.length || 0} history turns)`);
     const response = await this.client.generateResponse(messages, {
       temperature: options?.temperature || 0.8,
       maxTokens: options?.maxTokens || 1000,
