@@ -99,6 +99,10 @@ export function AdvisoryConversation({
   // Document selection state
   const [showDocumentSelector, setShowDocumentSelector] = useState(false);
   const [selectedDocuments, setSelectedDocuments] = useState<DocumentReference[]>([]);
+  // Store extracted document content persistently across entire conversation
+  const [conversationDocuments, setConversationDocuments] = useState<
+    Array<{ name: string; content: string }>
+  >([]);
 
   // Modal states
   const [showAdvisorEditModal, setShowAdvisorEditModal] = useState(false);
@@ -168,6 +172,10 @@ export function AdvisoryConversation({
         setSelectedMode(data.mode || 'general');
         setUploadedFiles(data.files || []);
         setSelectedDocuments(data.selectedDocuments || []);
+        setConversationDocuments(data.conversationDocuments || []);
+        console.log(
+          `📚 Loaded ${data.conversationDocuments?.length || 0} persistent documents from saved conversation`
+        );
       } catch (error) {
         console.error('Error parsing conversation data:', error);
       }
@@ -184,6 +192,7 @@ export function AdvisoryConversation({
       messages,
       files: uploadedFiles,
       selectedDocuments,
+      conversationDocuments, // Persist document content across sessions
       lastUpdated: new Date().toISOString(),
       title: generateConversationTitle(),
     };
@@ -429,7 +438,7 @@ export function AdvisoryConversation({
     );
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setUploadedFiles(prev => [...prev, ...files]);
 
@@ -444,6 +453,23 @@ export function AdvisoryConversation({
       };
       setMessages(prev => [...prev, message]);
     });
+
+    // Extract and persist document content for the entire conversation
+    console.log('📄 Extracting document content for persistent storage...');
+    for (const file of files) {
+      try {
+        const extractedText = await extractTextFromFile(file);
+        setConversationDocuments(prev => [
+          ...prev,
+          { name: file.name, content: extractedText },
+        ]);
+        console.log(
+          `✅ Stored ${file.name} content (${extractedText.length} chars) for persistent access`
+        );
+      } catch (error) {
+        console.error(`Failed to extract content from ${file.name}:`, error);
+      }
+    }
   };
 
   const sendMessage = async () => {
@@ -580,7 +606,7 @@ export function AdvisoryConversation({
         const conversationHistory = messages
           .filter(msg => msg.type === 'user' || msg.type === 'advisor')
           .map(msg => msg.content)
-          .slice(-5); // Last 5 messages for context
+          .slice(-20); // Increased from 5 to 20 messages for better context continuity
 
         const referencedDocIds = selectedDocuments.map(ref => ref.id);
         const documentContext = await getDocumentContext(
@@ -598,7 +624,7 @@ export function AdvisoryConversation({
       console.error('Error getting document context:', error);
     }
 
-    // Extract document content from uploaded files
+    // Extract document content from uploaded files (new uploads in this message)
     let uploadedFileContent = '';
     if (files.length > 0) {
       console.log(
@@ -625,12 +651,37 @@ export function AdvisoryConversation({
       console.log(`🔥 COMBINED UPLOAD CONTENT LENGTH: ${uploadedFileContent.length} characters`);
     }
 
+    // CRITICAL: Include ALL conversation documents (persistent across all turns)
+    // This ensures advisors have access to documents throughout the entire conversation
+    let persistentDocumentContent = '';
+    if (conversationDocuments.length > 0) {
+      console.log(
+        `📚 Including ${conversationDocuments.length} persistent conversation documents`
+      );
+      persistentDocumentContent = conversationDocuments
+        .map(doc => `Document: ${doc.name}\n${doc.content}`)
+        .join('\n\n');
+      console.log(
+        `💾 PERSISTENT DOCUMENT CONTENT LENGTH: ${persistentDocumentContent.length} characters`
+      );
+    }
+
+    // Combine persistent documents with any new uploads
+    const allDocumentContent = [persistentDocumentContent, uploadedFileContent]
+      .filter(Boolean)
+      .join('\n\n');
+    console.log(`📊 TOTAL DOCUMENT CONTENT: ${allDocumentContent.length} characters`);
+
+
     // Parse document references from user input
     const allAdvisors = [...celebrityAdvisors, ...customAdvisors];
     const documentReferences = parseDocumentReferences(userInput, []);
 
     const contextInfo = [
-      files.length > 0 ? `Files uploaded: ${files.map(f => f.name).join(', ')}` : '',
+      conversationDocuments.length > 0
+        ? `Conversation documents available: ${conversationDocuments.map(d => d.name).join(', ')}`
+        : '',
+      files.length > 0 ? `New files uploaded: ${files.map(f => f.name).join(', ')}` : '',
       selectedDocuments.length > 0
         ? `Knowledge base documents: ${selectedDocuments.map(d => d.name).join(', ')}`
         : '',
@@ -648,17 +699,25 @@ export function AdvisoryConversation({
 
     ${documentContextString}
 
-    ${uploadedFileContent ? `\n\nUPLOADED DOCUMENTS TO ANALYZE:\n${uploadedFileContent}` : ''}
+    ${allDocumentContent ? `\n\nDOCUMENTS AVAILABLE FOR THIS CONVERSATION:\n${allDocumentContent}` : ''}
 
     ${context ? `This is round ${context.round} of ${context.totalRounds} in an enhanced discussion with: ${context.otherAdvisors.map((a: any) => a.name).join(', ')}` : ''}
+
+    IMPORTANT CONTEXT INSTRUCTIONS:
+    - You have access to the full conversation history, including all previous questions and your previous responses
+    - Any documents that were uploaded are available for reference throughout this entire conversation
+    - When users ask follow-up questions about documents, refer back to the document content and your previous analysis
+    - Maintain continuity with your previous responses while providing new insights
+    - If a user references "the deck", "the document", or "the materials" without specifying, they are referring to documents that were previously uploaded in this conversation
 
     Respond as ${advisor.name} would, providing specific, actionable advice based on your expertise. If documents were provided, analyze them thoroughly and reference specific details in your response. You can reference documents using @document-name syntax.`;
 
     console.log('📋 System prompt with enhanced context:', {
       hasKnowledgeBase: !!documentContextString,
-      hasUploadedFiles: !!uploadedFileContent,
+      hasDocumentContent: !!allDocumentContent,
+      persistentDocsCount: conversationDocuments.length,
       knowledgeBaseLength: documentContextString.length,
-      uploadedContentLength: uploadedFileContent.length,
+      allDocumentContentLength: allDocumentContent.length,
       selectedDocuments: selectedDocuments.length,
       systemPromptLength: systemPrompt.length,
     });
@@ -675,13 +734,13 @@ export function AdvisoryConversation({
 
       // Enhanced prompt generation based on mode and advisor role
       const hasDocumentContext =
-        documentContextString.length > 0 || uploadedFileContent.length > 0;
+        documentContextString.length > 0 || allDocumentContent.length > 0;
       let enhancedPrompt = systemPrompt;
 
       // Generate specialized prompts for due diligence and strategic thinking
       if (selectedMode === 'due_diligence' && advisor.role) {
         const contextInfo = hasDocumentContext
-          ? `${documentContextString}\n\n${uploadedFileContent}`
+          ? `${documentContextString}\n\n${allDocumentContent}`
           : '';
         enhancedPrompt = generateDueDiligencePrompt(
           advisor.role,
@@ -690,7 +749,7 @@ export function AdvisoryConversation({
         );
       } else if (selectedMode === 'strategic_planning') {
         const contextInfo = hasDocumentContext
-          ? `${documentContextString}\n\n${uploadedFileContent}`
+          ? `${documentContextString}\n\n${allDocumentContent}`
           : '';
         // Determine business stage based on conversation context (default to growth)
         const businessStage = userInput.toLowerCase().includes('startup')
@@ -709,15 +768,31 @@ export function AdvisoryConversation({
 
 DOCUMENT CONTEXT:
 ${documentContextString}
-${uploadedFileContent}
+${allDocumentContent}
 
 Based on the documents provided and your expertise, please analyze and respond to the user's question or request.`;
       }
 
+      // Build conversation history for multi-turn context
+      // This ensures advisors remember previous exchanges and document discussions
+      const conversationHistory = messages
+        .filter(msg => msg.type === 'user' || msg.type === 'advisor')
+        .filter(msg => !msg.advisor || msg.advisor.id === advisor.id) // Only include this advisor's conversation thread
+        .slice(-10) // Last 10 messages (5 exchanges) for context
+        .map(msg => ({
+          role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
+          content: msg.content,
+        }));
+
+      console.log(`📜 Building conversation context for ${advisor.name}: ${conversationHistory.length} previous messages`);
+
       const response = await advisorAI.generateResponseWithCustomPrompt(
         enhancedPrompt,
         userInput, // Always pass user input as the message content
-        { maxTokens: 2000 } // Increased for more detailed analysis
+        {
+          maxTokens: 2000, // Increased for more detailed analysis
+          conversationHistory, // Pass conversation history for persistent context
+        }
       );
 
       if (response && response.trim().length > 0) {
