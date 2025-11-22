@@ -718,7 +718,8 @@ function AppContent() {
 
   const handleLogin = (email?: string, password?: string) => {
     console.log('Opening login modal', { email, hasPassword: !!password });
-    setPrefilledEmail(email);
+    // Set a flag to indicate this is for login, not signup
+    setPrefilledEmail(email || 'LOGIN_MODE');
     setPrefilledPassword(password);
     setShowAuthModal(true);
   };

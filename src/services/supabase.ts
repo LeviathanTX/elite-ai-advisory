@@ -64,13 +64,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: !isDemoMode && storageAvailable,
     persistSession: !isDemoMode && storageAvailable,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true, // Enable session detection in URL for proper auth flows
     storage: storageAvailable ? undefined : {
       // Memory-only storage fallback for when localStorage is blocked
       getItem: (key: string) => null,
       setItem: (key: string, value: string) => {},
       removeItem: (key: string) => {},
     },
+    storageKey: 'ai-bod-auth', // Custom storage key to avoid conflicts
   },
 });
 
