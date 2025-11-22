@@ -159,6 +159,7 @@ export interface Database {
           advisor_type: 'celebrity' | 'custom';
           mode: 'pitch_practice' | 'strategic_planning' | 'due_diligence' | 'quick_consultation';
           messages: any;
+          metadata: any;
           created_at: string;
           updated_at: string;
         };

@@ -19,10 +19,13 @@ import {
   Zap,
   TrendingUp,
   ArrowRight,
+  Paperclip,
 } from 'lucide-react';
 import { AdvisoryConversation } from './AdvisoryConversation';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
+import { useAuth } from '../../contexts/AuthContext';
 import { useAdvisor } from '../../contexts/AdvisorContext';
+import { loadConversations as loadConversationsFromDb } from '../../services/conversationService';
 import { cn, formatDate } from '../../utils';
 
 interface SavedConversation {
@@ -44,6 +47,7 @@ interface ConversationManagerProps {
 }
 
 export function ConversationManager({ onBack }: ConversationManagerProps) {
+  const { user } = useAuth();
   const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations } = useAdvisor();
   const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -53,6 +57,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   const [sortBy, setSortBy] = useState<'recent' | 'alphabetical' | 'mode'>('recent');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Check if we're in demo mode (no Supabase configured)
   const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
@@ -91,8 +96,11 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   useEffect(() => {
     if (isDemoMode) {
       loadLocalStorageConversations();
+    } else if (user?.id) {
+      // In production mode, load from our conversation service
+      loadConversationsFromService();
     }
-  }, [isDemoMode]);
+  }, [isDemoMode, user]);
 
   const loadLocalStorageConversations = () => {
     const saved: SavedConversation[] = [];
@@ -125,25 +133,66 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
     setLocalConversations(saved);
   };
 
+  const loadConversationsFromService = async () => {
+    if (!user?.id) {
+      console.log('No user logged in, skipping conversation load');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Load from database using our conversation service
+      const loaded = await loadConversationsFromDb(user.id);
+
+      const saved: SavedConversation[] = loaded.map(data => ({
+        id: data.id,
+        title: data.title || 'Untitled Conversation',
+        mode: data.mode || 'general',
+        advisors: data.advisors?.map(a => a.id) || [],
+        lastMessage: data.messages?.[data.messages.length - 1]?.content || 'No messages',
+        lastUpdated: data.updated_at || data.created_at || new Date().toISOString(),
+        messageCount: data.messages?.length || 0,
+        hasAttachments: data.files && data.files.length > 0,
+        tags: [],
+        isStarred: false,
+        isArchived: false,
+      }));
+
+      setLocalConversations(saved);
+      console.log(`✅ Loaded ${saved.length} conversations from database for user ${user.id}`);
+    } catch (error) {
+      console.error('Error loading conversations from database:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Get conversations from the appropriate source
+  // Priority: 1) AdvisorContext (if available), 2) Our conversation service, 3) localStorage
   const conversations: SavedConversation[] = React.useMemo(() => {
     if (isDemoMode) {
       return localConversations;
     }
 
-    return supabaseConversations.map(conv => ({
-      id: conv.id,
-      title: `Conversation with ${conv.advisor_id}`, // You can enhance this
-      mode: conv.mode as 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general',
-      advisors: [conv.advisor_id],
-      lastMessage: conv.messages?.[conv.messages.length - 1]?.content || 'No messages',
-      lastUpdated: conv.updated_at,
-      messageCount: conv.messages?.length || 0,
-      hasAttachments: false, // You can enhance this
-      tags: [],
-      isStarred: false,
-      isArchived: false,
-    }));
+    // If AdvisorContext has conversations, use those (synced from Dashboard)
+    if (supabaseConversations && supabaseConversations.length > 0) {
+      return supabaseConversations.map(conv => ({
+        id: conv.id,
+        title: `Conversation with ${conv.advisor_id}`,
+        mode: conv.mode as 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general',
+        advisors: [conv.advisor_id],
+        lastMessage: conv.messages?.[conv.messages.length - 1]?.content || 'No messages',
+        lastUpdated: conv.updated_at,
+        messageCount: conv.messages?.length || 0,
+        hasAttachments: false,
+        tags: [],
+        isStarred: false,
+        isArchived: false,
+      }));
+    }
+
+    // Fallback to our conversation service data
+    return localConversations;
   }, [isDemoMode, localConversations, supabaseConversations]);
 
   const filteredAndSortedConversations = conversations
@@ -155,66 +204,41 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
-          conv.title.toLowerCase().includes(query) || conv.lastMessage.toLowerCase().includes(query)
+          conv.title.toLowerCase().includes(query) ||
+          conv.lastMessage.toLowerCase().includes(query) ||
+          conv.advisors.some(a => a.toLowerCase().includes(query))
         );
       }
 
       return true;
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'alphabetical':
-          return a.title.localeCompare(b.title);
-        case 'mode':
-          return a.mode.localeCompare(b.mode);
-        case 'recent':
-        default:
-          return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
+      if (sortBy === 'recent') {
+        return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
+      } else if (sortBy === 'alphabetical') {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === 'mode') {
+        return a.mode.localeCompare(b.mode);
       }
+      return 0;
     });
 
-  const deleteConversation = (id: string) => {
+  const handleDeleteConversation = (id: string) => {
     setConversationToDelete(id);
     setShowDeleteConfirmation(true);
   };
 
   const confirmDelete = () => {
     if (conversationToDelete) {
+      localStorage.removeItem(`conversation-${conversationToDelete}`);
       if (isDemoMode) {
-        localStorage.removeItem(`conversation-${conversationToDelete}`);
-        setLocalConversations(prev => prev.filter(conv => conv.id !== conversationToDelete));
+        loadLocalStorageConversations();
       } else {
-        // TODO: Implement Supabase conversation deletion
-        console.warn('Supabase conversation deletion not yet implemented');
+        loadConversationsFromService();
       }
+      setShowDeleteConfirmation(false);
       setConversationToDelete(null);
     }
-  };
-
-  const toggleStar = (id: string) => {
-    if (isDemoMode) {
-      const key = `conversation-${id}`;
-      const data = JSON.parse(localStorage.getItem(key) || '{}');
-      data.isStarred = !data.isStarred;
-      localStorage.setItem(key, JSON.stringify(data));
-      loadLocalStorageConversations();
-    }
-    // TODO: Implement Supabase star toggle
-  };
-
-  const archiveConversation = (id: string) => {
-    if (isDemoMode) {
-      const key = `conversation-${id}`;
-      const data = JSON.parse(localStorage.getItem(key) || '{}');
-      data.isArchived = !data.isArchived;
-      localStorage.setItem(key, JSON.stringify(data));
-      loadLocalStorageConversations();
-    }
-    // TODO: Implement Supabase archive toggle
-  };
-
-  const getModeInfo = (mode: string) => {
-    return conversationModes.find(m => m.id === mode) || conversationModes[3];
   };
 
   if (selectedConversation || showNewConversation) {
@@ -223,306 +247,186 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         onBack={() => {
           setSelectedConversation(null);
           setShowNewConversation(false);
-          // Refresh list when returning
+          // Reload conversations when coming back
           if (isDemoMode) {
             loadLocalStorageConversations();
-          } else {
-            reloadSupabaseConversations();
+          } else if (user?.id) {
+            loadConversationsFromService();
           }
         }}
         conversationId={selectedConversation || undefined}
-        initialMode={showNewConversation ? 'general' : undefined}
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
-                ← Back to Dashboard
-              </button>
-              <div className="h-6 border-l border-gray-300"></div>
-              <div className="flex items-center space-x-2">
-                <MessageCircle className="w-6 h-6 text-purple-600" />
-                <h1 className="text-xl font-bold text-gray-900">Advisory Conversations</h1>
-              </div>
-            </div>
+    <div className="flex h-full bg-gray-50">
+      {/* Left Sidebar - Filters & Actions */}
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Conversations</h2>
             <button
-              onClick={() => setShowNewConversation(true)}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-2"
+              onClick={onBack}
+              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
             >
-              <Plus className="w-4 h-4" />
-              <span>New Conversation</span>
+              <ArrowRight className="w-5 h-5" />
             </button>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <MessageCircle className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Conversations</p>
-                <p className="text-2xl font-bold text-gray-900">{conversations.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Brain className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Strategic Sessions</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {conversations.filter(c => c.mode === 'strategic_planning').length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <FileText className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Due Diligence</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {conversations.filter(c => c.mode === 'due_diligence').length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Star className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Starred</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {conversations.filter(c => c.isStarred).length}
-                </p>
-              </div>
-            </div>
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
         </div>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search conversations..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              {(['all', 'recent', 'starred', 'archived'] as const).map(filter => (
-                <button
-                  key={filter}
-                  onClick={() => setFilterMode(filter)}
-                  className={cn(
-                    'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                    filterMode === filter
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  )}
-                >
-                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                </button>
-              ))}
-            </div>
-            <select
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-            >
-              <option value="recent">Sort by Recent</option>
-              <option value="alphabetical">Sort A-Z</option>
-              <option value="mode">Sort by Type</option>
-            </select>
+        {/* Filters */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">Filter</span>
+            <Filter className="w-4 h-4 text-gray-400" />
           </div>
-        </div>
-
-        {/* Quick Start Templates */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Start</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {conversationModes.map(mode => (
+          <div className="grid grid-cols-2 gap-2">
+            {(['all', 'recent', 'starred', 'archived'] as const).map(mode => (
               <button
-                key={mode.id}
-                onClick={() => {
-                  setSelectedConversation(null);
-                  setShowNewConversation(true);
-                }}
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-left group"
+                key={mode}
+                onClick={() => setFilterMode(mode)}
+                className={cn(
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  filterMode === mode
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                )}
               >
-                <div
-                  className={cn(
-                    'w-12 h-12 rounded-lg flex items-center justify-center mb-4',
-                    mode.color
-                  )}
-                >
-                  <div className="text-white text-lg">{mode.icon}</div>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{mode.name}</h3>
-                <p className="text-sm text-gray-600 mb-3">{mode.description}</p>
-                <div className="flex items-center text-purple-600 text-sm font-medium group-hover:text-purple-700">
-                  <span>Start new session</span>
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
+                {mode.charAt(0).toUpperCase() + mode.slice(1)}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Conversations List */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Conversations</h2>
-          {filteredAndSortedConversations.length === 0 ? (
-            <div className="bg-white rounded-xl p-12 shadow-sm text-center">
+        {/* Sort */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">Sort by</span>
+            <TrendingUp className="w-4 h-4 text-gray-400" />
+          </div>
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as any)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="recent">Most Recent</option>
+            <option value="alphabetical">Alphabetical</option>
+            <option value="mode">By Mode</option>
+          </select>
+        </div>
+
+        {/* New Conversation Button */}
+        <div className="p-4">
+          <button
+            onClick={() => setShowNewConversation(true)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="font-medium">New Conversation</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content - Conversation List */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-6">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-gray-500">Loading conversations...</div>
+            </div>
+          ) : filteredAndSortedConversations.length === 0 ? (
+            <div className="text-center py-12">
               <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No conversations found</h3>
-              <p className="text-gray-600 mb-6">
-                {searchQuery || filterMode !== 'all'
-                  ? 'Try adjusting your search or filters'
-                  : 'Start your first conversation with our AI advisory board'}
+              <p className="text-gray-500 mb-6">
+                {searchQuery
+                  ? 'Try adjusting your search criteria'
+                  : 'Start a new conversation with your AI advisors'}
               </p>
               <button
                 onClick={() => setShowNewConversation(true)}
-                className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 flex items-center space-x-2 mx-auto"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                <Plus className="w-4 h-4" />
-                <span>Start First Conversation</span>
+                <Plus className="w-5 h-5" />
+                Start New Conversation
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredAndSortedConversations.map(conversation => {
-                const modeInfo = getModeInfo(conversation.mode);
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              {filteredAndSortedConversations.map(conv => {
+                const mode = conversationModes.find(m => m.id === conv.mode);
                 return (
                   <div
-                    key={conversation.id}
-                    className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
-                    onClick={() => setSelectedConversation(conversation.id)}
+                    key={conv.id}
+                    className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
+                    onClick={() => setSelectedConversation(conv.id)}
                   >
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={cn(
-                            'w-10 h-10 rounded-lg flex items-center justify-center',
-                            modeInfo.color
-                          )}
-                        >
-                          <div className="text-white">{modeInfo.icon}</div>
+                    <div className="p-4">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className={cn('p-2 rounded-lg', mode?.color || 'bg-gray-500')}>
+                            {mode?.icon || <MessageCircle className="w-4 h-4 text-white" />}
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                              {conv.title}
+                            </h3>
+                            <p className="text-xs text-gray-500">{mode?.name || 'General'}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
-                            {conversation.title}
-                          </h3>
-                          <p className="text-sm text-gray-600">{modeInfo.name}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            toggleStar(conversation.id);
-                          }}
-                          className={cn(
-                            'p-1 rounded hover:bg-gray-100',
-                            conversation.isStarred ? 'text-yellow-500' : 'text-gray-400'
-                          )}
-                        >
-                          <Star
-                            className="w-4 h-4"
-                            fill={conversation.isStarred ? 'currentColor' : 'none'}
-                          />
-                        </button>
-                        <div className="relative group/menu">
+                        <div className="flex items-center gap-1">
+                          {conv.isStarred && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
                           <button
-                            onClick={e => e.stopPropagation()}
-                            className="p-1 rounded hover:bg-gray-100 text-gray-400"
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleDeleteConversation(conv.id);
+                            }}
+                            className="p-1 text-gray-400 hover:text-red-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <MoreVertical className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
-                          <div className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-10">
-                            <div className="py-1">
-                              <button
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  archiveConversation(conversation.id);
-                                }}
-                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              >
-                                <Archive className="w-4 h-4 mr-2" />
-                                {conversation.isArchived ? 'Unarchive' : 'Archive'}
-                              </button>
-                              <button
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  deleteConversation(conversation.id);
-                                }}
-                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </button>
-                            </div>
-                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Content Preview */}
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {conversation.lastMessage}
-                      </p>
-                    </div>
+                      {/* Last Message */}
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{conv.lastMessage}</p>
 
-                    {/* Metadata */}
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center space-x-1">
-                          <MessageCircle className="w-3 h-3" />
-                          <span>{conversation.messageCount} messages</span>
+                      {/* Footer */}
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {formatDate(conv.lastUpdated)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MessageCircle className="w-3 h-3" />
+                            {conv.messageCount}
+                          </span>
+                          {conv.hasAttachments && (
+                            <span className="flex items-center gap-1">
+                              <Paperclip className="w-3 h-3" />
+                            </span>
+                          )}
                         </div>
-                        <div className="flex items-center space-x-1">
+                        <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          <span>{conversation.advisors.length} advisors</span>
-                        </div>
-                        {conversation.hasAttachments && (
-                          <div className="flex items-center space-x-1">
-                            <FileText className="w-3 h-3" />
-                            <span>Files</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{formatDate(conversation.lastUpdated)}</span>
+                          {conv.advisors.length}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -533,18 +437,15 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         </div>
       </div>
 
+      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteConfirmation}
-        onClose={() => {
-          setShowDeleteConfirmation(false);
-          setConversationToDelete(null);
-        }}
+        onClose={() => setShowDeleteConfirmation(false)}
         onConfirm={confirmDelete}
         title="Delete Conversation"
         message="Are you sure you want to delete this conversation? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
+        confirmLabel="Delete"
+        confirmVariant="danger"
       />
     </div>
   );

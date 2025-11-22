@@ -19,6 +19,7 @@ import {
   Folder,
 } from 'lucide-react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useDocumentContext } from '../../hooks/useDocumentContext';
 import { createAdvisorAI } from '../../services/advisorAI';
@@ -31,6 +32,7 @@ import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
 import { CelebrityAdvisorCustomizationModal } from '../Modals/CelebrityAdvisorCustomizationModal';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
+import { saveConversation as saveConversationToDb } from '../../services/conversationService';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -47,6 +49,7 @@ interface EnhancedMeetingSettings {
   discussionRounds: number;
   includeDocumentAnalysis: boolean;
   autoSummary: boolean;
+  enableExpertPanel: boolean;  // New: Expert panel mode with cross-document analysis
 }
 
 interface ConversationMessage {
@@ -71,6 +74,7 @@ export function AdvisoryConversation({
   conversationId,
 }: AdvisoryConversationProps) {
   const { celebrityAdvisors, customAdvisors } = useAdvisor();
+  const { user } = useAuth();
   const { settings, isConfigured } = useSettings();
   const {
     getDocumentContext,
@@ -92,6 +96,7 @@ export function AdvisoryConversation({
     discussionRounds: 1,
     includeDocumentAnalysis: false,
     autoSummary: false,
+    enableExpertPanel: true,  // Enable expert panel by default for better document analysis
   });
   const [isRecording, setIsRecording] = useState(false);
   const [showAdvisorPanel, setShowAdvisorPanel] = useState(true);
@@ -184,20 +189,54 @@ export function AdvisoryConversation({
     }
   };
 
-  const saveConversation = () => {
+  const saveConversation = async () => {
+    if (!user?.id) {
+      console.warn('Cannot save conversation: no user logged in');
+      return;
+    }
+
     const conversationData = {
       id: conversationId || `conv-${Date.now()}`,
+      user_id: user.id,
       mode: selectedMode,
-      advisors: selectedAdvisors,
-      messages,
-      files: uploadedFiles,
+      advisors: selectedAdvisors.map(id => {
+        const advisor = allAdvisors.find(a => a.id === id);
+        return {
+          id,
+          type: celebrityAdvisors.some(a => a.id === id) ? 'celebrity' as const : 'custom' as const,
+          name: advisor?.name,
+        };
+      }),
+      messages: messages.map(m => ({
+        id: m.id,
+        type: m.type,
+        content: m.content,
+        timestamp: m.timestamp.toISOString(),
+        advisor: m.advisor,
+        attachments: m.attachments,
+        metadata: m.metadata,
+      })),
+      files: uploadedFiles.map(f => ({
+        name: f.name,
+        type: f.type,
+        size: f.size,
+      })),
       selectedDocuments,
       conversationDocuments, // Persist document content across sessions
-      lastUpdated: new Date().toISOString(),
       title: generateConversationTitle(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
-    localStorage.setItem(`conversation-${conversationData.id}`, JSON.stringify(conversationData));
+    // Save to database (also caches in localStorage)
+    const result = await saveConversationToDb(conversationData);
+
+    if (!result.success) {
+      console.error('Failed to save conversation to database:', result.error);
+    } else {
+      console.log('✅ Conversation saved successfully');
+    }
+
     return conversationData.id;
   };
 
@@ -1219,6 +1258,23 @@ The committee unanimously recommends proceeding with measured optimism while sys
                     className="rounded border-gray-300 mr-2"
                   />
                   Build Consensus
+                </label>
+                <label className="flex items-center text-sm">
+                  <input
+                    type="checkbox"
+                    checked={enhancedSettings.enableExpertPanel}
+                    onChange={e =>
+                      setEnhancedSettings(prev => ({
+                        ...prev,
+                        enableExpertPanel: e.target.checked,
+                      }))
+                    }
+                    className="rounded border-gray-300 mr-2"
+                  />
+                  <span>
+                    Expert Panel Mode{' '}
+                    <span className="text-xs text-gray-500">(Deep document analysis with cross-referencing)</span>
+                  </span>
                 </label>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
