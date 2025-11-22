@@ -10,7 +10,6 @@ interface VoiceChatButtonProps {
 
 export const VoiceChatButton: React.FC<VoiceChatButtonProps> = ({ advisor, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [transcript, setTranscript] = useState<string[]>([]);
 
   const {
     state,
@@ -19,16 +18,12 @@ export const VoiceChatButton: React.FC<VoiceChatButtonProps> = ({ advisor, onClo
     disconnect,
     startListening,
     stopListening,
-    sendText,
     interrupt,
     error
   } = useVoiceConversation({
     advisorId: advisor.id,
     advisorName: advisor.name,
-    systemPrompt: advisor.system_prompt || `You are ${advisor.name}, providing business advice.`,
-    onTranscript: (text, isUser) => {
-      setTranscript(prev => [...prev, `${isUser ? 'You' : advisor.name}: ${text}`]);
-    }
+    systemPrompt: advisor.system_prompt || `You are ${advisor.name}, providing business advice.`
   });
 
   const handleToggleVoice = async () => {
@@ -45,7 +40,6 @@ export const VoiceChatButton: React.FC<VoiceChatButtonProps> = ({ advisor, onClo
   const handleClose = () => {
     disconnect();
     setIsOpen(false);
-    setTranscript([]);
     onClose?.();
   };
 

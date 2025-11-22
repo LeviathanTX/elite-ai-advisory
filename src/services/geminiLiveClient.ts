@@ -26,9 +26,21 @@ export class GeminiLiveClient {
   };
   private audioQueue: ArrayBuffer[] = [];
   private isPlaying = false;
+  private audioContext: AudioContext | null = null;
 
   constructor(config: GeminiLiveConfig) {
     this.config = config;
+    // Initialize shared AudioContext once
+    try {
+      this.audioContext = new AudioContext({ sampleRate: 16000 });
+    } catch (err) {
+      console.warn('AudioContext creation failed, will try without sample rate:', err);
+      try {
+        this.audioContext = new AudioContext();
+      } catch (e) {
+        console.error('AudioContext creation failed completely:', e);
+      }
+    }
   }
 
   private updateState(updates: Partial<VoiceSessionState>) {
@@ -161,17 +173,22 @@ export class GeminiLiveClient {
   private async playNextAudio() {
     if (this.isPlaying || this.audioQueue.length === 0) return;
 
+    if (!this.audioContext) {
+      console.error('Gemini Live: AudioContext not available');
+      this.isPlaying = false;
+      return;
+    }
+
     this.isPlaying = true;
     this.updateState({ isSpeaking: true });
 
     const audioData = this.audioQueue.shift()!;
 
     try {
-      const audioContext = new AudioContext({ sampleRate: 24000 });
-      const audioBuffer = await audioContext.decodeAudioData(audioData.slice(0));
-      const source = audioContext.createBufferSource();
+      const audioBuffer = await this.audioContext.decodeAudioData(audioData.slice(0));
+      const source = this.audioContext.createBufferSource();
       source.buffer = audioBuffer;
-      source.connect(audioContext.destination);
+      source.connect(this.audioContext.destination);
 
       source.onended = () => {
         this.isPlaying = false;
@@ -239,6 +256,11 @@ export class GeminiLiveClient {
       this.ws.close();
       this.ws = null;
     }
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close();
+      this.audioContext = null;
+    }
+    this.audioQueue = [];
     this.updateState({ isConnected: false, isListening: false, isSpeaking: false });
   }
 

@@ -60,12 +60,12 @@ Speak naturally as if in a real conversation.`;
 
       clientRef.current = new GeminiLiveClient({
         apiKey,
-        model: 'models/gemini-2.0-flash-exp',
+        model: 'models/gemini-2.0-flash',
         systemInstruction: fullSystemPrompt,
         voiceConfig: {
           voiceName,
           languageCode: 'en-US',
-          sampleRate: 24000
+          sampleRate: 16000
         },
         generationConfig: {
           responseModalities: ['AUDIO', 'TEXT'],
