@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSubscription } from '../../contexts/SubscriptionContext';
+import { appConfig } from '../../config/env';
 import { cn } from '../../utils';
 
 interface TrialBannerProps {
@@ -11,8 +12,11 @@ export const TrialBanner: React.FC<TrialBannerProps> = ({ className, onUpgradeCl
   const { isTrialActive, trialDaysRemaining } = useSubscription();
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Don't show if trial is not active or banner is dismissed
-  if (!isTrialActive || isDismissed) {
+  // Don't show in demo/bypass mode
+  const isDemoMode = appConfig.bypassAuth || !appConfig.hasSupabase;
+
+  // Don't show if trial is not active, banner is dismissed, or in demo mode
+  if (!isTrialActive || isDismissed || isDemoMode) {
     return null;
   }
 

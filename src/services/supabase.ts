@@ -503,12 +503,30 @@ export const signUp = async (email: string, password: string, fullName?: string)
 };
 
 export const signOut = async () => {
+  console.log('🚪 signOut called', { isDemoMode });
+
   if (isDemoMode) {
+    console.log('✅ Demo mode - clearing session and redirecting');
+    // Clear any local storage auth data
+    localStorage.removeItem('ai-bod-auth');
     return { error: null };
   }
 
-  const { error } = await supabase.auth.signOut();
-  return { error };
+  try {
+    console.log('📤 Calling Supabase signOut...');
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error('❌ signOut error:', error);
+    } else {
+      console.log('✅ signOut successful');
+    }
+
+    return { error };
+  } catch (err: any) {
+    console.error('❌ signOut exception:', err);
+    return { error: { message: err.message } };
+  }
 };
 
 export const getCurrentUser = async () => {
