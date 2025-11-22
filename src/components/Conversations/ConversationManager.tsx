@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { AdvisoryConversation } from './AdvisoryConversation';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
+import { useAuth } from '../../contexts/AuthContext';
+import { loadConversations as loadConversationsFromDb } from '../../services/conversationService';
 import { cn, formatDate } from '../../utils';
 
 interface SavedConversation {
@@ -43,6 +45,7 @@ interface ConversationManagerProps {
 }
 
 export function ConversationManager({ onBack }: ConversationManagerProps) {
+  const { user } = useAuth();
   const [conversations, setConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [showNewConversation, setShowNewConversation] = useState(false);
@@ -51,6 +54,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   const [sortBy, setSortBy] = useState<'recent' | 'alphabetical' | 'mode'>('recent');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const conversationModes = [
     {
@@ -85,37 +89,40 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
 
   useEffect(() => {
     loadConversations();
-  }, []);
+  }, [user]);
 
-  const loadConversations = () => {
-    const saved: SavedConversation[] = [];
-
-    // Load from localStorage
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith('conversation-')) {
-        try {
-          const data = JSON.parse(localStorage.getItem(key) || '');
-          saved.push({
-            id: data.id,
-            title: data.title || 'Untitled Conversation',
-            mode: data.mode || 'general',
-            advisors: data.advisors || [],
-            lastMessage: data.messages?.[data.messages.length - 1]?.content || 'No messages',
-            lastUpdated: data.lastUpdated || new Date().toISOString(),
-            messageCount: data.messages?.length || 0,
-            hasAttachments: data.files?.length > 0 || false,
-            tags: data.tags || [],
-            isStarred: data.isStarred || false,
-            isArchived: data.isArchived || false,
-          });
-        } catch (error) {
-          console.error('Error loading conversation:', error);
-        }
-      }
+  const loadConversations = async () => {
+    if (!user?.id) {
+      console.log('No user logged in, skipping conversation load');
+      return;
     }
 
-    setConversations(saved);
+    setIsLoading(true);
+    try {
+      // Load from database (or localStorage fallback)
+      const loaded = await loadConversationsFromDb(user.id);
+
+      const saved: SavedConversation[] = loaded.map(data => ({
+        id: data.id,
+        title: data.title || 'Untitled Conversation',
+        mode: data.mode || 'general',
+        advisors: data.advisors?.map(a => a.id) || [],
+        lastMessage: data.messages?.[data.messages.length - 1]?.content || 'No messages',
+        lastUpdated: data.updated_at || data.created_at || new Date().toISOString(),
+        messageCount: data.messages?.length || 0,
+        hasAttachments: data.files && data.files.length > 0,
+        tags: [],
+        isStarred: false,
+        isArchived: false,
+      }));
+
+      setConversations(saved);
+      console.log(`✅ Loaded ${saved.length} conversations for user ${user.id}`);
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const filteredAndSortedConversations = conversations
