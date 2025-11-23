@@ -193,9 +193,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                 onClick={async () => {
                   try {
                     await signOut();
-                    window.location.href = '/';
+                    // Force page reload to clear all state and show landing page
+                    window.location.reload();
                   } catch (error) {
                     console.error('Sign out error:', error);
+                    // Still reload on error to ensure clean state
+                    window.location.reload();
                   }
                 }}
                 className="text-gray-500 hover:text-gray-700"

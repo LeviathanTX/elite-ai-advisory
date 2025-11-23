@@ -88,8 +88,19 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const limits = SUBSCRIPTION_LIMITS[currentTier];
 
   // Calculate trial status
-  // Special handling: LeviathanTX@gmail.com never expires
-  const isOwnerAccount = user?.email === 'LeviathanTX@gmail.com' || user?.email === 'leviathanTX@gmail.com';
+  // Special handling: Owner accounts never expire
+  const ownerEmails = [
+    'leviathanTX@gmail.com',
+    'LeviathanTX@gmail.com',
+    'jeff@leviantx.com',
+    'jeffrey@leviantx.com',
+    'jeff.levine@gmail.com',
+    'jeffrey.levine@gmail.com',
+  ];
+  const isOwnerAccount =
+    ownerEmails.some(email => user?.email?.toLowerCase() === email.toLowerCase()) ||
+    user?.full_name?.toLowerCase().includes('jeff') && user?.full_name?.toLowerCase().includes('levine');
+
   const isTrialActive = isOwnerAccount ? true : (user?.is_trial_active ?? false);
   const trialEndDate = user?.trial_end_date ? new Date(user.trial_end_date) : null;
 
