@@ -9,6 +9,16 @@ import {
 } from '../../services/AudioAnalysisEngine';
 import RealTimeAudioFeedback from '../Audio/RealTimeAudioFeedback';
 import { LiveCoachingChart } from '../Charts/LiveCoachingChart';
+import {
+  CheckCircle,
+  AlertTriangle,
+  Target,
+  TrendingUp,
+  BarChart3,
+  Lightbulb,
+  BookOpen,
+  Zap
+} from 'lucide-react';
 
 interface PitchPracticeModeProps {
   onBack: () => void;
@@ -512,19 +522,27 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
 
         // Calculate realistic metrics from audio features with varied defaults
         const calculatedMetrics = {
-          clarity: audioFeatures?.coaching_metrics.clarity_score ||
-                   audioFeatures?.coaching_metrics.articulation_score ||
-                   (speechAnalysis?.clarityScore) ||
-                   Math.floor(Math.random() * 30) + 55, // Range: 55-85
-          confidence: audioFeatures?.emotional_markers.confidence_level ||
-                      (speechAnalysis?.confidenceLevel) ||
-                      Math.floor(Math.random() * 35) + 50, // Range: 50-85
-          structure: audioFeatures?.coaching_metrics.flow_score ||
-                     (speechAnalysis ? Math.max(50, Math.min(95, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5)) : null) ||
-                     Math.floor(Math.random() * 35) + 50, // Range: 50-85
-          engagement: audioFeatures?.emotional_markers.energy_level ||
-                      (speechAnalysis?.energyLevel) ||
-                      Math.floor(Math.random() * 30) + 55, // Range: 55-85
+          clarity: Math.min(90, Math.max(40,
+            audioFeatures?.coaching_metrics.clarity_score ||
+            audioFeatures?.coaching_metrics.articulation_score ||
+            (speechAnalysis?.clarityScore) ||
+            Math.floor(Math.random() * 30) + 55 // Range: 55-85
+          )),
+          confidence: Math.min(90, Math.max(35,
+            audioFeatures?.emotional_markers.confidence_level ||
+            (speechAnalysis?.confidenceLevel) ||
+            Math.floor(Math.random() * 35) + 50 // Range: 50-85
+          )),
+          structure: Math.min(90, Math.max(40,
+            audioFeatures?.coaching_metrics.flow_score ||
+            (speechAnalysis ? Math.max(50, Math.min(95, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5)) : null) ||
+            Math.floor(Math.random() * 35) + 50 // Range: 50-85
+          )),
+          engagement: Math.min(90, Math.max(45,
+            audioFeatures?.emotional_markers.energy_level ||
+            (speechAnalysis?.energyLevel) ||
+            Math.floor(Math.random() * 30) + 55 // Range: 55-85
+          )),
         };
 
         const realAnalysis = {
@@ -949,17 +967,219 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
               </div>
             </div>
 
-            {/* AI Generated Feedback */}
+            {/* AI-Powered Analysis Report */}
             {analysis.aiGeneratedFeedback && (
-              <div className="mt-8 p-6 bg-green-50 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">🤖 AI-Powered Analysis</h3>
-                <div className="prose prose-sm max-w-none">
-                  <p className="text-gray-700">{analysis.aiGeneratedFeedback}</p>
+              <div className="mt-8 space-y-6">
+                {/* Executive Summary */}
+                <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                  <div className="flex items-start gap-3 mb-4">
+                    <BarChart3 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">AI-Powered Analysis Report</h3>
+                      <div className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full mb-3">
+                        Overall Score: {analysis.overallScore}/100
+                      </div>
+                      <div className="text-gray-700 text-sm leading-relaxed bg-white/50 p-4 rounded-lg">
+                        <p className="font-medium mb-2">Executive Summary:</p>
+                        <p>{analysis.aiGeneratedFeedback}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Key Metrics Visual Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(analysis.metrics).map(([key, value]) => {
+                    const score = Math.round(value as number);
+                    const getRating = (s: number) => {
+                      if (s >= 80) return { label: 'Excellent', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200' };
+                      if (s >= 70) return { label: 'Good', color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' };
+                      if (s >= 60) return { label: 'Average', color: 'text-yellow-600', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' };
+                      return { label: 'Needs Work', color: 'text-orange-600', bgColor: 'bg-orange-50', borderColor: 'border-orange-200' };
+                    };
+                    const rating = getRating(score);
+                    return (
+                      <div key={key} className={`p-4 rounded-lg border ${rating.borderColor} ${rating.bgColor}`}>
+                        <div className="text-xs font-medium text-gray-600 uppercase mb-1 capitalize">{key}</div>
+                        <div className={`text-3xl font-bold ${rating.color} mb-2`}>{score}%</div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                          <div
+                            className={`h-2 rounded-full transition-all ${score >= 80 ? 'bg-green-500' : score >= 70 ? 'bg-blue-500' : score >= 60 ? 'bg-yellow-500' : 'bg-orange-500'}`}
+                            style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+                          ></div>
+                        </div>
+                        <div className={`text-xs font-semibold ${rating.color}`}>{rating.label}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* What's Working Well */}
+                {analysis.strengths && analysis.strengths.length > 0 && (
+                  <div className="p-6 bg-green-50 rounded-xl border border-green-200">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="text-lg font-bold text-green-900 mb-4">What's Working Well</h4>
+                        <div className="space-y-3">
+                          {analysis.strengths.slice(0, 5).map((strength: string, index: number) => (
+                            <div key={index} className="bg-white/70 p-3 rounded-lg">
+                              <div className="flex items-start gap-2">
+                                <Zap className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="text-sm text-gray-800 font-medium">{strength}</p>
+                                  {index === 0 && (
+                                    <p className="text-xs text-green-700 mt-1">→ Keep leveraging this strength in your pitch</p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Areas for Improvement */}
+                {analysis.improvements && analysis.improvements.length > 0 && (
+                  <div className="p-6 bg-orange-50 rounded-xl border border-orange-200">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="text-lg font-bold text-orange-900 mb-4">Top Priority Improvements</h4>
+                        <div className="space-y-3">
+                          {analysis.improvements.slice(0, 5).map((improvement: string, index: number) => (
+                            <div key={index} className="bg-white/70 p-4 rounded-lg">
+                              <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-600 text-white text-sm font-bold flex items-center justify-center">
+                                  {index + 1}
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm text-gray-800 font-medium mb-1">{improvement}</p>
+                                  {index === 0 && (
+                                    <div className="text-xs text-orange-700 mt-2 p-2 bg-orange-100 rounded">
+                                      <strong>→ Action:</strong> Focus on this first to make the biggest impact
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Speech Delivery Metrics (Voice Mode Only) */}
+                {analysis.pitchMode === 'voice' && (analysis.speechAnalysis || analysis.audioFeatures) && (
+                  <div className="p-6 bg-purple-50 rounded-xl border border-purple-200">
+                    <div className="flex items-start gap-3">
+                      <TrendingUp className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="text-lg font-bold text-purple-900 mb-4">Delivery Analysis</h4>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="bg-white/70 p-4 rounded-lg space-y-2 text-sm">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-700">Speaking Pace:</span>
+                              <span className="font-semibold text-purple-700">
+                                {analysis.speechAnalysis?.wordsPerMinute || analysis.audioFeatures?.rhythm.speaking_rate.toFixed(0) || 'N/A'} WPM
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-600 bg-purple-100 p-2 rounded">
+                              Optimal: 140-160 WPM
+                            </div>
+                          </div>
+                          <div className="bg-white/70 p-4 rounded-lg space-y-2 text-sm">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-700">Filler Words:</span>
+                              <span className="font-semibold text-purple-700">
+                                {analysis.speechAnalysis?.pauseAnalysis.fillerWords || analysis.audioFeatures?.timing.pause_count || 'N/A'}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-600 bg-purple-100 p-2 rounded">
+                              Target: Less than 5 per minute
+                            </div>
+                          </div>
+                          {analysis.audioFeatures && (
+                            <>
+                              <div className="bg-white/70 p-4 rounded-lg space-y-2 text-sm">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-700">Energy Level:</span>
+                                  <span className="font-semibold text-purple-700">
+                                    {analysis.audioFeatures.emotional_markers.energy_level > 75 ? 'High' : analysis.audioFeatures.emotional_markers.energy_level > 50 ? 'Medium' : 'Low'}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="bg-white/70 p-4 rounded-lg space-y-2 text-sm">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-700">Stress Level:</span>
+                                  <span className={`font-semibold ${analysis.audioFeatures.emotional_markers.stress_level > 60 ? 'text-red-600' : 'text-green-600'}`}>
+                                    {analysis.audioFeatures.emotional_markers.stress_level.toFixed(0)}%
+                                  </span>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Next Steps - Actionable */}
+                <div className="p-6 bg-indigo-50 rounded-xl border border-indigo-200">
+                  <div className="flex items-start gap-3">
+                    <Target className="w-6 h-6 text-indigo-600 flex-shrink-0 mt-1" />
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold text-indigo-900 mb-4">Immediate Next Steps</h4>
+                      <div className="space-y-3">
+                        {analysis.improvements && analysis.improvements.slice(0, 3).map((improvement: string, index: number) => (
+                          <div key={index} className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">
+                              {index + 1}
+                            </div>
+                            <p className="text-sm text-gray-800">{improvement}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Practice Resources */}
+                      {analysis.pitchMode === 'voice' && (
+                        <div className="mt-4 p-4 bg-indigo-100 rounded-lg">
+                          <div className="flex items-start gap-2 mb-2">
+                            <BookOpen className="w-4 h-4 text-indigo-700 flex-shrink-0 mt-0.5" />
+                            <h5 className="font-semibold text-indigo-900 text-sm">Practice Techniques:</h5>
+                          </div>
+                          <ul className="text-xs text-indigo-800 space-y-1 ml-6">
+                            {analysis.speechAnalysis?.pauseAnalysis.fillerWords > 5 && (
+                              <li>• Practice with "filler word awareness" - pause instead of saying "um" or "uh"</li>
+                            )}
+                            {(analysis.speechAnalysis?.wordsPerMinute > 170 || analysis.audioFeatures?.rhythm.speaking_rate > 170) && (
+                              <li>• Slow down: Use the "power pause" technique after key points</li>
+                            )}
+                            {(analysis.speechAnalysis?.stressLevel > 60 || analysis.audioFeatures?.emotional_markers.stress_level > 60) && (
+                              <li>• Try box breathing before pitching: inhale 4s, hold 4s, exhale 4s, hold 4s</li>
+                            )}
+                            <li>• Record yourself daily and track improvement in these metrics</li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Transcript */}
                 {analysis.transcript && (
-                  <div className="mt-4 p-3 bg-white rounded border">
-                    <h4 className="font-medium text-gray-900 mb-2">📝 Your Pitch Transcript:</h4>
-                    <p className="text-sm text-gray-600 italic">"{analysis.transcript}"</p>
+                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div className="flex items-start gap-2 mb-3">
+                      <Lightbulb className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
+                      <h4 className="font-medium text-gray-900">Your Pitch Transcript</h4>
+                    </div>
+                    <div className="text-sm text-gray-700 italic bg-white p-4 rounded-lg border max-h-48 overflow-y-auto">
+                      "{analysis.transcript}"
+                    </div>
                   </div>
                 )}
               </div>
