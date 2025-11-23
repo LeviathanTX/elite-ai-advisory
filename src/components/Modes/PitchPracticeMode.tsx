@@ -697,7 +697,11 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
         actualStrengths.push('Comprehensive pitch content with good detail');
 
       const validStrengths = actualStrengths.filter(
-        item => typeof item === 'string' && item.trim().length > 10 && !/^[\[\],\{\}`\s]+$/.test(item) && !item.match(/^[^a-zA-Z0-9]+$/)
+        item =>
+          typeof item === 'string' &&
+          item.trim().length > 10 &&
+          !/^[\[\],\{\}`\s]+$/.test(item) &&
+          !item.match(/^[^a-zA-Z0-9]+$/)
       );
       return validStrengths.length > 0 ? validStrengths : potentialStrengths.slice(0, 2);
     }
@@ -750,7 +754,11 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
         );
 
       return [...baseImprovements.slice(0, 3), ...voiceImprovements].filter(
-        item => typeof item === 'string' && item.trim().length > 10 && !/^[\[\],\{\}`\s]+$/.test(item) && !item.match(/^[^a-zA-Z0-9]+$/)
+        item =>
+          typeof item === 'string' &&
+          item.trim().length > 10 &&
+          !/^[\[\],\{\}`\s]+$/.test(item) &&
+          !item.match(/^[^a-zA-Z0-9]+$/)
       );
     }
 

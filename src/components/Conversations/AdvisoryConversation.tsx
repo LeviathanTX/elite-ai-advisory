@@ -209,15 +209,14 @@ export function AdvisoryConversation({
           name: advisor?.name,
         };
       }),
-      messages: messages.map(m => ({
-        id: m.id,
-        type: m.type,
-        content: m.content,
-        timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
-        advisor: m.advisor,
-        attachments: m.attachments,
-        metadata: m.metadata,
-      })),
+      messages: messages
+        .filter(m => m.type === 'user' || m.type === 'advisor') // Only save user and advisor messages
+        .map(m => ({
+          id: m.id,
+          role: m.type as 'user' | 'advisor', // Convert type to role for database
+          content: m.content,
+          timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
+        })),
       files: uploadedFiles.map(f => ({
         name: f.name,
         type: f.type,

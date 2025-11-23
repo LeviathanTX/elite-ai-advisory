@@ -155,10 +155,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         setTimeout(() => reject(new Error('Conversation load timeout')), 10000);
       });
 
-      const loaded = await Promise.race([
-        loadConversationsFromDb(user.id),
-        timeoutPromise
-      ]);
+      const loaded = await Promise.race([loadConversationsFromDb(user.id), timeoutPromise]);
 
       console.log(`✅ Loaded ${loaded.length} conversations from database`);
 
