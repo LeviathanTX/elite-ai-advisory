@@ -175,17 +175,27 @@ export function MessageInput({
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="mt-3 flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center space-x-4">
-            <span>Press Enter to send, Shift+Enter for new line</span>
-            {supportVoice && <span>• Voice input supported</span>}
+        {/* Quick Actions and Tips */}
+        <div className="mt-3 flex items-center justify-between text-sm">
+          <div className="flex items-center space-x-4 text-gray-500">
+            <span className="flex items-center">
+              <kbd className="px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono mr-1">
+                Enter
+              </kbd>
+              to send
+            </span>
+            <span className="flex items-center">
+              <kbd className="px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono mr-1">
+                Shift + Enter
+              </kbd>
+              for new line
+            </span>
           </div>
 
-          {input.length === 0 && (
-            <div className="flex items-center space-x-2">
+          {input.length === 0 && !isGeneratingResponse && (
+            <div className="flex items-center space-x-2 text-blue-600">
               <Smile className="w-4 h-4" />
-              <span>Start typing your question...</span>
+              <span className="font-medium">Ask me anything about your business!</span>
             </div>
           )}
         </div>

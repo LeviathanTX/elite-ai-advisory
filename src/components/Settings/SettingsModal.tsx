@@ -80,7 +80,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       // Make a REAL API call to test the connection
       const testMessage = {
         role: 'user' as const,
-        content: 'Say OK'
+        content: 'Say OK',
       };
 
       // Try backend proxy first (uses server-side API keys)
@@ -94,7 +94,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             service: serviceId,
             model: service.model,
             messages: [testMessage],
-            options: { maxTokens: 50, temperature: 0 }
+            options: { maxTokens: 50, temperature: 0 },
           }),
         });
 
@@ -138,7 +138,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           apiUrl = 'https://api.openai.com/v1/chat/completions';
           headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${service.apiKey}`,
+            Authorization: `Bearer ${service.apiKey}`,
           };
           body = {
             model: service.model || 'gpt-4',
@@ -153,9 +153,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             'Content-Type': 'application/json',
           };
           body = {
-            contents: [{
-              parts: [{ text: testMessage.content }]
-            }]
+            contents: [
+              {
+                parts: [{ text: testMessage.content }],
+              },
+            ],
           };
           break;
 
@@ -177,7 +179,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       const data = await response.json();
       console.log(`✅ ${service.name} connected via direct API:`, data);
       setServiceStatuses(prev => ({ ...prev, [serviceId]: 'connected' }));
-
     } catch (error: any) {
       console.error(`❌ Failed to validate ${service.name}:`, error);
       setServiceStatuses(prev => ({ ...prev, [serviceId]: 'error' }));

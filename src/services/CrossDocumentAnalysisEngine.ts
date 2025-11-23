@@ -304,9 +304,7 @@ ${JSON.stringify(context, null, 2)}`,
   /**
    * Perform comprehensive due diligence analysis
    */
-  async conductDueDiligence(
-    collectionId: string
-  ): Promise<{
+  async conductDueDiligence(collectionId: string): Promise<{
     executiveSummary: string;
     strengths: string[];
     weaknesses: string[];
@@ -340,9 +338,8 @@ ${JSON.stringify(context, null, 2)}`,
       const documents = await this.fetchDocuments(documentIds);
 
       // Get financial analysis
-      const financialAssessment = await this.financialExtractor.generateFinancialAnalysis(
-        documentIds
-      );
+      const financialAssessment =
+        await this.financialExtractor.generateFinancialAnalysis(documentIds);
 
       // Build comprehensive due diligence context
       const ddContext = documents
@@ -492,10 +489,7 @@ ${doc.content_text.substring(0, 4000)}...
   private async fetchDocuments(documentIds: string[]): Promise<any[]> {
     const supabase = createClient(this.supabaseUrl, this.supabaseKey);
 
-    const { data, error } = await supabase
-      .from('documents')
-      .select('*')
-      .in('id', documentIds);
+    const { data, error } = await supabase.from('documents').select('*').in('id', documentIds);
 
     if (error) {
       throw new Error(`Error fetching documents: ${error.message}`);

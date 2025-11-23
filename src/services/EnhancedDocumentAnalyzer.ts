@@ -304,14 +304,15 @@ export class EnhancedDocumentAnalyzer {
       .select('*')
       .in('id', documentIds);
 
-    const documentContext = documents
-      ?.map(
-        doc => `
+    const documentContext =
+      documents
+        ?.map(
+          doc => `
 ### ${doc.filename}
 ${doc.content_text.substring(0, 3000)}...
 `
-      )
-      .join('\n\n') || '';
+        )
+        .join('\n\n') || '';
 
     // Generate analysis using framework
     const prompt = VCAnalysisFramework.generateAnalysisPrompt(framework, documentContext);

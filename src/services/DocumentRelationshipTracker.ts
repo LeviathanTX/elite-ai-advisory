@@ -122,11 +122,7 @@ export class DocumentRelationshipTracker {
           }
 
           // Check for same company
-          if (
-            doc1.company_name &&
-            doc2.company_name &&
-            doc1.company_name === doc2.company_name
-          ) {
+          if (doc1.company_name && doc2.company_name && doc1.company_name === doc2.company_name) {
             relationships.push({
               id: crypto.randomUUID(),
               sourceDocumentId: doc1.id,
@@ -266,10 +262,7 @@ Preview: ${doc2.content_text.substring(0, 500)}
   /**
    * Get document network/graph
    */
-  async getDocumentNetwork(
-    rootDocumentId: string,
-    maxDepth: number = 2
-  ): Promise<DocumentNetwork> {
+  async getDocumentNetwork(rootDocumentId: string, maxDepth: number = 2): Promise<DocumentNetwork> {
     try {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey);
 

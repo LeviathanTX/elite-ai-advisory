@@ -55,28 +55,29 @@ function LandingPage({
             Get Mark Cuban's advice for $97/mo instead of $50,000
           </p>
           <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-            247 founders use AI-BoD to practice pitches, refine strategy, and raise capital faster.
-            Join the community transforming how entrepreneurs get expert advice.
+            Practice your pitch with AI advisors trained on insights from Mark Cuban, Reid Hoffman,
+            and other business legends. Transform how you prepare for investors and make strategic
+            decisions.
           </p>
 
-          {/* Social Proof Badges */}
+          {/* Key Features */}
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-green-600 font-bold text-xl">✅</span>
+              <span className="text-blue-600 font-bold text-xl">🎤</span>
               <span className="text-sm text-gray-700">
-                <strong>Avg 47 pitch practices</strong> before investor meetings
+                <strong>Unlimited pitch practice</strong> with AI feedback
               </span>
             </div>
             <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-green-600 font-bold text-xl">✅</span>
+              <span className="text-purple-600 font-bold text-xl">🧠</span>
               <span className="text-sm text-gray-700">
-                <strong>2.3x higher</strong> fundraising success rate
+                <strong>15+ expert AI advisors</strong> available 24/7
               </span>
             </div>
             <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-green-600 font-bold text-xl">✅</span>
+              <span className="text-green-600 font-bold text-xl">📄</span>
               <span className="text-sm text-gray-700">
-                <strong>6 hours/week saved</strong> on strategic planning
+                <strong>Document analysis</strong> for pitch decks & plans
               </span>
             </div>
           </div>
@@ -88,79 +89,71 @@ function LandingPage({
           </div>
         </div>
 
-        {/* Testimonials Section - CRITICAL for conversion */}
+        {/* What You Get Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">
-            Trusted by Founders Who've Raised Capital
+            Built for Founders Who Take Preparation Seriously
           </h2>
-          <p className="text-center text-gray-600 mb-10">Real results from real entrepreneurs</p>
+          <p className="text-center text-gray-600 mb-10">
+            Real AI-powered advisory platform with advanced features
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
+            {/* Feature 1 */}
             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl font-bold text-blue-600">SC</span>
+                  <span className="text-2xl">🎯</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Sarah Chen</div>
-                  <div className="text-sm text-gray-600">Founder, FinFlow (Fintech)</div>
+                  <div className="font-semibold text-gray-900">Expert Panel Mode</div>
+                  <div className="text-sm text-gray-600">Multi-advisor collaboration</div>
                 </div>
               </div>
-              <div className="mb-3">
-                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-              </div>
               <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                "I practiced my pitch 47 times with AI Mark Cuban. The feedback on my delivery,
-                pacing, and value prop was incredible.{' '}
-                <strong className="text-blue-600">Raised $2M from Austin Ventures</strong> two weeks
-                later."
+                Orchestrate conversations between multiple AI advisors - Mark Cuban debates with
+                Reid Hoffman while Barbara Corcoran adds her perspective. Get comprehensive
+                strategic insights from diverse viewpoints.
               </p>
-              <div className="text-xs text-gray-500">Capital Factory '24</div>
+              <div className="text-xs text-blue-600 font-medium">Available on all plans</div>
             </div>
 
-            {/* Testimonial 2 */}
+            {/* Feature 2 */}
             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl font-bold text-purple-600">MR</span>
+                  <span className="text-2xl">💾</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Marcus Rodriguez</div>
-                  <div className="text-sm text-gray-600">CEO, OptiScale (SaaS)</div>
+                  <div className="font-semibold text-gray-900">Persistent Conversations</div>
+                  <div className="text-sm text-gray-600">Full memory & context</div>
                 </div>
               </div>
-              <div className="mb-3">
-                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-              </div>
               <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                "AI-BoD replaced my $5K/month business coach. I get better advice, faster, and it
-                remembers every conversation.{' '}
-                <strong className="text-purple-600">Strategic planning time dropped 80%.</strong>"
+                Every conversation is saved and searchable. Advisors remember your business context,
+                previous discussions, and uploaded documents. Build on insights over time instead of
+                starting fresh each session.
               </p>
-              <div className="text-xs text-gray-500">Capital Factory '23</div>
+              <div className="text-xs text-purple-600 font-medium">Powered by Supabase</div>
             </div>
 
-            {/* Testimonial 3 */}
+            {/* Feature 3 */}
             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-xl font-bold text-green-600">AP</span>
+                  <span className="text-2xl">📚</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Amy Patel</div>
-                  <div className="text-sm text-gray-600">Founder, HealthBridge (HealthTech)</div>
+                  <div className="font-semibold text-gray-900">Document Intelligence</div>
+                  <div className="text-sm text-gray-600">PDF, Word, Excel analysis</div>
                 </div>
               </div>
-              <div className="mb-3">
-                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-              </div>
               <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                "The document analysis is gold. Uploaded my pitch deck, got instant VC-grade
-                feedback, and redesigned it completely.{' '}
-                <strong className="text-green-600">Secured Series A</strong> three months later."
+                Upload pitch decks, business plans, and financial models. AI advisors analyze your
+                documents and provide specific feedback referenced to actual content. Get VC-grade
+                critique before sending to investors.
               </p>
-              <div className="text-xs text-gray-500">Capital Factory '24</div>
+              <div className="text-xs text-green-600 font-medium">PDF.js + OpenAI embeddings</div>
             </div>
           </div>
         </div>
@@ -180,9 +173,9 @@ function LandingPage({
                 AI-powered analysis of delivery, pacing, content, and confidence
               </p>
               <div className="bg-purple-50 rounded-lg p-3 text-xs">
-                <p className="text-purple-900 font-medium mb-1">Real Results:</p>
-                <p className="text-gray-700">→ Sarah practiced 47x, raised $2M</p>
-                <p className="text-gray-700">→ Avg 15 pitches before investor-ready</p>
+                <p className="text-purple-900 font-medium mb-1">What You Get:</p>
+                <p className="text-gray-700">→ Unlimited practice sessions</p>
+                <p className="text-gray-700">→ Real-time delivery feedback</p>
               </div>
             </div>
 
@@ -195,9 +188,9 @@ function LandingPage({
                 Multi-advisor discussions with celebrity-grade insights
               </p>
               <div className="bg-blue-50 rounded-lg p-3 text-xs">
-                <p className="text-blue-900 font-medium mb-1">Real Results:</p>
-                <p className="text-gray-700">→ Marcus saved 6 hrs/week planning</p>
-                <p className="text-gray-700">→ Reid Hoffman-style strategy sessions</p>
+                <p className="text-blue-900 font-medium mb-1">What You Get:</p>
+                <p className="text-gray-700">→ Expert panel orchestration</p>
+                <p className="text-gray-700">→ Diverse strategic perspectives</p>
               </div>
             </div>
 
@@ -210,9 +203,9 @@ function LandingPage({
                 VC-grade analysis of pitch decks, business plans, and financials
               </p>
               <div className="bg-green-50 rounded-lg p-3 text-xs">
-                <p className="text-green-900 font-medium mb-1">Real Results:</p>
-                <p className="text-gray-700">→ Amy's deck scored 8.7/10, got Series A</p>
-                <p className="text-gray-700">→ 2.1x higher fundraising success</p>
+                <p className="text-green-900 font-medium mb-1">What You Get:</p>
+                <p className="text-gray-700">→ PDF, Word, Excel support</p>
+                <p className="text-gray-700">→ AI embeddings analysis</p>
               </div>
             </div>
 
@@ -225,9 +218,9 @@ function LandingPage({
                 Instant expert advice 24/7 for urgent decisions
               </p>
               <div className="bg-orange-50 rounded-lg p-3 text-xs">
-                <p className="text-orange-900 font-medium mb-1">Real Results:</p>
-                <p className="text-gray-700">→ 2 min answers vs. 2 weeks waiting</p>
-                <p className="text-gray-700">→ Always-on access to 15+ advisors</p>
+                <p className="text-orange-900 font-medium mb-1">What You Get:</p>
+                <p className="text-gray-700">→ 24/7 instant responses</p>
+                <p className="text-gray-700">→ 15+ advisor personas</p>
               </div>
             </div>
           </div>
@@ -283,20 +276,14 @@ function LandingPage({
                 </li>
               </ul>
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 text-xs">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-xs">
                 <p className="text-green-900 font-semibold">
                   You Save: {formatCurrency(3403)}/mo vs. traditional advisors
                 </p>
               </div>
 
-              <div className="text-center text-xs text-gray-500 mb-4">
-                47 founders subscribed this month
-              </div>
-
               <button
-                onClick={() => {
-                  console.log('Founder tier selected');
-                }}
+                onClick={onGetStarted}
                 className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 Start 7-Day Free Trial
@@ -356,18 +343,14 @@ function LandingPage({
                 </li>
               </ul>
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 text-xs">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-xs">
                 <p className="text-green-900 font-semibold">
                   You Save: {formatCurrency(7753)}/mo vs. traditional advisors
                 </p>
               </div>
 
-              <div className="text-center text-xs text-gray-500 mb-4">127 active subscribers</div>
-
               <button
-                onClick={() => {
-                  console.log('Scale-Up tier selected');
-                }}
+                onClick={onGetStarted}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg"
               >
                 Start 7-Day Free Trial
@@ -423,18 +406,14 @@ function LandingPage({
                 </li>
               </ul>
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 text-xs">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-xs">
                 <p className="text-green-900 font-semibold">
                   You Save: {formatCurrency(14503)}/mo vs. traditional advisors
                 </p>
               </div>
 
-              <div className="text-center text-xs text-gray-500 mb-4">23 enterprise customers</div>
-
               <button
-                onClick={() => {
-                  console.log('Enterprise tier selected');
-                }}
+                onClick={onGetStarted}
                 className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 Start 7-Day Free Trial
@@ -442,29 +421,21 @@ function LandingPage({
             </div>
           </div>
 
-          {/* Urgency Message */}
-          <div className="mt-8 text-center bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-sm text-yellow-900">
-              <strong>🔥 Limited-Time Offer:</strong> First 100 founders lock in these prices
-              forever. <strong className="text-yellow-700">72 spots claimed, 28 remaining.</strong>
+          {/* Trial Info */}
+          <div className="mt-8 text-center bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-900">
+              <strong>7-Day Free Trial</strong> - No credit card required. Cancel anytime during
+              trial period.
             </p>
           </div>
         </div>
 
         {/* Demo Account Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center justify-center">
+          <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center justify-center">
             <span className="mr-2">🎯</span>
             Try Our Demo Account (No Credit Card Required)
           </h3>
-
-          {/* Mini Testimonial */}
-          <div className="bg-white rounded-lg p-4 border border-blue-100 mb-4">
-            <p className="text-sm text-gray-700 italic mb-2">
-              "I was skeptical about AI advisors. The demo changed my mind in 10 minutes."
-            </p>
-            <p className="text-xs text-gray-500">- John Martinez, Capital Factory Founder</p>
-          </div>
 
           <div className="bg-white rounded-lg p-4 border border-blue-100">
             <div className="space-y-3 text-sm">
@@ -493,9 +464,10 @@ function LandingPage({
 
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-10 text-white shadow-2xl text-center">
-          <h2 className="text-3xl font-bold mb-3">Join 247 Founders Already Using AI-BoD</h2>
+          <h2 className="text-3xl font-bold mb-3">Ready to Transform Your Fundraising Strategy?</h2>
           <p className="text-blue-100 mb-6 text-lg">
-            Perfect timing if you're fundraising, preparing for investors, or need strategic clarity
+            Get started with AI-powered advisory for pitch preparation, strategic planning, and
+            investor readiness
           </p>
 
           {/* Use Cases */}
@@ -717,7 +689,8 @@ function AppContent() {
   }
 
   const handleLogin = (email?: string, password?: string) => {
-    console.log('Opening login modal', { email, hasPassword: !!password });
+    // SECURITY: Never log credentials or credential metadata
+    console.log('Opening login modal');
     // Set a flag to indicate this is for login, not signup
     setPrefilledEmail(email || 'LOGIN_MODE');
     setPrefilledPassword(password);

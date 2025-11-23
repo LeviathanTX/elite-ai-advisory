@@ -252,7 +252,9 @@ Respond as the Host, providing facilitation guidance, process suggestions, or be
 
     // Include conversation history to maintain context across turns
     if (options?.conversationHistory && options.conversationHistory.length > 0) {
-      console.log(`AdvisorAI: Including ${options.conversationHistory.length} previous conversation turns for context`);
+      console.log(
+        `AdvisorAI: Including ${options.conversationHistory.length} previous conversation turns for context`
+      );
 
       // Add previous conversation turns (user and assistant exchanges)
       for (const turn of options.conversationHistory) {
@@ -269,7 +271,9 @@ Respond as the Host, providing facilitation guidance, process suggestions, or be
       content: userMessage,
     });
 
-    console.log(`AdvisorAI: About to call generateResponse with custom prompt (${messages.length} total messages including system prompt and ${options?.conversationHistory?.length || 0} history turns)`);
+    console.log(
+      `AdvisorAI: About to call generateResponse with custom prompt (${messages.length} total messages including system prompt and ${options?.conversationHistory?.length || 0} history turns)`
+    );
     const response = await this.client.generateResponse(messages, {
       temperature: options?.temperature || 0.8,
       maxTokens: options?.maxTokens || 1000,

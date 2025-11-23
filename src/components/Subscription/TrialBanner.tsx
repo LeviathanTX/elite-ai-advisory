@@ -27,26 +27,18 @@ export const TrialBanner: React.FC<TrialBannerProps> = ({ className, onUpgradeCl
   const bgColor = isUrgent
     ? 'bg-red-50 border-red-200'
     : isWarning
-    ? 'bg-yellow-50 border-yellow-200'
-    : 'bg-blue-50 border-blue-200';
+      ? 'bg-yellow-50 border-yellow-200'
+      : 'bg-blue-50 border-blue-200';
 
-  const textColor = isUrgent
-    ? 'text-red-900'
-    : isWarning
-    ? 'text-yellow-900'
-    : 'text-blue-900';
+  const textColor = isUrgent ? 'text-red-900' : isWarning ? 'text-yellow-900' : 'text-blue-900';
 
-  const accentColor = isUrgent
-    ? 'text-red-600'
-    : isWarning
-    ? 'text-yellow-600'
-    : 'text-blue-600';
+  const accentColor = isUrgent ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-blue-600';
 
   const buttonColor = isUrgent
     ? 'bg-red-600 hover:bg-red-700'
     : isWarning
-    ? 'bg-yellow-600 hover:bg-yellow-700'
-    : 'bg-blue-600 hover:bg-blue-700';
+      ? 'bg-yellow-600 hover:bg-yellow-700'
+      : 'bg-blue-600 hover:bg-blue-700';
 
   const getMessage = () => {
     if (trialDaysRemaining === 0) {
@@ -103,12 +95,7 @@ export const TrialBanner: React.FC<TrialBannerProps> = ({ className, onUpgradeCl
             )}
             aria-label="Dismiss banner"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

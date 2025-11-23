@@ -544,9 +544,7 @@ Always maintain your persona and provide advice that reflects your expertise are
                   <option value="gemini">Gemini (Google)</option>
                   <option value="deepseek">DeepSeek</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  ✅ Using platform API
-                </p>
+                <p className="text-xs text-gray-500 mt-1">✅ Using platform API</p>
               </div>
 
               {/* System Prompt */}

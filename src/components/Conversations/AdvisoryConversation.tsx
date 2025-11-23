@@ -49,7 +49,7 @@ interface EnhancedMeetingSettings {
   discussionRounds: number;
   includeDocumentAnalysis: boolean;
   autoSummary: boolean;
-  enableExpertPanel: boolean;  // New: Expert panel mode with cross-document analysis
+  enableExpertPanel: boolean; // New: Expert panel mode with cross-document analysis
 }
 
 interface ConversationMessage {
@@ -96,7 +96,7 @@ export function AdvisoryConversation({
     discussionRounds: 1,
     includeDocumentAnalysis: false,
     autoSummary: false,
-    enableExpertPanel: true,  // Enable expert panel by default for better document analysis
+    enableExpertPanel: true, // Enable expert panel by default for better document analysis
   });
   const [isRecording, setIsRecording] = useState(false);
   const [showAdvisorPanel, setShowAdvisorPanel] = useState(true);
@@ -203,18 +203,17 @@ export function AdvisoryConversation({
         const advisor = allAdvisors.find(a => a.id === id);
         return {
           id,
-          type: celebrityAdvisors.some(a => a.id === id) ? 'celebrity' as const : 'custom' as const,
+          type: celebrityAdvisors.some(a => a.id === id)
+            ? ('celebrity' as const)
+            : ('custom' as const),
           name: advisor?.name,
         };
       }),
       messages: messages.map(m => ({
         id: m.id,
-        type: m.type,
+        role: m.type === 'user' || m.type === 'advisor' ? m.type : 'advisor', // Convert type to role
         content: m.content,
         timestamp: m.timestamp.toISOString(),
-        advisor: m.advisor,
-        attachments: m.attachments,
-        metadata: m.metadata,
       })),
       files: uploadedFiles.map(f => ({
         name: f.name,
@@ -222,7 +221,12 @@ export function AdvisoryConversation({
         size: f.size,
       })),
       selectedDocuments,
-      conversationDocuments, // Persist document content across sessions
+      conversationDocuments: conversationDocuments.map((doc, index) => ({
+        id: `doc-${Date.now()}-${index}`,
+        filename: doc.name,
+        content: doc.content,
+        metadata: {},
+      })), // Persist document content across sessions
       title: generateConversationTitle(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -498,10 +502,7 @@ export function AdvisoryConversation({
     for (const file of files) {
       try {
         const extractedText = await extractTextFromFile(file);
-        setConversationDocuments(prev => [
-          ...prev,
-          { name: file.name, content: extractedText },
-        ]);
+        setConversationDocuments(prev => [...prev, { name: file.name, content: extractedText }]);
         console.log(
           `✅ Stored ${file.name} content (${extractedText.length} chars) for persistent access`
         );
@@ -694,9 +695,7 @@ export function AdvisoryConversation({
     // This ensures advisors have access to documents throughout the entire conversation
     let persistentDocumentContent = '';
     if (conversationDocuments.length > 0) {
-      console.log(
-        `📚 Including ${conversationDocuments.length} persistent conversation documents`
-      );
+      console.log(`📚 Including ${conversationDocuments.length} persistent conversation documents`);
       persistentDocumentContent = conversationDocuments
         .map(doc => `Document: ${doc.name}\n${doc.content}`)
         .join('\n\n');
@@ -710,7 +709,6 @@ export function AdvisoryConversation({
       .filter(Boolean)
       .join('\n\n');
     console.log(`📊 TOTAL DOCUMENT CONTENT: ${allDocumentContent.length} characters`);
-
 
     // Parse document references from user input
     const allAdvisors = [...celebrityAdvisors, ...customAdvisors];
@@ -767,13 +765,21 @@ export function AdvisoryConversation({
       });
 
       // Always use AI service - it will automatically use server-side proxy in production
-      const aiService = settings.aiServices.claude || { id: 'claude', name: 'Claude', model: 'claude-3-sonnet-20240229', apiKey: '' };
-      console.log('Using AI service for', advisor.name, '(will use server-side proxy if no local key)');
+      const aiService = settings.aiServices.claude || {
+        id: 'claude',
+        name: 'Claude',
+        model: 'claude-3-sonnet-20240229',
+        apiKey: '',
+      };
+      console.log(
+        'Using AI service for',
+        advisor.name,
+        '(will use server-side proxy if no local key)'
+      );
       const advisorAI = createAdvisorAI(aiService);
 
       // Enhanced prompt generation based on mode and advisor role
-      const hasDocumentContext =
-        documentContextString.length > 0 || allDocumentContent.length > 0;
+      const hasDocumentContext = documentContextString.length > 0 || allDocumentContent.length > 0;
       let enhancedPrompt = systemPrompt;
 
       // Generate specialized prompts for due diligence and strategic thinking
@@ -819,11 +825,13 @@ Based on the documents provided and your expertise, please analyze and respond t
         .filter(msg => !msg.advisor || msg.advisor.id === advisor.id) // Only include this advisor's conversation thread
         .slice(-10) // Last 10 messages (5 exchanges) for context
         .map(msg => ({
-          role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
+          role: msg.type === 'user' ? ('user' as const) : ('assistant' as const),
           content: msg.content,
         }));
 
-      console.log(`📜 Building conversation context for ${advisor.name}: ${conversationHistory.length} previous messages`);
+      console.log(
+        `📜 Building conversation context for ${advisor.name}: ${conversationHistory.length} previous messages`
+      );
 
       const response = await advisorAI.generateResponseWithCustomPrompt(
         enhancedPrompt,
@@ -1085,7 +1093,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
   };
 
   return (
-    <div className={cn("h-screen flex bg-gray-50", !isConfigured && "pt-10")}>
+    <div className={cn('h-screen flex bg-gray-50', !isConfigured && 'pt-10')}>
       {/* Development Mode Banner */}
       {!isConfigured && (
         <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium z-50">
@@ -1273,7 +1281,9 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   />
                   <span>
                     Expert Panel Mode{' '}
-                    <span className="text-xs text-gray-500">(Deep document analysis with cross-referencing)</span>
+                    <span className="text-xs text-gray-500">
+                      (Deep document analysis with cross-referencing)
+                    </span>
                   </span>
                 </label>
                 <div>

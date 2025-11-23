@@ -31,11 +31,7 @@ export class VectorEmbeddingsService {
   private embeddingModel = 'text-embedding-ada-002';
   private embeddingDimension = 1536;
 
-  constructor(config: {
-    supabaseUrl: string;
-    supabaseKey: string;
-    openaiApiKey: string;
-  }) {
+  constructor(config: { supabaseUrl: string; supabaseKey: string; openaiApiKey: string }) {
     this.supabaseUrl = config.supabaseUrl;
     this.supabaseKey = config.supabaseKey;
     this.openaiApiKey = config.openaiApiKey;
@@ -54,7 +50,7 @@ export class VectorEmbeddingsService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.openaiApiKey}`,
+          Authorization: `Bearer ${this.openaiApiKey}`,
         },
         body: JSON.stringify({
           model: this.embeddingModel,
@@ -85,9 +81,7 @@ export class VectorEmbeddingsService {
   async generateEmbeddingsBatch(texts: string[]): Promise<EmbeddingResult[]> {
     try {
       // Clean and prepare texts
-      const cleanTexts = texts.map(text =>
-        this.truncateToTokenLimit(this.cleanText(text), 8000)
-      );
+      const cleanTexts = texts.map(text => this.truncateToTokenLimit(this.cleanText(text), 8000));
 
       // OpenAI allows up to 2048 inputs per request, but we'll batch smaller for reliability
       const batchSize = 100;
@@ -100,7 +94,7 @@ export class VectorEmbeddingsService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.openaiApiKey}`,
+            Authorization: `Bearer ${this.openaiApiKey}`,
           },
           body: JSON.stringify({
             model: this.embeddingModel,
@@ -147,9 +141,7 @@ export class VectorEmbeddingsService {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey);
 
       // Generate embeddings for all chunks
-      const embeddings = await this.generateEmbeddingsBatch(
-        chunks.map(c => c.content)
-      );
+      const embeddings = await this.generateEmbeddingsBatch(chunks.map(c => c.content));
 
       // Prepare chunk records
       const chunkRecords = chunks.map((chunk, index) => ({
@@ -166,11 +158,9 @@ export class VectorEmbeddingsService {
       const batchSize = 50;
       for (let i = 0; i < chunkRecords.length; i += batchSize) {
         const batch = chunkRecords.slice(i, i + batchSize);
-        const { error } = await supabase
-          .from('document_chunks')
-          .upsert(batch, {
-            onConflict: 'document_id,chunk_index',
-          });
+        const { error } = await supabase.from('document_chunks').upsert(batch, {
+          onConflict: 'document_id,chunk_index',
+        });
 
         if (error) {
           throw new Error(`Supabase error storing chunks: ${error.message}`);
@@ -234,11 +224,13 @@ export class VectorEmbeddingsService {
       matchThreshold?: number;
       matchCount?: number;
     } = {}
-  ): Promise<Array<{
-    documentId: string;
-    avgSimilarity: number;
-    matchingChunks: number;
-  }>> {
+  ): Promise<
+    Array<{
+      documentId: string;
+      avgSimilarity: number;
+      matchingChunks: number;
+    }>
+  > {
     try {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey);
 

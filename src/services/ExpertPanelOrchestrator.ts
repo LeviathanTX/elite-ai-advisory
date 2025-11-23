@@ -99,11 +99,7 @@ export class ExpertPanelOrchestrator {
       // Step 5: Generate synthesis if multiple advisors
       let synthesis: string | undefined;
       if (config.advisors.length > 1) {
-        synthesis = await this.generateSynthesis(
-          advisorResponses,
-          documentInsights,
-          debates
-        );
+        synthesis = await this.generateSynthesis(advisorResponses, documentInsights, debates);
       }
 
       return {
@@ -163,9 +159,10 @@ export class ExpertPanelOrchestrator {
 
       // Fallback: Use EnhancedDocumentAnalyzer for basic analysis
       if (this.documentAnalyzer) {
-        const insights = await this.documentAnalyzer.analyzeMultipleDocuments(
-          documents.map(d => d.id)
-        );
+        const insights = await this.documentAnalyzer.analyzeMultipleDocuments({
+          documentIds: documents.map(d => d.id),
+          analysisType: 'due-diligence',
+        });
 
         // Convert to AnalysisResult format
         return {
@@ -277,11 +274,29 @@ export class ExpertPanelOrchestrator {
     // Collect responses in parallel for efficiency
     const responsePromises = advisors.map(async advisor => {
       try {
+        // Build system prompt for the advisor
+        const systemPrompt =
+          advisor.system_prompt ||
+          `You are ${advisor.name}, ${(advisor as any).title || 'advisor'}${(advisor as any).company ? ` at ${(advisor as any).company}` : ''}.
+Expertise: ${advisor.expertise.join(', ')}
+Communication style: ${(advisor as any).communication_style || 'professional'}
+
+Provide expert insights based on your background and expertise.`;
+
+        // Convert Message[] to conversationHistory format expected by generateResponseWithCustomPrompt
+        const historyForAI = conversationHistory.map(msg => ({
+          role: (msg.role === 'advisor' ? 'assistant' : msg.role) as 'user' | 'assistant',
+          content: msg.content,
+        }));
+
         const response = await this.advisorAI.generateResponseWithCustomPrompt(
-          advisor,
-          mode,
+          systemPrompt,
           enrichedContext,
-          conversationHistory
+          {
+            conversationHistory: historyForAI,
+            temperature: 0.8,
+            maxTokens: 2000,
+          }
         );
 
         // Extract document references (simple heuristic: look for document names)
@@ -335,7 +350,8 @@ export class ExpertPanelOrchestrator {
       const themes = this.extractDebateThemes(advisorResponses);
 
       // For each theme, facilitate a brief debate round
-      for (const theme of themes.slice(0, 2)) { // Limit to 2 debates to avoid token overload
+      for (const theme of themes.slice(0, 2)) {
+        // Limit to 2 debates to avoid token overload
         const debatePrompt = this.buildDebatePrompt(
           theme,
           advisorResponses,
@@ -345,13 +361,24 @@ export class ExpertPanelOrchestrator {
 
         // Get counter-points from other advisors
         const counterPoints: string[] = [];
-        for (const advisor of advisors.slice(0, 3)) { // Limit to 3 advisors
+        for (const advisor of advisors.slice(0, 3)) {
+          // Limit to 3 advisors
           try {
+            // Build system prompt for the advisor
+            const systemPrompt =
+              advisor.system_prompt ||
+              `You are ${advisor.name}, ${(advisor as any).title || 'advisor'}${(advisor as any).company ? ` at ${(advisor as any).company}` : ''}.
+Expertise: ${advisor.expertise.join(', ')}
+
+Provide your perspective on this debate topic.`;
+
             const counterPoint = await this.advisorAI.generateResponseWithCustomPrompt(
-              advisor,
-              'quick_consultation',
+              systemPrompt,
               debatePrompt,
-              []
+              {
+                temperature: 0.8,
+                maxTokens: 500,
+              }
             );
             counterPoints.push(`${advisor.name}: ${counterPoint.substring(0, 300)}`);
           } catch (error) {
@@ -477,7 +504,7 @@ export class ExpertPanelOrchestrator {
       return synthesis;
     } catch (error) {
       console.error('Synthesis generation error:', error);
-      return '## Panel Summary\n\nThe expert panel has provided diverse perspectives on your question. Please review each advisor\'s detailed response above.';
+      return "## Panel Summary\n\nThe expert panel has provided diverse perspectives on your question. Please review each advisor's detailed response above.";
     }
   }
 
@@ -487,7 +514,10 @@ export class ExpertPanelOrchestrator {
   private findCommonThemes(responses: PanelResponse['advisorResponses']): string[] {
     // Simple heuristic: Find common keywords/phrases
     const allWords = responses.flatMap(r =>
-      r.response.toLowerCase().split(/\s+/).filter(w => w.length > 5)
+      r.response
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(w => w.length > 5)
     );
 
     const wordCounts = new Map<string, number>();

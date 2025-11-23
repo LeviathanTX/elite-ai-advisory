@@ -2,11 +2,17 @@ import { createClient } from '@supabase/supabase-js';
 import { AuthResponse, SignUpData, SignInData, AuthError, AuthErrorCode } from '../types/auth';
 
 // Environment variables - these will be set in production
-const supabaseUrl = (process.env.REACT_APP_SUPABASE_URL || 'https://placeholder.supabase.co').trim();
-const supabaseAnonKey = (process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTIwMDAsImV4cCI6MTk2MDc2ODAwMH0.placeholder').trim();
+const supabaseUrl = (
+  process.env.REACT_APP_SUPABASE_URL || 'https://placeholder.supabase.co'
+).trim();
+const supabaseAnonKey = (
+  process.env.REACT_APP_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTIwMDAsImV4cCI6MTk2MDc2ODAwMH0.placeholder'
+).trim();
 
 // Demo mode flag - check for both missing URL and bypass auth
-const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
+const isDemoMode =
+  !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
 
 // Detect if browser storage is available
 function isStorageAvailable(): boolean {
@@ -65,12 +71,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: !isDemoMode && storageAvailable,
     persistSession: !isDemoMode && storageAvailable,
     detectSessionInUrl: true, // Enable session detection in URL for proper auth flows
-    storage: storageAvailable ? undefined : {
-      // Memory-only storage fallback for when localStorage is blocked
-      getItem: (key: string) => null,
-      setItem: (key: string, value: string) => {},
-      removeItem: (key: string) => {},
-    },
+    storage: storageAvailable
+      ? undefined
+      : {
+          // Memory-only storage fallback for when localStorage is blocked
+          getItem: (key: string) => null,
+          setItem: (key: string, value: string) => {},
+          removeItem: (key: string) => {},
+        },
     storageKey: 'ai-bod-auth', // Custom storage key to avoid conflicts
   },
 });
@@ -256,7 +264,8 @@ const categorizeAuthError = (error: any): AuthError => {
 
   if (message.includes('Invalid login credentials')) {
     return {
-      message: 'Invalid email or password. Please check your credentials or sign up for a new account.',
+      message:
+        'Invalid email or password. Please check your credentials or sign up for a new account.',
       code: AuthErrorCode.INVALID_CREDENTIALS,
     };
   }
@@ -296,7 +305,10 @@ const categorizeAuthError = (error: any): AuthError => {
 };
 
 // Helper functions for authentication
-export const signIn = async (email: string, password: string): Promise<AuthResponse<SignInData>> => {
+export const signIn = async (
+  email: string,
+  password: string
+): Promise<AuthResponse<SignInData>> => {
   console.log('signIn called:', { email, isDemoMode, supabaseUrl });
 
   if (isDemoMode) {
@@ -331,7 +343,9 @@ export const signIn = async (email: string, password: string): Promise<AuthRespo
 
     // Create a promise that resolves when auth state changes
     const authStatePromise = new Promise((resolve, reject) => {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' && session) {
           clearTimeout(timeout);
           subscription.unsubscribe();
@@ -391,7 +405,11 @@ export const signIn = async (email: string, password: string): Promise<AuthRespo
   }
 };
 
-export const signUp = async (email: string, password: string, fullName?: string): Promise<AuthResponse<SignUpData>> => {
+export const signUp = async (
+  email: string,
+  password: string,
+  fullName?: string
+): Promise<AuthResponse<SignUpData>> => {
   console.log('signUp called:', { email, fullName, isDemoMode });
 
   if (isDemoMode) {
@@ -548,7 +566,7 @@ export const getCurrentUser = async () => {
     const {
       data: { user },
       error,
-    } = await Promise.race([authPromise, timeoutPromise]) as any;
+    } = (await Promise.race([authPromise, timeoutPromise])) as any;
 
     if (error) {
       console.error('❌ Auth check error:', error.message);

@@ -101,7 +101,7 @@ export const PasswordResetConfirmation: React.FC<PasswordResetConfirmationProps>
               type="password"
               id="new-password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={e => setNewPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter new password"
               required
@@ -122,7 +122,7 @@ export const PasswordResetConfirmation: React.FC<PasswordResetConfirmationProps>
               type="password"
               id="confirm-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Confirm new password"
               required

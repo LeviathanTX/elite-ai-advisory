@@ -57,7 +57,9 @@ export const EmailVerificationBanner: React.FC = () => {
               <p className="text-xs text-yellow-700 mt-1">
                 Check your inbox for a verification link. Didn't receive it?{' '}
                 {sent ? (
-                  <span className="text-green-700 font-semibold">Email sent! Check your inbox.</span>
+                  <span className="text-green-700 font-semibold">
+                    Email sent! Check your inbox.
+                  </span>
                 ) : (
                   <button
                     onClick={handleResend}
@@ -68,11 +70,7 @@ export const EmailVerificationBanner: React.FC = () => {
                   </button>
                 )}
               </p>
-              {error && (
-                <p className="text-xs text-red-600 mt-1">
-                  Error: {error}
-                </p>
-              )}
+              {error && <p className="text-xs text-red-600 mt-1">Error: {error}</p>}
             </div>
           </div>
           <div className="ml-3">

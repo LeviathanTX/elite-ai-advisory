@@ -1848,6 +1848,11 @@ function generateAdvisorResponse(
       `${advisorName}: I'm ready to help you test document processing...`,
       `${advisorName}: Upload some documents and I'll analyze them for you...`,
     ],
+    general: [
+      `${advisorName}: I'm here to help. What would you like to discuss?`,
+      `${advisorName}: Let's work through this together...`,
+      `${advisorName}: I'm listening. Tell me more about your situation...`,
+    ],
   };
 
   const modeResponses = responses[mode];

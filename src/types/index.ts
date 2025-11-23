@@ -68,6 +68,7 @@ export interface CustomAdvisor {
   communication_style: string;
   background_context: string;
   avatar_image?: string; // URL or base64 data for custom uploaded image
+  system_prompt?: string; // Advanced AI system prompt for custom advisors
   created_at: string;
   // Additional properties for compatibility
   role?: AdvisorRole;
@@ -172,6 +173,9 @@ export interface ConversationMessage {
   voice_url?: string;
 }
 
+// Type alias for backward compatibility
+export type Message = ConversationMessage;
+
 export type ApplicationMode =
   | 'pitch_practice'
   | 'advisory_conversation'
@@ -179,7 +183,8 @@ export type ApplicationMode =
   | 'strategic_planning'
   | 'due_diligence'
   | 'quick_consultation'
-  | 'test_document';
+  | 'test_document'
+  | 'general'; // Added for SavedConversation compatibility
 
 export type AIService = 'claude' | 'gemini' | 'chatgpt' | 'deepseek' | 'groq';
 
@@ -421,3 +426,6 @@ export interface PaginatedResponse<T> {
     total_pages: number;
   };
 }
+
+// Re-export DocumentReference from DocumentContext for convenience
+export type { DocumentReference } from '../services/DocumentContext';

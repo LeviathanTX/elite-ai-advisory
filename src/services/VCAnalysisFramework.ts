@@ -24,7 +24,7 @@ export class VCAnalysisFramework {
   static readonly SEQUOIA_FRAMEWORK: VCFramework = {
     name: 'Sequoia Capital Investment Framework',
     description:
-      'Sequoia\'s time-tested framework focusing on market, product, team, and business model',
+      "Sequoia's time-tested framework focusing on market, product, team, and business model",
     criteria: [
       {
         category: 'Market',
@@ -81,7 +81,7 @@ export class VCAnalysisFramework {
   static readonly A16Z_FRAMEWORK: VCFramework = {
     name: 'Andreessen Horowitz Investment Framework',
     description:
-      'a16z\'s framework emphasizing product-market fit, founder strength, and disruptive potential',
+      "a16z's framework emphasizing product-market fit, founder strength, and disruptive potential",
     criteria: [
       {
         category: 'Founder-Market Fit',
@@ -137,7 +137,7 @@ export class VCAnalysisFramework {
    */
   static readonly YC_FRAMEWORK: VCFramework = {
     name: 'Y Combinator Evaluation Framework',
-    description: 'YC\'s framework focusing on founders, idea, product, and growth potential',
+    description: "YC's framework focusing on founders, idea, product, and growth potential",
     criteria: [
       {
         category: 'Founders',
@@ -157,7 +157,7 @@ export class VCAnalysisFramework {
           'Is the idea clear and concise?',
           'Is it solving a real problem?',
           'Is the market large enough?',
-          'Why now? Why hasn\'t this been done before?',
+          "Why now? Why hasn't this been done before?",
           'What is unique about the approach?',
         ],
       },
@@ -193,7 +193,7 @@ export class VCAnalysisFramework {
    */
   static readonly FIRST_ROUND_FRAMEWORK: VCFramework = {
     name: 'First Round Capital Seed Framework',
-    description: 'First Round\'s seed-stage framework focusing on early signals',
+    description: "First Round's seed-stage framework focusing on early signals",
     criteria: [
       {
         category: 'Founding Team DNA',
@@ -477,7 +477,7 @@ ${documentContext}
         monthlyFrequency: '>2',
       },
     },
-    'fintech': {
+    fintech: {
       keyMetrics: ['Transaction Volume', 'Revenue per Customer', 'Compliance', 'CAC', 'Fraud Rate'],
       idealProfile: {
         volumeGrowth: '>150% YoY',

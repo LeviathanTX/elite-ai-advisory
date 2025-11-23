@@ -135,8 +135,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     Object.values(settings.aiServices).some(service => service.apiKey.trim().length > 0);
 
   // Assume platform keys are configured in production
-  const hasPlatformKeys = process.env.NODE_ENV === 'production' ||
-    process.env.REACT_APP_USE_PLATFORM_KEYS === 'true';
+  const hasPlatformKeys =
+    process.env.NODE_ENV === 'production' || process.env.REACT_APP_USE_PLATFORM_KEYS === 'true';
 
   const isConfigured = hasUserKeys || hasPlatformKeys;
 
