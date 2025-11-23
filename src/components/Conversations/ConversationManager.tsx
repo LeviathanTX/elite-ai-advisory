@@ -444,8 +444,8 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         onConfirm={confirmDelete}
         title="Delete Conversation"
         message="Are you sure you want to delete this conversation? This action cannot be undone."
-        confirmLabel="Delete"
-        confirmVariant="danger"
+        confirmText="Delete"
+        type="danger"
       />
     </div>
   );
