@@ -211,9 +211,12 @@ export function AdvisoryConversation({
       }),
       messages: messages.map(m => ({
         id: m.id,
-        role: m.type === 'user' || m.type === 'advisor' ? m.type : 'advisor', // Convert type to role
+        type: m.type,
         content: m.content,
-        timestamp: m.timestamp.toISOString(),
+        timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
+        advisor: m.advisor,
+        attachments: m.attachments,
+        metadata: m.metadata,
       })),
       files: uploadedFiles.map(f => ({
         name: f.name,

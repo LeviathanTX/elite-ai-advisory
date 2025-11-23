@@ -88,16 +88,20 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const limits = SUBSCRIPTION_LIMITS[currentTier];
 
   // Calculate trial status
-  const isTrialActive = user?.is_trial_active ?? false;
+  // Special handling: LeviathanTX@gmail.com never expires
+  const isOwnerAccount = user?.email === 'LeviathanTX@gmail.com' || user?.email === 'leviathanTX@gmail.com';
+  const isTrialActive = isOwnerAccount ? true : (user?.is_trial_active ?? false);
   const trialEndDate = user?.trial_end_date ? new Date(user.trial_end_date) : null;
 
   const trialDaysRemaining = React.useMemo(() => {
+    // Owner account never expires
+    if (isOwnerAccount) return 999;
     if (!trialEndDate) return 0;
     const now = new Date();
     const diffMs = trialEndDate.getTime() - now.getTime();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);
-  }, [trialEndDate]);
+  }, [trialEndDate, isOwnerAccount]);
 
   useEffect(() => {
     if (user) {

@@ -142,13 +142,25 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   const loadConversationsFromService = async () => {
     if (!user?.id) {
       console.log('No user logged in, skipping conversation load');
+      setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
+    console.log(`📋 Loading conversations for user ${user.id}...`);
+
     try {
-      // Load from database using our conversation service
-      const loaded = await loadConversationsFromDb(user.id);
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Conversation load timeout')), 10000);
+      });
+
+      const loaded = await Promise.race([
+        loadConversationsFromDb(user.id),
+        timeoutPromise
+      ]);
+
+      console.log(`✅ Loaded ${loaded.length} conversations from database`);
 
       const saved: SavedConversation[] = loaded.map(data => ({
         id: data.id,
@@ -158,18 +170,21 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         lastMessage: data.messages?.[data.messages.length - 1]?.content || 'No messages',
         lastUpdated: data.updated_at || data.created_at || new Date().toISOString(),
         messageCount: data.messages?.length || 0,
-        hasAttachments: !!(data.files && data.files.length > 0),
+        hasAttachments: Boolean(data.files && data.files.length > 0),
         tags: [],
         isStarred: false,
         isArchived: false,
       }));
 
       setLocalConversations(saved);
-      console.log(`✅ Loaded ${saved.length} conversations from database for user ${user.id}`);
+      console.log(`✅ Set ${saved.length} conversations in state`);
     } catch (error) {
-      console.error('Error loading conversations from database:', error);
+      console.error('❌ Error loading conversations from database:', error);
+      // Fallback to empty state to unblock UI
+      setLocalConversations([]);
     } finally {
       setIsLoading(false);
+      console.log('✅ Conversation loading complete, isLoading set to false');
     }
   };
 
