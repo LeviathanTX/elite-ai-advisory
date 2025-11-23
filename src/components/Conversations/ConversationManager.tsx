@@ -108,6 +108,14 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
     }
   }, [isDemoMode, user]);
 
+  // Auto-start new conversation if no conversations exist after loading
+  useEffect(() => {
+    if (!isLoading && conversations.length === 0 && !showNewConversation && !selectedConversation) {
+      console.log('📝 No conversations found, auto-starting new general discussion');
+      setShowNewConversation(true);
+    }
+  }, [isLoading, conversations.length, showNewConversation, selectedConversation]);
+
   const loadLocalStorageConversations = () => {
     const saved: SavedConversation[] = [];
 
