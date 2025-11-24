@@ -235,7 +235,7 @@ export function AdvisoryConversation({
     };
 
     // Save to database (also caches in localStorage)
-    const result = await saveConversationToDb(conversationData);
+    const result = await saveConversationToDb(conversationData, user?.email);
 
     if (!result.success) {
       console.error('Failed to save conversation to database:', result.error);
