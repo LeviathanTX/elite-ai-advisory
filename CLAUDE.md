@@ -72,6 +72,76 @@ Fix in this order to avoid cascade failures:
 - Check Supabase connection
 - Don't assume env vars set
 
+## GitHub Automation (REST API)
+
+**Important:** GitHub CLI (`gh`) is not available in the Claude Code sandbox, but we can automate GitHub operations using `curl` and the REST API.
+
+### Setup (Once per session)
+
+Set the GitHub token as an environment variable:
+```bash
+export GITHUB_TOKEN="your_github_pat_token_here"
+```
+
+**Token Requirements:**
+- Create at: https://github.com/settings/tokens
+- Required scopes: `repo`, `workflow`, `write:packages`, `read:org`
+- Store securely, never commit to repository
+
+### Automated Operations
+
+**Create Pull Request:**
+```bash
+curl -X POST \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/LeviathanTX/AI-BoD/pulls \
+  -d '{
+    "title": "Feature: Description",
+    "head": "claude/branch-name",
+    "base": "main",
+    "body": "## Summary\n\nPR description here"
+  }'
+```
+
+**Merge Pull Request:**
+```bash
+curl -X PUT \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/LeviathanTX/AI-BoD/pulls/{PR_NUMBER}/merge \
+  -d '{"merge_method": "merge"}'
+```
+
+**Check PR Status:**
+```bash
+curl -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/LeviathanTX/AI-BoD/pulls/{PR_NUMBER}
+```
+
+**List Open PRs:**
+```bash
+curl -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/LeviathanTX/AI-BoD/pulls?state=open
+```
+
+### Benefits Over gh CLI
+- More control over API operations
+- Can handle complex workflows
+- Works in sandboxed environments
+- Direct access to GitHub's full API
+
+### Session Initialization
+
+At the start of each vibe coding session, request the user to run:
+```bash
+export GITHUB_TOKEN="token_here"
+```
+
+This enables automated PR creation, merging, and status checks throughout the session.
+
 ## When Blocked
 1. Don't repeat failing approaches
 2. Suggest concrete alternatives
