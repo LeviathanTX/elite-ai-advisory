@@ -19,6 +19,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   console.log('AuthModal render:', { isOpen, initialEmail, hasInitialPassword: !!initialPassword });
 
+  const { signIn, signUp } = useAuth();
+
   // Set initial mode: if initialEmail is 'LOGIN_MODE', it's a login request
   const isLoginMode = initialEmail === 'LOGIN_MODE';
   const [mode, setMode] = useState<'signin' | 'signup'>(
@@ -33,8 +35,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [signupEmail, setSignupEmail] = useState('');
 
-  const { signIn, signUp } = useAuth();
-
   // Check if localStorage is available
   React.useEffect(() => {
     try {
@@ -47,8 +47,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   }, []);
 
+  // Reset form when modal opens/closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      // Reset form when modal closes
+      resetForm();
+    }
+  }, [isOpen]);
+
   // Update email and password when initialEmail/initialPassword change
   React.useEffect(() => {
+    if (!isOpen) return; // Don't update if modal is closed
+
     console.log('AuthModal useEffect - updating credentials:', {
       initialEmail,
       initialPassword: !!initialPassword,
@@ -57,14 +67,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (isLogin) {
       setEmail('');
       setMode('signin');
-    } else if (initialEmail) {
+    } else if (initialEmail && initialEmail !== 'LOGIN_MODE') {
       setEmail(initialEmail);
       setMode('signin'); // Switch to signin mode when credentials are pre-filled
+    } else if (!initialEmail) {
+      // No initial email means signup mode
+      setMode('signup');
     }
     if (initialPassword) {
       setPassword(initialPassword);
     }
-  }, [initialEmail, initialPassword]);
+  }, [initialEmail, initialPassword, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +119,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError('');
     setSignupSuccess(false);
     setSignupEmail('');
+    setMode('signup'); // Reset to default mode
   };
 
   const switchMode = () => {

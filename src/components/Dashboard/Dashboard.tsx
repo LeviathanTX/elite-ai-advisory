@@ -191,13 +191,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
               </button>
               <button
                 onClick={async () => {
+                  console.log('🔴 Sign out button clicked');
                   try {
+                    console.log('🔴 Calling signOut...');
                     await signOut();
+                    console.log('🔴 signOut completed, reloading page...');
                     // Force page reload to clear all state and show landing page
                     window.location.reload();
                   } catch (error) {
-                    console.error('Sign out error:', error);
+                    console.error('🔴 Sign out error:', error);
                     // Still reload on error to ensure clean state
+                    console.log('🔴 Reloading page after error...');
                     window.location.reload();
                   }
                 }}
