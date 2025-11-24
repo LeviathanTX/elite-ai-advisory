@@ -193,9 +193,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                 onClick={async () => {
                   try {
                     await signOut();
-                    window.location.href = '/';
+                    // Force page reload to clear all state and show landing page
+                    window.location.reload();
                   } catch (error) {
                     console.error('Sign out error:', error);
+                    // Still reload on error to ensure clean state
+                    window.location.reload();
                   }
                 }}
                 className="text-gray-500 hover:text-gray-700"
@@ -291,7 +294,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
 
         {/* Application Modes */}
         <div className="mb-8 advisory-modes">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Choose Your Advisory Mode</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Choose Your Advisory Mode</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Select how you want to work with your AI advisors today
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {modes.map(mode => (
               <button
@@ -303,31 +314,86 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                     onModeSelect(mode.id);
                   }
                 }}
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-left group"
+                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all text-left group border border-gray-200 hover:border-blue-300"
               >
-                <div
-                  className={cn(
-                    'w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto',
-                    'bg-gradient-to-r',
-                    mode.color
-                  )}
-                >
-                  <span className="text-2xl">{mode.icon}</span>
+                <div className="flex items-start space-x-4">
+                  <div
+                    className={cn(
+                      'w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0',
+                      'bg-gradient-to-r',
+                      mode.color
+                    )}
+                  >
+                    <span className="text-2xl">{mode.icon}</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                      {mode.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">{mode.description}</p>
+                  </div>
+                  <svg
+                    className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-center">{mode.title}</h3>
-                <p className="text-sm text-gray-600 text-center">{mode.description}</p>
               </button>
             ))}
           </div>
+
+          {/* Quick Start Tips */}
+          {(isDemoMode ? localConversations : conversations).length === 0 && (
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">💡</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-2">Getting Started</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>
+                      <strong>New to fundraising?</strong> Try Pitch Practice to refine your pitch
+                    </li>
+                    <li>
+                      <strong>Need strategic advice?</strong> Start an Advisory Board conversation
+                    </li>
+                    <li>
+                      <strong>Have documents?</strong> Upload them in any mode for contextual
+                      analysis
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Conversations */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Conversations</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Recent Conversations</h3>
+              {(isDemoMode ? localConversations : conversations).length > 0 && (
+                <button
+                  onClick={() => onModeSelect('advisory_conversation')}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  View All
+                </button>
+              )}
+            </div>
             {(isDemoMode ? localConversations : conversations).length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {(isDemoMode ? localConversations : conversations).slice(0, 5).map(conversation => {
                   const advisor =
                     conversation.advisor_type === 'celebrity'
@@ -335,78 +401,127 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                       : customAdvisors.find(a => a.id === conversation.advisor_id);
 
                   return (
-                    <div
+                    <button
                       key={conversation.id}
-                      className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg"
+                      onClick={() => onModeSelect('advisory_conversation')}
+                      className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
                     >
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium">
-                          {advisor?.name.charAt(0) || '?'}
-                        </span>
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
+                        {advisor?.name.charAt(0) || '?'}
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 text-left">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {advisor?.name || 'Unknown Advisor'}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 capitalize">
                           {conversation.mode.replace('_', ' ')} • {conversation.messages.length}{' '}
-                          messages
+                          message{conversation.messages.length !== 1 ? 's' : ''}
                         </p>
                       </div>
-                    </div>
+                      <svg
+                        className="w-4 h-4 text-gray-400 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
                   );
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">
-                No conversations yet. Start by selecting a mode above!
-              </p>
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg
+                    className="w-8 h-8 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
+                  </svg>
+                </div>
+                <p className="text-gray-600 font-medium mb-1">No conversations yet</p>
+                <p className="text-sm text-gray-500">
+                  Select a mode above to start your first advisory session
+                </p>
+              </div>
             )}
           </div>
 
           {/* Available Advisors */}
           <div className="bg-white rounded-xl p-6 shadow-sm available-advisors">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Advisors</h3>
-            <div className="space-y-3">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Available Advisors</h3>
+              <button
+                onClick={() => onModeSelect('advisor_management')}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Manage
+              </button>
+            </div>
+            <div className="space-y-2">
               {celebrityAdvisors.slice(0, 6).map(advisor => (
-                <div
+                <button
                   key={advisor.id}
-                  className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg"
+                  onClick={() => onModeSelect('advisory_conversation')}
+                  className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+                  title={`Start conversation with ${advisor.name}`}
                 >
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-blue-600">
-                      {advisor.name.charAt(0)}
-                    </span>
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
+                    {advisor.name.charAt(0)}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium text-gray-900">{advisor.name}</p>
-                    <p className="text-xs text-gray-500">{advisor.title}</p>
+                    <p className="text-xs text-gray-500 truncate">{advisor.title}</p>
                   </div>
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    Celebrity
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 flex-shrink-0">
+                    AI Advisor
                   </span>
-                </div>
+                </button>
               ))}
               {customAdvisors.slice(0, 3).map(advisor => (
-                <div
+                <button
                   key={advisor.id}
-                  className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg"
+                  onClick={() => onModeSelect('advisory_conversation')}
+                  className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+                  title={`Start conversation with ${advisor.name}`}
                 >
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-purple-600">
-                      {advisor.name.charAt(0)}
-                    </span>
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
+                    {advisor.name.charAt(0)}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium text-gray-900">{advisor.name}</p>
-                    <p className="text-xs text-gray-500">{advisor.title}</p>
+                    <p className="text-xs text-gray-500 truncate">{advisor.title}</p>
                   </div>
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 flex-shrink-0">
                     Custom
                   </span>
-                </div>
+                </button>
               ))}
             </div>
+            {celebrityAdvisors.length + customAdvisors.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-sm">No advisors available yet</p>
+                <button
+                  onClick={() => onModeSelect('advisor_management')}
+                  className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  Create Your First Advisor →
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

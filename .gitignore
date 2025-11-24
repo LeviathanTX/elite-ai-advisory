@@ -44,3 +44,5 @@ CLAUDE.md
 supabase/.temp/
 .env.vercel.check
 .env.prod.test
+.env.production.new
+.env.vercel.production

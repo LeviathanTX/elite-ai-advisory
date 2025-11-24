@@ -142,9 +142,17 @@ function validateConfig(config: AppConfig): void {
       errors.push(
         'CRITICAL: Auth bypass is enabled in production! Set REACT_APP_BYPASS_AUTH=false'
       );
+      // SECURITY: Prevent app from running with bypass auth in production
+      throw new Error(
+        'SECURITY ERROR: Authentication bypass is not allowed in production. Please configure Supabase authentication.'
+      );
     }
     if (!config.hasSupabase) {
       errors.push('CRITICAL: Supabase not configured in production. App will run in demo mode.');
+      // SECURITY: Require database in production
+      throw new Error(
+        'SECURITY ERROR: Supabase must be configured in production. Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY.'
+      );
     }
     if (config.useMockAi) {
       warnings.push('WARNING: Mock AI enabled in production. Real AI features will not work.');

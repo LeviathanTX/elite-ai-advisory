@@ -4,7 +4,12 @@ import { Message, DocumentReference } from '../types';
 export interface ConversationData {
   id: string;
   user_id: string;
-  mode: 'pitch_practice' | 'strategic_planning' | 'due_diligence' | 'quick_consultation';
+  mode:
+    | 'pitch_practice'
+    | 'strategic_planning'
+    | 'due_diligence'
+    | 'quick_consultation'
+    | 'general';
   advisors: Array<{
     id: string;
     type: 'celebrity' | 'custom';
@@ -34,7 +39,12 @@ export interface SavedConversationRow {
   user_id: string;
   advisor_id: string;
   advisor_type: 'celebrity' | 'custom';
-  mode: 'pitch_practice' | 'strategic_planning' | 'due_diligence' | 'quick_consultation';
+  mode:
+    | 'pitch_practice'
+    | 'strategic_planning'
+    | 'due_diligence'
+    | 'quick_consultation'
+    | 'general';
   messages: any;
   metadata: any;
   created_at: string;
@@ -45,7 +55,9 @@ export interface SavedConversationRow {
  * Save or update a conversation to Supabase
  * Also saves to localStorage as cache
  */
-export async function saveConversation(conversation: ConversationData): Promise<{ success: boolean; error?: string }> {
+export async function saveConversation(
+  conversation: ConversationData
+): Promise<{ success: boolean; error?: string }> {
   try {
     // Save to localStorage first (cache)
     try {
@@ -55,7 +67,8 @@ export async function saveConversation(conversation: ConversationData): Promise<
     }
 
     // Don't save to database in demo mode
-    const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
+    const isDemoMode =
+      !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
     if (isDemoMode) {
       console.log('Demo mode - conversation saved to localStorage only');
       return { success: true };
@@ -98,17 +111,15 @@ export async function saveConversation(conversation: ConversationData): Promise<
       if (error) throw error;
     } else {
       // Insert new conversation
-      const { error } = await supabase
-        .from('conversations')
-        .insert({
-          id: conversation.id,
-          user_id: conversation.user_id,
-          advisor_id: primaryAdvisor.id,
-          advisor_type: primaryAdvisor.type,
-          mode: conversation.mode,
-          messages: conversation.messages,
-          metadata,
-        });
+      const { error } = await supabase.from('conversations').insert({
+        id: conversation.id,
+        user_id: conversation.user_id,
+        advisor_id: primaryAdvisor.id,
+        advisor_type: primaryAdvisor.type,
+        mode: conversation.mode,
+        messages: conversation.messages,
+        metadata,
+      });
 
       if (error) throw error;
     }
@@ -130,7 +141,8 @@ export async function loadConversations(userId: string): Promise<ConversationDat
 
   try {
     // Don't query database in demo mode
-    const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
+    const isDemoMode =
+      !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
 
     if (!isDemoMode && userId) {
       // Fetch from Supabase
@@ -194,9 +206,10 @@ export async function loadConversations(userId: string): Promise<ConversationDat
     }
 
     console.log(`📦 Loaded ${conversations.length} conversations from localStorage`);
-    return conversations.sort((a, b) =>
-      new Date(b.updated_at || b.created_at || 0).getTime() -
-      new Date(a.updated_at || a.created_at || 0).getTime()
+    return conversations.sort(
+      (a, b) =>
+        new Date(b.updated_at || b.created_at || 0).getTime() -
+        new Date(a.updated_at || a.created_at || 0).getTime()
     );
   } catch (error: any) {
     console.error('❌ Failed to load conversations from database, using localStorage:', error);
@@ -216,9 +229,10 @@ export async function loadConversations(userId: string): Promise<ConversationDat
       }
     }
 
-    return conversations.sort((a, b) =>
-      new Date(b.updated_at || b.created_at || 0).getTime() -
-      new Date(a.updated_at || a.created_at || 0).getTime()
+    return conversations.sort(
+      (a, b) =>
+        new Date(b.updated_at || b.created_at || 0).getTime() -
+        new Date(a.updated_at || a.created_at || 0).getTime()
     );
   }
 }
@@ -226,7 +240,9 @@ export async function loadConversations(userId: string): Promise<ConversationDat
 /**
  * Delete a conversation from both database and localStorage
  */
-export async function deleteConversation(conversationId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteConversation(
+  conversationId: string
+): Promise<{ success: boolean; error?: string }> {
   try {
     // Delete from localStorage
     try {
@@ -236,12 +252,10 @@ export async function deleteConversation(conversationId: string): Promise<{ succ
     }
 
     // Delete from database
-    const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
+    const isDemoMode =
+      !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
     if (!isDemoMode) {
-      const { error } = await supabase
-        .from('conversations')
-        .delete()
-        .eq('id', conversationId);
+      const { error } = await supabase.from('conversations').delete().eq('id', conversationId);
 
       if (error) throw error;
     }
@@ -257,10 +271,14 @@ export async function deleteConversation(conversationId: string): Promise<{ succ
 /**
  * Load a single conversation by ID
  */
-export async function loadConversation(conversationId: string, userId: string): Promise<ConversationData | null> {
+export async function loadConversation(
+  conversationId: string,
+  userId: string
+): Promise<ConversationData | null> {
   try {
     // Try database first
-    const isDemoMode = !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
+    const isDemoMode =
+      !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
 
     if (!isDemoMode) {
       const { data, error } = await supabase

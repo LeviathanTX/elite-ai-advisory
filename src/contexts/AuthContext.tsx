@@ -33,22 +33,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Use environment configuration for auth bypass
   const bypassAuth = appConfig.bypassAuth;
 
-  const [user, setUser] = useState<User | null>(
-    bypassAuth
-      ? {
-          id: '00000000-0000-0000-0000-000000000001', // Valid UUID for bypass mode
-          email: 'LeviathanTX@gmail.com',
-          full_name: 'Jeff (Demo Mode)',
-          subscription_tier: 'founder',
-          trial_start_date: new Date().toISOString(),
-          trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          is_trial_active: true,
-          email_verified: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-      : null
-  );
+  // SECURITY: Generate demo user dynamically instead of hardcoding real email addresses
+  const getDemoUser = (): User => ({
+    id: '00000000-0000-0000-0000-000000000001',
+    email: 'demo@ai-bod.local',
+    full_name: 'Demo User',
+    subscription_tier: 'founder',
+    trial_start_date: new Date().toISOString(),
+    trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    is_trial_active: true,
+    email_verified: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  const [user, setUser] = useState<User | null>(bypassAuth ? getDemoUser() : null);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(bypassAuth ? false : true);
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
@@ -88,10 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const authPromise = getCurrentUser();
 
-        const { user: currentUser, error } = await Promise.race([
+        const { user: currentUser, error } = (await Promise.race([
           authPromise,
-          timeoutPromise
-        ]) as any;
+          timeoutPromise,
+        ])) as any;
 
         if (error) {
           console.error('❌ Auth initialization error:', error.message);
@@ -183,10 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Sync email verification status if it has changed
       if (data.email_verified !== isEmailVerified) {
         console.log('📧 Syncing email verification status:', isEmailVerified);
-        await supabase
-          .from('users')
-          .update({ email_verified: isEmailVerified })
-          .eq('id', userId);
+        await supabase.from('users').update({ email_verified: isEmailVerified }).eq('id', userId);
         data.email_verified = isEmailVerified;
       }
 
@@ -222,7 +218,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   };
 
-  const handleSignIn = async (email: string, password: string): Promise<AuthResponse<SignInData>> => {
+  const handleSignIn = async (
+    email: string,
+    password: string
+  ): Promise<AuthResponse<SignInData>> => {
     const result = await signIn(email, password);
 
     // In demo mode, manually set the user
@@ -251,7 +250,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return result;
   };
 
-  const handleSignUp = async (email: string, password: string, fullName?: string): Promise<AuthResponse<SignUpData>> => {
+  const handleSignUp = async (
+    email: string,
+    password: string,
+    fullName?: string
+  ): Promise<AuthResponse<SignUpData>> => {
     const result = await signUp(email, password, fullName);
 
     // In demo mode, manually set the user
@@ -294,7 +297,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) {
       return {
         data: null,
-        error: { message: 'No user logged in', code: 'no_user' }
+        error: { message: 'No user logged in', code: 'no_user' },
       };
     }
 
@@ -312,7 +315,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return {
       data: null,
-      error: error ? { message: error.message } : { message: 'Update failed' }
+      error: error ? { message: error.message } : { message: 'Update failed' },
     };
   };
 
@@ -320,7 +323,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!supabaseUser?.email) {
       return {
         data: null,
-        error: { message: 'No user email found', code: 'no_email' }
+        error: { message: 'No user email found', code: 'no_email' },
       };
     }
 
@@ -341,7 +344,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Exception resending verification email:', err);
       return {
         data: null,
-        error: { message: err.message || 'Failed to resend verification email' }
+        error: { message: err.message || 'Failed to resend verification email' },
       };
     }
   };
@@ -365,7 +368,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Exception refreshing session:', err);
       return {
         data: null,
-        error: { message: err.message || 'Failed to refresh session' }
+        error: { message: err.message || 'Failed to refresh session' },
       };
     }
   };

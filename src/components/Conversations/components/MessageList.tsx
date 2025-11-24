@@ -137,16 +137,46 @@ export function MessageList({
   if (visibleMessages.length === 0 && !isGeneratingResponse) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center max-w-md">
-          <Bot className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Start Your Advisory Session</h3>
-          <p className="text-gray-500 mb-4">
-            Ask questions, share documents, or begin a strategic discussion with your AI advisors.
+        <div className="text-center max-w-2xl">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Bot className="w-10 h-10 text-blue-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Start Your Advisory Session</h3>
+          <p className="text-gray-600 mb-8 text-lg">
+            Your AI advisory team is ready to help. Ask questions, share documents, or begin a
+            strategic discussion.
           </p>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-sm text-gray-600">
-              <strong>Pro tip:</strong> Select specific advisors and upload relevant documents to
-              get more targeted insights.
+
+          {/* Example Questions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
+              <p className="text-sm font-semibold text-blue-900 mb-1">💡 Try asking:</p>
+              <p className="text-sm text-blue-800">
+                "How can I improve my pitch deck for investors?"
+              </p>
+            </div>
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left">
+              <p className="text-sm font-semibold text-purple-900 mb-1">📊 Or ask:</p>
+              <p className="text-sm text-purple-800">
+                "What metrics should I track for my SaaS startup?"
+              </p>
+            </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-left">
+              <p className="text-sm font-semibold text-green-900 mb-1">🎯 Strategy:</p>
+              <p className="text-sm text-green-800">"How do I prioritize features for my MVP?"</p>
+            </div>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left">
+              <p className="text-sm font-semibold text-orange-900 mb-1">💰 Fundraising:</p>
+              <p className="text-sm text-orange-800">
+                "What's the best way to approach VCs in Austin?"
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p className="text-sm text-gray-700">
+              <strong className="text-gray-900">💡 Pro tip:</strong> Select specific advisors above
+              and upload your pitch deck or business plan for more targeted, context-aware advice.
             </p>
           </div>
         </div>

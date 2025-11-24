@@ -39,11 +39,18 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
                     <strong>NEVER</strong> be relied upon for actual business, financial, legal,
                     medical, or any other professional decisions.
                   </p>
-                  <p className="font-semibold">
+                  <p className="font-semibold mb-3">
                     <strong>AI SYSTEMS CAN AND DO GENERATE FALSE INFORMATION</strong> (commonly
                     known as "hallucinations"). Our AI advisors may confidently present completely
                     fabricated facts, statistics, citations, and recommendations that have no basis
                     in reality.
+                  </p>
+                  <h4 className="font-semibold mb-2 mt-4">Celebrity Advisor Disclaimer</h4>
+                  <p>
+                    <strong>None of the Celebrity Advisors have authorized or are even aware of this
+                    platform, yet.</strong> I hope to introduce it to them in the near future. These AI
+                    personas are based on publicly available information and do not represent actual
+                    endorsements or participation by the individuals portrayed.
                   </p>
                 </div>
               </div>
@@ -186,7 +193,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
                 For questions about these Terms (though we assume no obligation to respond):
               </p>
               <p className="mb-1">
-                <strong>Email:</strong> legal@aiboardofadvisors.com
+                <strong>Email:</strong> hello@bearableai.com
               </p>
               <p>
                 <strong>Response Time:</strong> If we feel like it

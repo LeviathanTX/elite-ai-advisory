@@ -88,16 +88,32 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const limits = SUBSCRIPTION_LIMITS[currentTier];
 
   // Calculate trial status
-  const isTrialActive = user?.is_trial_active ?? false;
+  // Special handling: Owner accounts are not on trial (full permanent access)
+  const ownerEmails = [
+    'leviathanTX@gmail.com',
+    'LeviathanTX@gmail.com',
+    'jeff@leviantx.com',
+    'jeffrey@leviantx.com',
+    'jeff.levine@gmail.com',
+    'jeffrey.levine@gmail.com',
+  ];
+  const isOwnerAccount =
+    ownerEmails.some(email => user?.email?.toLowerCase() === email.toLowerCase()) ||
+    (user?.full_name?.toLowerCase().includes('jeff') && user?.full_name?.toLowerCase().includes('levine'));
+
+  // Owner accounts have full access, not trial
+  const isTrialActive = isOwnerAccount ? false : (user?.is_trial_active ?? false);
   const trialEndDate = user?.trial_end_date ? new Date(user.trial_end_date) : null;
 
   const trialDaysRemaining = React.useMemo(() => {
+    // Owner account has unlimited access (not on trial)
+    if (isOwnerAccount) return 0; // 0 means not on trial, not expired
     if (!trialEndDate) return 0;
     const now = new Date();
     const diffMs = trialEndDate.getTime() - now.getTime();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);
-  }, [trialEndDate]);
+  }, [trialEndDate, isOwnerAccount]);
 
   useEffect(() => {
     if (user) {

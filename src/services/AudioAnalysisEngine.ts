@@ -215,7 +215,11 @@ export class AudioAnalysisEngine {
     const emotionalFeatures = this.analyzeEmotionalMarkers();
     const coachingFeatures = this.generateCoachingMetrics();
     const fillerWordAnalysis = this.analyzeFillerWords(transcript, recordingDuration);
-    const vocalQualities = this.analyzeVocalQualities(pitchFeatures, volumeFeatures, emotionalFeatures);
+    const vocalQualities = this.analyzeVocalQualities(
+      pitchFeatures,
+      volumeFeatures,
+      emotionalFeatures
+    );
 
     return {
       pitch: pitchFeatures,
@@ -598,18 +602,20 @@ export class AudioAnalysisEngine {
   ): number {
     // Authority = steady confident voice with good projection and moderate pitch
     // Lower pitch tends to sound more authoritative (but not too low)
-    const pitchAuthority = pitch.mean > 100 && pitch.mean < 180 ? 100 : Math.max(0, 100 - Math.abs(pitch.mean - 140));
+    const pitchAuthority =
+      pitch.mean > 100 && pitch.mean < 180 ? 100 : Math.max(0, 100 - Math.abs(pitch.mean - 140));
     const volumeAuthority = volume.average > 0.05 ? Math.min(100, volume.average * 1500) : 0; // Good projection
     const steadiness = volume.consistency; // Steady voice = authority
     const variationControl = Math.max(0, 100 - pitch.monotoneScore); // Some variation, not monotone
 
     // Combine factors with confidence being key
-    return Math.min(100,
+    return Math.min(
+      100,
       confidence * 0.4 +
-      pitchAuthority * 0.2 +
-      volumeAuthority * 0.2 +
-      steadiness * 0.1 +
-      variationControl * 0.1
+        pitchAuthority * 0.2 +
+        volumeAuthority * 0.2 +
+        steadiness * 0.1 +
+        variationControl * 0.1
     );
   }
 
@@ -624,43 +630,29 @@ export class AudioAnalysisEngine {
     const naturalPacing = Math.max(0, 100 - Math.abs(pitch.monotoneScore - 35)); // Some natural variety
 
     // Authenticity is key for credibility
-    return Math.min(100,
-      authenticity * 0.5 +
-      steadyPitch * 0.2 +
-      steadyVolume * 0.2 +
-      naturalPacing * 0.1
+    return Math.min(
+      100,
+      authenticity * 0.5 + steadyPitch * 0.2 + steadyVolume * 0.2 + naturalPacing * 0.1
     );
   }
 
-  private calculatePersuasiveness(
-    authority: number,
-    credibility: number,
-    energy: number
-  ): number {
+  private calculatePersuasiveness(authority: number, credibility: number, energy: number): number {
     // Persuasiveness = combination of authority, credibility, and energy
     // Authority and credibility are most important
-    return Math.min(100,
-      authority * 0.4 +
-      credibility * 0.4 +
-      energy * 0.2
-    );
+    return Math.min(100, authority * 0.4 + credibility * 0.4 + energy * 0.2);
   }
 
-  private calculateWarmth(
-    pitch: AudioFeatures['pitch'],
-    volume: AudioFeatures['volume']
-  ): number {
+  private calculateWarmth(pitch: AudioFeatures['pitch'], volume: AudioFeatures['volume']): number {
     // Warmth = moderate-to-higher pitch with good variation and consistent moderate volume
-    const pitchWarmth = pitch.mean > 150 && pitch.mean < 220 ? 100 : Math.max(0, 100 - Math.abs(pitch.mean - 185));
+    const pitchWarmth =
+      pitch.mean > 150 && pitch.mean < 220 ? 100 : Math.max(0, 100 - Math.abs(pitch.mean - 185));
     const volumeWarmth = Math.max(0, 100 - Math.abs(volume.average - 0.06) * 1000); // Moderate volume
     const variation = Math.max(0, 100 - pitch.monotoneScore); // Varied = warm
     const consistency = volume.consistency; // Consistent = warm
 
-    return Math.min(100,
-      pitchWarmth * 0.3 +
-      volumeWarmth * 0.2 +
-      variation * 0.3 +
-      consistency * 0.2
+    return Math.min(
+      100,
+      pitchWarmth * 0.3 + volumeWarmth * 0.2 + variation * 0.3 + consistency * 0.2
     );
   }
 
@@ -696,14 +688,12 @@ export class AudioAnalysisEngine {
     // Determine most common filler
     const fillerCounts = {
       'um/uh': umUhCount,
-      'like': likeFillerCount,
+      like: likeFillerCount,
       'you know': youKnowCount,
       'basically/actually': basicallyCount,
-      'so': soFillerCount,
+      so: soFillerCount,
     };
-    const mostCommon = Object.entries(fillerCounts).reduce((a, b) =>
-      a[1] > b[1] ? a : b
-    )[0];
+    const mostCommon = Object.entries(fillerCounts).reduce((a, b) => (a[1] > b[1] ? a : b))[0];
 
     return {
       total_count: totalCount,
@@ -759,7 +749,8 @@ export class AudioAnalysisEngine {
 
     // Steadiness
     let steadiness: string;
-    const steadyScore = (volume.consistency + (100 - pitch.monotoneScore) + (100 - emotional.nervousness)) / 3;
+    const steadyScore =
+      (volume.consistency + (100 - pitch.monotoneScore) + (100 - emotional.nervousness)) / 3;
     if (steadyScore > 75) steadiness = 'rock-solid and controlled';
     else if (steadyScore > 60) steadiness = 'steady and reliable';
     else if (steadyScore > 45) steadiness = 'moderately stable';
@@ -782,87 +773,157 @@ export class AudioAnalysisEngine {
     const coachingTips: string[] = [];
 
     // === VOCAL QUALITY DESCRIPTORS (Always include) ===
-    strengths.push(`Your voice is ${features.vocal_qualities.tone_description} with ${features.vocal_qualities.richness}`);
+    strengths.push(
+      `Your voice is ${features.vocal_qualities.tone_description} with ${features.vocal_qualities.richness}`
+    );
     strengths.push(`Vocal strength: ${features.vocal_qualities.strength_level}`);
     strengths.push(`Authority level: ${features.vocal_qualities.authority_level}`);
     strengths.push(`Voice steadiness: ${features.vocal_qualities.steadiness}`);
 
     // === AUTHORITY & CREDIBILITY ANALYSIS ===
     if (features.emotional_markers.authority > 70) {
-      strengths.push(`🎯 Strong vocal authority (${features.emotional_markers.authority.toFixed(0)}%) - Your voice commands attention and respect`);
+      strengths.push(
+        `🎯 Strong vocal authority (${features.emotional_markers.authority.toFixed(0)}%) - Your voice commands attention and respect`
+      );
       coachingTips.push('Continue to project confidence and maintain your commanding presence');
     } else if (features.emotional_markers.authority > 50) {
-      improvementAreas.push(`⚡ Moderate authority (${features.emotional_markers.authority.toFixed(0)}%) - You sound capable but could be more commanding`);
-      recommendations.push('Lower your pitch slightly and speak with more deliberate pacing to increase authority');
-      coachingTips.push('Practice power poses before presenting to naturally boost your vocal authority');
+      improvementAreas.push(
+        `⚡ Moderate authority (${features.emotional_markers.authority.toFixed(0)}%) - You sound capable but could be more commanding`
+      );
+      recommendations.push(
+        'Lower your pitch slightly and speak with more deliberate pacing to increase authority'
+      );
+      coachingTips.push(
+        'Practice power poses before presenting to naturally boost your vocal authority'
+      );
     } else {
-      improvementAreas.push(`❌ Low vocal authority (${features.emotional_markers.authority.toFixed(0)}%) - Your voice lacks command and assertiveness`);
-      recommendations.push('Work on projecting confidence through deeper breathing and stronger volume');
-      coachingTips.push('Record yourself and compare to authoritative speakers - note the difference in pace, pitch, and power');
+      improvementAreas.push(
+        `❌ Low vocal authority (${features.emotional_markers.authority.toFixed(0)}%) - Your voice lacks command and assertiveness`
+      );
+      recommendations.push(
+        'Work on projecting confidence through deeper breathing and stronger volume'
+      );
+      coachingTips.push(
+        'Record yourself and compare to authoritative speakers - note the difference in pace, pitch, and power'
+      );
     }
 
     if (features.emotional_markers.credibility > 70) {
-      strengths.push(`✓ High credibility (${features.emotional_markers.credibility.toFixed(0)}%) - You sound believable and trustworthy`);
+      strengths.push(
+        `✓ High credibility (${features.emotional_markers.credibility.toFixed(0)}%) - You sound believable and trustworthy`
+      );
     } else if (features.emotional_markers.credibility > 50) {
-      improvementAreas.push(`⚠ Moderate credibility (${features.emotional_markers.credibility.toFixed(0)}%) - Could sound more believable`);
-      recommendations.push('Reduce vocal nervousness and maintain steadier pitch to increase believability');
-      coachingTips.push('Speak as if you truly believe every word - authenticity builds credibility');
+      improvementAreas.push(
+        `⚠ Moderate credibility (${features.emotional_markers.credibility.toFixed(0)}%) - Could sound more believable`
+      );
+      recommendations.push(
+        'Reduce vocal nervousness and maintain steadier pitch to increase believability'
+      );
+      coachingTips.push(
+        'Speak as if you truly believe every word - authenticity builds credibility'
+      );
     } else {
-      improvementAreas.push(`❌ Low credibility (${features.emotional_markers.credibility.toFixed(0)}%) - Your voice undermines your message`);
-      recommendations.push('Work on vocal authenticity and reducing signs of nervousness or uncertainty');
-      coachingTips.push('Practice until you can deliver your pitch naturally without reading or memorizing');
+      improvementAreas.push(
+        `❌ Low credibility (${features.emotional_markers.credibility.toFixed(0)}%) - Your voice undermines your message`
+      );
+      recommendations.push(
+        'Work on vocal authenticity and reducing signs of nervousness or uncertainty'
+      );
+      coachingTips.push(
+        'Practice until you can deliver your pitch naturally without reading or memorizing'
+      );
     }
 
     if (features.emotional_markers.persuasiveness > 70) {
-      strengths.push(`💪 Highly persuasive (${features.emotional_markers.persuasiveness.toFixed(0)}%) - Your voice is convincing and compelling`);
+      strengths.push(
+        `💪 Highly persuasive (${features.emotional_markers.persuasiveness.toFixed(0)}%) - Your voice is convincing and compelling`
+      );
     } else {
-      improvementAreas.push(`📉 Limited persuasiveness (${features.emotional_markers.persuasiveness.toFixed(0)}%) - Your delivery lacks convincing power`);
-      recommendations.push('Combine vocal authority with authentic credibility to become more persuasive');
-      coachingTips.push('Watch and study TED Talks - note how great speakers use vocal variety to persuade');
+      improvementAreas.push(
+        `📉 Limited persuasiveness (${features.emotional_markers.persuasiveness.toFixed(0)}%) - Your delivery lacks convincing power`
+      );
+      recommendations.push(
+        'Combine vocal authority with authentic credibility to become more persuasive'
+      );
+      coachingTips.push(
+        'Watch and study TED Talks - note how great speakers use vocal variety to persuade'
+      );
     }
 
     // === FILLER WORDS ANALYSIS ===
     if (features.filler_words.total_count === 0) {
-      strengths.push('🌟 Excellent - No filler words detected! Your speech is clean and professional');
+      strengths.push(
+        '🌟 Excellent - No filler words detected! Your speech is clean and professional'
+      );
     } else if (features.filler_words.filler_rate < 2) {
-      strengths.push(`✓ Good filler word control - ${features.filler_words.total_count} fillers (${features.filler_words.filler_rate} per minute)`);
+      strengths.push(
+        `✓ Good filler word control - ${features.filler_words.total_count} fillers (${features.filler_words.filler_rate} per minute)`
+      );
     } else if (features.filler_words.filler_rate < 5) {
-      improvementAreas.push(`⚠ Moderate filler word usage - ${features.filler_words.total_count} total (${features.filler_words.filler_rate} per minute)`);
-      improvementAreas.push(`Most common filler: "${features.filler_words.most_common}" - Work on eliminating this habit`);
+      improvementAreas.push(
+        `⚠ Moderate filler word usage - ${features.filler_words.total_count} total (${features.filler_words.filler_rate} per minute)`
+      );
+      improvementAreas.push(
+        `Most common filler: "${features.filler_words.most_common}" - Work on eliminating this habit`
+      );
       if (features.filler_words.um_uh_count > 0) {
-        recommendations.push(`Reduce "um/uh" (${features.filler_words.um_uh_count} times) - Replace with brief pauses instead`);
+        recommendations.push(
+          `Reduce "um/uh" (${features.filler_words.um_uh_count} times) - Replace with brief pauses instead`
+        );
       }
       if (features.filler_words.like_count > 0) {
-        recommendations.push(`Reduce "like" as filler (${features.filler_words.like_count} times) - Be more deliberate with word choice`);
+        recommendations.push(
+          `Reduce "like" as filler (${features.filler_words.like_count} times) - Be more deliberate with word choice`
+        );
       }
       if (features.filler_words.you_know_count > 0) {
-        recommendations.push(`Eliminate "you know" (${features.filler_words.you_know_count} times) - Trust that your audience is following along`);
+        recommendations.push(
+          `Eliminate "you know" (${features.filler_words.you_know_count} times) - Trust that your audience is following along`
+        );
       }
       coachingTips.push('Pause instead of using filler words - silence is more powerful than "um"');
     } else {
-      improvementAreas.push(`❌ High filler word usage - ${features.filler_words.total_count} total (${features.filler_words.filler_rate} per minute) - This seriously undermines your credibility`);
-      improvementAreas.push(`Biggest culprit: "${features.filler_words.most_common}" - Eliminate this immediately`);
+      improvementAreas.push(
+        `❌ High filler word usage - ${features.filler_words.total_count} total (${features.filler_words.filler_rate} per minute) - This seriously undermines your credibility`
+      );
+      improvementAreas.push(
+        `Biggest culprit: "${features.filler_words.most_common}" - Eliminate this immediately`
+      );
       recommendations.push('Practice slowing down and pausing instead of using fillers');
-      recommendations.push('Record yourself and count fillers - awareness is the first step to elimination');
-      coachingTips.push('Use the "pause button" technique - physically pause when you feel a filler word coming');
+      recommendations.push(
+        'Record yourself and count fillers - awareness is the first step to elimination'
+      );
+      coachingTips.push(
+        'Use the "pause button" technique - physically pause when you feel a filler word coming'
+      );
       coachingTips.push('Practice your pitch until you can deliver it with zero filler words');
     }
 
     // === SPEAKING PACE ===
     if (features.rhythm.speaking_rate >= 140 && features.rhythm.speaking_rate <= 160) {
-      strengths.push(`✓ Optimal speaking pace (${features.rhythm.speaking_rate.toFixed(0)} WPM) - Perfect for audience engagement`);
+      strengths.push(
+        `✓ Optimal speaking pace (${features.rhythm.speaking_rate.toFixed(0)} WPM) - Perfect for audience engagement`
+      );
     } else if (features.rhythm.speaking_rate < 120) {
-      improvementAreas.push(`🐌 Too slow (${features.rhythm.speaking_rate.toFixed(0)} WPM) - You risk losing your audience's attention`);
+      improvementAreas.push(
+        `🐌 Too slow (${features.rhythm.speaking_rate.toFixed(0)} WPM) - You risk losing your audience's attention`
+      );
       recommendations.push('Speed up to 140-160 words per minute for optimal engagement');
       coachingTips.push('Practice with a timer - aim for 2.5 words per second');
     } else if (features.rhythm.speaking_rate < 140) {
-      improvementAreas.push(`⚠ Slightly slow (${features.rhythm.speaking_rate.toFixed(0)} WPM) - Could be more energetic`);
+      improvementAreas.push(
+        `⚠ Slightly slow (${features.rhythm.speaking_rate.toFixed(0)} WPM) - Could be more energetic`
+      );
       recommendations.push('Increase pace slightly while maintaining clarity');
     } else if (features.rhythm.speaking_rate <= 180) {
-      improvementAreas.push(`⚠ Slightly fast (${features.rhythm.speaking_rate.toFixed(0)} WPM) - Slow down for better comprehension`);
+      improvementAreas.push(
+        `⚠ Slightly fast (${features.rhythm.speaking_rate.toFixed(0)} WPM) - Slow down for better comprehension`
+      );
       recommendations.push('Add more strategic pauses to improve pacing');
     } else {
-      improvementAreas.push(`🏃 Too fast (${features.rhythm.speaking_rate.toFixed(0)} WPM) - You're rushing and losing clarity`);
+      improvementAreas.push(
+        `🏃 Too fast (${features.rhythm.speaking_rate.toFixed(0)} WPM) - You're rushing and losing clarity`
+      );
       recommendations.push('Slow down significantly - take deliberate pauses between key points');
       coachingTips.push('Use pauses as emphasis - great speakers let important points breathe');
     }
@@ -876,9 +937,15 @@ export class AudioAnalysisEngine {
       recommendations.push('Speak from your diaphragm to increase natural projection');
       coachingTips.push('Imagine speaking to the back of a large room');
     } else {
-      improvementAreas.push(`❌ Weak projection (${volumePercent}%) - Your voice lacks power and presence`);
-      recommendations.push('Work on breath support and diaphragmatic breathing for stronger projection');
-      coachingTips.push('Practice vocal exercises to build strength: sustained "ah" sounds at increasing volumes');
+      improvementAreas.push(
+        `❌ Weak projection (${volumePercent}%) - Your voice lacks power and presence`
+      );
+      recommendations.push(
+        'Work on breath support and diaphragmatic breathing for stronger projection'
+      );
+      coachingTips.push(
+        'Practice vocal exercises to build strength: sustained "ah" sounds at increasing volumes'
+      );
     }
 
     if (features.volume.consistency > 75) {
@@ -897,54 +964,82 @@ export class AudioAnalysisEngine {
       recommendations.push('Emphasize key words by varying your pitch');
       coachingTips.push('Go UP on important new ideas, DOWN on conclusions');
     } else {
-      improvementAreas.push(`❌ Monotone delivery (${features.pitch.monotoneScore.toFixed(0)}%) - Your voice lacks emotional expression`);
+      improvementAreas.push(
+        `❌ Monotone delivery (${features.pitch.monotoneScore.toFixed(0)}%) - Your voice lacks emotional expression`
+      );
       recommendations.push('Practice adding dramatic pitch changes to emphasize key points');
-      coachingTips.push('Read children\'s books aloud with exaggerated expression to develop vocal variety');
+      coachingTips.push(
+        "Read children's books aloud with exaggerated expression to develop vocal variety"
+      );
     }
 
     // === CONFIDENCE & NERVOUSNESS ===
     if (features.emotional_markers.confidence_level > 80) {
-      strengths.push(`💪 Strong confidence (${features.emotional_markers.confidence_level.toFixed(0)}%) - You sound self-assured`);
+      strengths.push(
+        `💪 Strong confidence (${features.emotional_markers.confidence_level.toFixed(0)}%) - You sound self-assured`
+      );
     } else if (features.emotional_markers.confidence_level > 60) {
-      improvementAreas.push(`⚠ Moderate confidence (${features.emotional_markers.confidence_level.toFixed(0)}%) - Could sound more self-assured`);
+      improvementAreas.push(
+        `⚠ Moderate confidence (${features.emotional_markers.confidence_level.toFixed(0)}%) - Could sound more self-assured`
+      );
       recommendations.push('Practice until mastery - confidence comes from preparation');
     } else {
-      improvementAreas.push(`❌ Low confidence (${features.emotional_markers.confidence_level.toFixed(0)}%) - Your voice reveals uncertainty`);
-      recommendations.push('Work on building genuine confidence through thorough preparation and practice');
-      coachingTips.push('Do power poses for 2 minutes before presenting - it genuinely boosts confidence');
+      improvementAreas.push(
+        `❌ Low confidence (${features.emotional_markers.confidence_level.toFixed(0)}%) - Your voice reveals uncertainty`
+      );
+      recommendations.push(
+        'Work on building genuine confidence through thorough preparation and practice'
+      );
+      coachingTips.push(
+        'Do power poses for 2 minutes before presenting - it genuinely boosts confidence'
+      );
     }
 
     if (features.emotional_markers.nervousness > 60) {
-      improvementAreas.push(`😰 High nervousness detected (${features.emotional_markers.nervousness.toFixed(0)}%) - Your voice reveals anxiety`);
+      improvementAreas.push(
+        `😰 High nervousness detected (${features.emotional_markers.nervousness.toFixed(0)}%) - Your voice reveals anxiety`
+      );
       recommendations.push('Practice relaxation breathing: 4 seconds in, hold 4, out 4, hold 4');
       coachingTips.push('Reframe nervousness as excitement - they feel the same physiologically');
     }
 
     if (features.emotional_markers.stress_level > 60) {
-      improvementAreas.push(`⚠ Vocal stress indicators present (${features.emotional_markers.stress_level.toFixed(0)}%)`);
+      improvementAreas.push(
+        `⚠ Vocal stress indicators present (${features.emotional_markers.stress_level.toFixed(0)}%)`
+      );
       recommendations.push('Focus on breath control and speaking from a relaxed state');
       coachingTips.push('Drop your shoulders, relax your jaw, and breathe deeply before speaking');
     }
 
     // === VOICE QUALITY ISSUES ===
     if (features.voice_quality.voice_breaks > 5) {
-      improvementAreas.push(`❌ Frequent voice breaks (${features.voice_quality.voice_breaks}) - Indicates poor breath support`);
+      improvementAreas.push(
+        `❌ Frequent voice breaks (${features.voice_quality.voice_breaks}) - Indicates poor breath support`
+      );
       recommendations.push('Work with a voice coach on breath support exercises');
       coachingTips.push('Warm up your voice: humming, lip trills, sirens from low to high pitch');
     }
 
     // === AUTHENTICITY & WARMTH ===
     if (features.emotional_markers.authenticity > 70) {
-      strengths.push(`✓ Authentic delivery (${features.emotional_markers.authenticity.toFixed(0)}%) - You sound genuine and real`);
+      strengths.push(
+        `✓ Authentic delivery (${features.emotional_markers.authenticity.toFixed(0)}%) - You sound genuine and real`
+      );
     } else {
-      improvementAreas.push(`⚠ Limited authenticity (${features.emotional_markers.authenticity.toFixed(0)}%) - Work on sounding more natural`);
+      improvementAreas.push(
+        `⚠ Limited authenticity (${features.emotional_markers.authenticity.toFixed(0)}%) - Work on sounding more natural`
+      );
       recommendations.push('Speak conversationally - imagine talking to a friend, not performing');
     }
 
     if (features.emotional_markers.warmth > 60) {
-      strengths.push(`😊 Warm and approachable voice (${features.emotional_markers.warmth.toFixed(0)}%)`);
+      strengths.push(
+        `😊 Warm and approachable voice (${features.emotional_markers.warmth.toFixed(0)}%)`
+      );
     } else if (features.emotional_markers.warmth < 40) {
-      improvementAreas.push(`❄️ Cold vocal tone (${features.emotional_markers.warmth.toFixed(0)}%) - Could be more personable`);
+      improvementAreas.push(
+        `❄️ Cold vocal tone (${features.emotional_markers.warmth.toFixed(0)}%) - Could be more personable`
+      );
       recommendations.push('Add warmth by smiling while speaking - it genuinely affects your tone');
       coachingTips.push('Think of someone you care about while delivering your pitch');
     }
@@ -956,7 +1051,8 @@ export class AudioAnalysisEngine {
         features.emotional_markers.authority +
         features.emotional_markers.credibility +
         features.emotional_markers.persuasiveness +
-        (100 - Math.min(100, features.filler_words.filler_rate * 20))) / 6
+        (100 - Math.min(100, features.filler_words.filler_rate * 20))) /
+        6
     );
 
     // Add summary coaching tip

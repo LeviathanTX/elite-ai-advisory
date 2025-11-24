@@ -31,7 +31,12 @@ import { cn, formatDate } from '../../utils';
 interface SavedConversation {
   id: string;
   title: string;
-  mode: 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general';
+  mode:
+    | 'pitch_practice'
+    | 'strategic_planning'
+    | 'due_diligence'
+    | 'quick_consultation'
+    | 'general';
   advisors: string[];
   lastMessage: string;
   lastUpdated: string;
@@ -48,7 +53,8 @@ interface ConversationManagerProps {
 
 export function ConversationManager({ onBack }: ConversationManagerProps) {
   const { user } = useAuth();
-  const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations } = useAdvisor();
+  const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations } =
+    useAdvisor();
   const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [showNewConversation, setShowNewConversation] = useState(false);
@@ -102,6 +108,14 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
     }
   }, [isDemoMode, user]);
 
+  // Auto-start new conversation if no conversations exist after loading
+  useEffect(() => {
+    if (!isLoading && localConversations.length === 0 && !showNewConversation && !selectedConversation) {
+      console.log('📝 No conversations found, auto-starting new general discussion');
+      setShowNewConversation(true);
+    }
+  }, [isLoading, localConversations.length, showNewConversation, selectedConversation]);
+
   const loadLocalStorageConversations = () => {
     const saved: SavedConversation[] = [];
 
@@ -136,13 +150,22 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   const loadConversationsFromService = async () => {
     if (!user?.id) {
       console.log('No user logged in, skipping conversation load');
+      setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
+    console.log(`📋 Loading conversations for user ${user.id}...`);
+
     try {
-      // Load from database using our conversation service
-      const loaded = await loadConversationsFromDb(user.id);
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Conversation load timeout')), 10000);
+      });
+
+      const loaded = await Promise.race([loadConversationsFromDb(user.id), timeoutPromise]);
+
+      console.log(`✅ Loaded ${loaded.length} conversations from database`);
 
       const saved: SavedConversation[] = loaded.map(data => ({
         id: data.id,
@@ -152,18 +175,21 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         lastMessage: data.messages?.[data.messages.length - 1]?.content || 'No messages',
         lastUpdated: data.updated_at || data.created_at || new Date().toISOString(),
         messageCount: data.messages?.length || 0,
-        hasAttachments: data.files && data.files.length > 0,
+        hasAttachments: Boolean(data.files && data.files.length > 0),
         tags: [],
         isStarred: false,
         isArchived: false,
       }));
 
       setLocalConversations(saved);
-      console.log(`✅ Loaded ${saved.length} conversations from database for user ${user.id}`);
+      console.log(`✅ Set ${saved.length} conversations in state`);
     } catch (error) {
-      console.error('Error loading conversations from database:', error);
+      console.error('❌ Error loading conversations from database:', error);
+      // Fallback to empty state to unblock UI
+      setLocalConversations([]);
     } finally {
       setIsLoading(false);
+      console.log('✅ Conversation loading complete, isLoading set to false');
     }
   };
 
@@ -179,7 +205,11 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
       return supabaseConversations.map(conv => ({
         id: conv.id,
         title: `Conversation with ${conv.advisor_id}`,
-        mode: conv.mode as 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general',
+        mode: conv.mode as
+          | 'strategic_planning'
+          | 'due_diligence'
+          | 'quick_consultation'
+          | 'general',
         advisors: [conv.advisor_id],
         lastMessage: conv.messages?.[conv.messages.length - 1]?.content || 'No messages',
         lastUpdated: conv.updated_at,
@@ -333,11 +363,14 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         <div className="p-4">
           <button
             onClick={() => setShowNewConversation(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+            className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg font-semibold"
           >
             <Plus className="w-5 h-5" />
-            <span className="font-medium">New Conversation</span>
+            <span>Start New Conversation</span>
           </button>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Get advice from AI advisors on any topic
+          </p>
         </div>
       </div>
 
@@ -349,21 +382,44 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
               <div className="text-gray-500">Loading conversations...</div>
             </div>
           ) : filteredAndSortedConversations.length === 0 ? (
-            <div className="text-center py-12">
-              <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No conversations found</h3>
-              <p className="text-gray-500 mb-6">
+            <div className="text-center py-16">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageCircle className="w-12 h-12 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {searchQuery ? 'No conversations found' : 'Ready to get started?'}
+              </h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
                 {searchQuery
-                  ? 'Try adjusting your search criteria'
-                  : 'Start a new conversation with your AI advisors'}
+                  ? "Try adjusting your search criteria or filters to find what you're looking for"
+                  : 'Start your first conversation with AI advisors trained on insights from Mark Cuban, Reid Hoffman, and other business legends'}
               </p>
               <button
                 onClick={() => setShowNewConversation(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl font-semibold text-lg"
               >
-                <Plus className="w-5 h-5" />
-                Start New Conversation
+                <Plus className="w-6 h-6" />
+                Start Your First Conversation
               </button>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="text-3xl mb-2">🎯</div>
+                  <p className="text-sm font-medium text-gray-900 mb-1">Strategic Planning</p>
+                  <p className="text-xs text-gray-600">
+                    Get expert guidance on your business strategy
+                  </p>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <div className="text-3xl mb-2">💡</div>
+                  <p className="text-sm font-medium text-gray-900 mb-1">Quick Consultation</p>
+                  <p className="text-xs text-gray-600">Fast answers to urgent business questions</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4">
+                  <div className="text-3xl mb-2">📊</div>
+                  <p className="text-sm font-medium text-gray-900 mb-1">Due Diligence</p>
+                  <p className="text-xs text-gray-600">Deep analysis and document review</p>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -390,7 +446,9 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
-                          {conv.isStarred && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
+                          {conv.isStarred && (
+                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                          )}
                           <button
                             onClick={e => {
                               e.stopPropagation();
@@ -444,8 +502,8 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
         onConfirm={confirmDelete}
         title="Delete Conversation"
         message="Are you sure you want to delete this conversation? This action cannot be undone."
-        confirmLabel="Delete"
-        confirmVariant="danger"
+        confirmText="Delete"
+        type="danger"
       />
     </div>
   );
