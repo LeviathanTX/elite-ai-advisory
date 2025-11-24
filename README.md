@@ -115,24 +115,33 @@ This project leverages our enhanced development architecture:
    git checkout -b feature/your-feature
    ```
 
-2. **Implement with Claude** (any interface)
+2. **Set up GitHub automation** (once per session)
+   ```bash
+   export GITHUB_TOKEN="your_github_pat_token"
+   ```
+   - Get token from: https://github.com/settings/tokens
+   - Required scopes: `repo`, `workflow`, `write:packages`, `read:org`
+   - Enables automated PR creation and merging via REST API
+
+3. **Implement with Claude** (any interface)
    - Browser: Complex architecture, refactoring multi-file systems
    - CLI: Rapid implementation, debugging, file operations
    - GitHub: Review and iterate on PRs with `@claude` mentions
 
-3. **Automated deployment**
+4. **Automated PR creation** (via GitHub REST API)
    ```bash
    git push -u origin feature/your-feature
-   gh pr create  # Auto-generates preview deployment
+   # Claude automatically creates PR using curl + GitHub API
    ```
 
-4. **Review & verify**
+5. **Review & verify**
    - Preview URL posted in PR comments
    - Browser console clean (verified)
    - Tests pass (automated CI)
    - `@claude please review this PR` for code review
 
-5. **Merge to main** → Auto-deploys to production
+6. **Merge to main** → Auto-deploys to production
+   - Can be automated via REST API or manual via GitHub UI
 
 **Project-Specific Agents:**
 - See `.claude/agents/` for specialized subagents (document processing, business analysis, etc.)

@@ -451,6 +451,7 @@ export const signUp = async (
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -472,6 +473,7 @@ export const signUp = async (
         email,
         password,
         data: { full_name: fullName },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       }),
     }).then(async response => {
       const responseData = await response.json();

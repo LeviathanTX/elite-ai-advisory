@@ -56,9 +56,20 @@ export interface SavedConversationRow {
  * Also saves to localStorage as cache
  */
 export async function saveConversation(
-  conversation: ConversationData
+  conversation: ConversationData,
+  userEmail?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Check if this is the demo account
+    const isDemoAccount = userEmail?.toLowerCase() === 'founder@demo.com';
+
+    // Don't save demo account conversations to database or localStorage
+    // This ensures each demo login starts fresh
+    if (isDemoAccount) {
+      console.log('Demo account - conversation not persisted');
+      return { success: true };
+    }
+
     // Save to localStorage first (cache)
     try {
       localStorage.setItem(`conversation-${conversation.id}`, JSON.stringify(conversation));
@@ -136,10 +147,20 @@ export async function saveConversation(
  * Load all conversations for the current user from Supabase
  * Falls back to localStorage if database fails
  */
-export async function loadConversations(userId: string): Promise<ConversationData[]> {
+export async function loadConversations(
+  userId: string,
+  userEmail?: string
+): Promise<ConversationData[]> {
   const conversations: ConversationData[] = [];
 
   try {
+    // Demo account always starts with empty conversation history
+    const isDemoAccount = userEmail?.toLowerCase() === 'founder@demo.com';
+    if (isDemoAccount) {
+      console.log('Demo account - starting with empty conversation history');
+      return [];
+    }
+
     // Don't query database in demo mode
     const isDemoMode =
       !process.env.REACT_APP_SUPABASE_URL || process.env.REACT_APP_BYPASS_AUTH === 'true';
