@@ -13,6 +13,7 @@ import { PitchPracticeMode } from './components/Modes/PitchPracticeMode';
 import { ConversationManager } from './components/Conversations/ConversationManager';
 import { AdvisorManagement } from './components/Advisory/AdvisorManagement';
 import TermsOfService from './components/Legal/TermsOfService';
+import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import { ApplicationMode } from './types';
 import { formatCurrency } from './utils';
 
@@ -28,6 +29,7 @@ function LandingPage({
 }) {
   const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
   const [showTermsOfService, setShowTermsOfService] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center relative">
@@ -52,7 +54,7 @@ function LandingPage({
             Bearable AI Advisors
           </h1>
           <p className="text-2xl md:text-3xl font-bold text-blue-600 mb-6">
-            Get Mark Cuban's advice for $97/mo instead of $50,000
+            Get advice from AI versions of leading investors and business legends
           </p>
           <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
             Practice your pitch with AI advisors trained on insights from Mark Cuban, Reid Hoffman,
@@ -226,240 +228,91 @@ function LandingPage({
           </div>
         </div>
 
-        {/* Subscription Tiers */}
+        {/* Get Started Options */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">Choose Your Plan</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">Get Started</h2>
           <p className="text-center text-gray-600 mb-10">
-            10x cheaper than traditional advisors, infinitely more accessible
+            Choose how you'd like to experience Bearable AI Advisors
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Founder Tier */}
-            <div className="bg-white rounded-xl p-8 shadow-sm border-2 border-gray-200 hover:border-blue-300 transition-all">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Demo Account Option */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 shadow-lg border-2 border-blue-300">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Founder 🚀</h3>
-                <div className="mb-2">
-                  <span className="text-4xl font-bold text-blue-600">{formatCurrency(97)}</span>
-                  <span className="text-lg text-gray-500">/mo</span>
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-3xl">🎯</span>
                 </div>
-                <div className="text-xs text-gray-500 line-through">
-                  Regular {formatCurrency(147)}/mo
-                </div>
-                <div className="mt-3 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full inline-block">
-                  BEST FOR: Pre-Seed & Seed Founders
-                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Try Our Demo Account</h3>
+                <p className="text-gray-600 text-sm">
+                  No credit card required • Instant access
+                </p>
               </div>
 
-              <ul className="text-sm text-gray-700 space-y-3 mb-6">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>20 AI advisor hours</strong> ({formatCurrency(2000)} value)
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>10 document analyses</strong> ({formatCurrency(1000)} value)
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>50 pitch practice sessions</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>3 custom advisors</strong>
-                  </span>
-                </li>
-              </ul>
-
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-xs">
-                <p className="text-green-900 font-semibold">
-                  You Save: {formatCurrency(3403)}/mo vs. traditional advisors
+              <div className="bg-white rounded-lg p-4 border border-blue-100 mb-6">
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 font-medium">Email:</span>
+                    <code className="bg-gray-100 px-3 py-1 rounded text-blue-600">
+                      founder@demo.com
+                    </code>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 font-medium">Password:</span>
+                    <code className="bg-gray-100 px-3 py-1 rounded text-blue-600">demo123</code>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-3 text-center">
+                  Pre-loaded with sample conversations
                 </p>
               </div>
 
               <button
-                onClick={onGetStarted}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={() => onLogin('founder@demo.com', 'demo123')}
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
               >
-                Start 7-Day Free Trial
+                Try Demo Now →
               </button>
             </div>
 
-            {/* Scale-Up Tier */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 shadow-xl border-2 border-blue-400 relative transform scale-105">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                ⭐ MOST POPULAR
-              </div>
-
-              <div className="text-center mb-6 mt-2">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Scale-Up 📈</h3>
-                <div className="mb-2">
-                  <span className="text-4xl font-bold text-blue-600">{formatCurrency(247)}</span>
-                  <span className="text-lg text-gray-500">/mo</span>
-                </div>
-                <div className="text-xs text-gray-500 line-through">
-                  Regular {formatCurrency(297)}/mo
-                </div>
-                <div className="mt-3 bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full inline-block">
-                  BEST FOR: Series A & Growth Stage
-                </div>
-              </div>
-
-              <ul className="text-sm text-gray-700 space-y-3 mb-6">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>50 AI advisor hours</strong> ({formatCurrency(5000)} value)
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>Unlimited pitch practice</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>Unlimited document analysis</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>Unlimited custom advisors</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>Priority support</strong>
-                  </span>
-                </li>
-              </ul>
-
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-xs">
-                <p className="text-green-900 font-semibold">
-                  You Save: {formatCurrency(7753)}/mo vs. traditional advisors
-                </p>
-              </div>
-
-              <button
-                onClick={onGetStarted}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg"
-              >
-                Start 7-Day Free Trial
-              </button>
-            </div>
-
-            {/* Enterprise Tier */}
-            <div className="bg-white rounded-xl p-8 shadow-sm border-2 border-gray-200 hover:border-blue-300 transition-all">
+            {/* 7-Day Free Trial Option */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-8 shadow-lg border-2 border-purple-300">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise 🏢</h3>
-                <div className="mb-2">
-                  <span className="text-4xl font-bold text-blue-600">{formatCurrency(497)}</span>
-                  <span className="text-lg text-gray-500">/mo</span>
+                <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-3xl">🚀</span>
                 </div>
-                <div className="text-xs text-gray-500 line-through">
-                  Regular {formatCurrency(597)}/mo
-                </div>
-                <div className="mt-3 bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full inline-block">
-                  BEST FOR: Established Companies
-                </div>
-              </div>
-
-              <ul className="text-sm text-gray-700 space-y-3 mb-6">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>150 AI advisor hours</strong> ({formatCurrency(15000)} value)
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>Unlimited everything</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>White-label options</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>API access</strong>
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>
-                    <strong>Dedicated account manager</strong>
-                  </span>
-                </li>
-              </ul>
-
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-xs">
-                <p className="text-green-900 font-semibold">
-                  You Save: {formatCurrency(14503)}/mo vs. traditional advisors
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">7-Day Free Trial</h3>
+                <p className="text-gray-600 text-sm">
+                  Create your own account • No credit card required
                 </p>
               </div>
 
+              <ul className="text-sm text-gray-700 space-y-3 mb-8">
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Unlimited AI advisor conversations</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Pitch practice with feedback</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Document analysis tools</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>15+ expert AI advisors</span>
+                </li>
+              </ul>
+
               <button
                 onClick={onGetStarted}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-md"
               >
-                Start 7-Day Free Trial
+                Start Free Trial →
               </button>
             </div>
           </div>
-
-          {/* Trial Info */}
-          <div className="mt-8 text-center bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-900">
-              <strong>7-Day Free Trial</strong> - No credit card required. Cancel anytime during
-              trial period.
-            </p>
-          </div>
-        </div>
-
-        {/* Demo Account Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-          <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center justify-center">
-            <span className="mr-2">🎯</span>
-            Try Our Demo Account (No Credit Card Required)
-          </h3>
-
-          <div className="bg-white rounded-lg p-4 border border-blue-100">
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600 font-medium">Email:</span>
-                <code className="bg-gray-100 px-3 py-1 rounded text-blue-600">
-                  founder@demo.com
-                </code>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600 font-medium">Password:</span>
-                <code className="bg-gray-100 px-3 py-1 rounded text-blue-600">demo123</code>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-3 text-center">
-              Pre-loaded with sample conversations • Full founder-tier access
-            </p>
-          </div>
-          <button
-            onClick={() => onLogin('founder@demo.com', 'demo123')}
-            className="mt-4 w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
-          >
-            Try Demo Now (10 Minutes) →
-          </button>
         </div>
 
         {/* CTA Section */}
@@ -514,7 +367,7 @@ function LandingPage({
                 }}
                 className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
               >
-                Start Free Trial - Lock in $97/mo
+                Start Free Trial
               </button>
               <button
                 onClick={() => onLogin()}
@@ -524,11 +377,6 @@ function LandingPage({
               </button>
             </div>
           </div>
-
-          <p className="text-sm text-blue-100">
-            💰 <strong>Money-Back Guarantee:</strong> Not seeing results after 30 days? Full refund,
-            no questions asked.
-          </p>
         </div>
 
         {/* Footer */}
@@ -545,9 +393,7 @@ function LandingPage({
                 Terms of Service
               </button>
               <button
-                onClick={() => {
-                  /* TODO: Add Privacy Policy */
-                }}
+                onClick={() => setShowPrivacyPolicy(true)}
                 className="text-gray-600 hover:text-gray-900 transition-colors underline"
               >
                 Privacy Policy
@@ -559,6 +405,9 @@ function LandingPage({
 
       {/* Terms of Service Modal */}
       <TermsOfService isOpen={showTermsOfService} onClose={() => setShowTermsOfService(false)} />
+
+      {/* Privacy Policy Modal */}
+      <PrivacyPolicy isOpen={showPrivacyPolicy} onClose={() => setShowPrivacyPolicy(false)} />
     </div>
   );
 }
