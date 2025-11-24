@@ -970,22 +970,251 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
             {/* AI-Powered Analysis Report */}
             {analysis.aiGeneratedFeedback && (
               <div className="mt-8 space-y-6">
-                {/* Executive Summary */}
-                <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                  <div className="flex items-start gap-3 mb-4">
-                    <BarChart3 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">AI-Powered Analysis Report</h3>
-                      <div className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full mb-3">
-                        Overall Score: {analysis.overallScore}/100
+                {/* Parse AI feedback if it's JSON */}
+                {(() => {
+                  let aiData: any = {};
+                  try {
+                    // Try to parse as JSON if it's a string
+                    aiData = typeof analysis.aiGeneratedFeedback === 'string'
+                      ? JSON.parse(analysis.aiGeneratedFeedback)
+                      : analysis.aiGeneratedFeedback;
+                  } catch (e) {
+                    // If not JSON, treat as plain text
+                    aiData = { overall_feedback: analysis.aiGeneratedFeedback };
+                  }
+
+                  return (
+                    <>
+                      {/* Executive Summary */}
+                      <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className="flex items-start gap-3">
+                          <BarChart3 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Professional Pitch Analysis</h3>
+                            <div className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-lg font-bold rounded-full mb-4 shadow-md">
+                              Overall Score: {aiData.combined_score || analysis.overallScore}/100
+                            </div>
+
+                            {/* Executive Summary Text */}
+                            {aiData.overall_feedback && (
+                              <div className="bg-white p-5 rounded-lg shadow-sm border border-blue-100 mb-4">
+                                <h4 className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wide">Executive Summary</h4>
+                                <p className="text-gray-700 leading-relaxed">{aiData.overall_feedback}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-gray-700 text-sm leading-relaxed bg-white/50 p-4 rounded-lg">
-                        <p className="font-medium mb-2">Executive Summary:</p>
-                        <p>{analysis.aiGeneratedFeedback}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
+                      {/* Content Analysis Section */}
+                      {aiData.content_analysis && (
+                        <div className="p-6 bg-white rounded-xl border-2 border-blue-200 shadow-sm">
+                          <div className="flex items-start gap-3 mb-4">
+                            <BookOpen className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                            <div className="flex-1">
+                              <h4 className="text-lg font-bold text-gray-900 mb-1">Content Analysis</h4>
+                              <p className="text-sm text-gray-600">Score: {aiData.content_analysis.score}/100</p>
+                            </div>
+                          </div>
+
+                          {/* Content Strengths */}
+                          {aiData.content_analysis.strengths && aiData.content_analysis.strengths.length > 0 && (
+                            <div className="mb-4">
+                              <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4" />
+                                What's Working
+                              </h5>
+                              <ul className="space-y-2">
+                                {aiData.content_analysis.strengths.map((item: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                                    <span className="text-green-600 mt-0.5">✓</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Content Improvements */}
+                          {aiData.content_analysis.improvements && aiData.content_analysis.improvements.length > 0 && (
+                            <div className="mb-4">
+                              <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                                <AlertTriangle className="w-4 h-4" />
+                                Areas to Strengthen
+                              </h5>
+                              <ul className="space-y-2">
+                                {aiData.content_analysis.improvements.map((item: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                                    <span className="text-orange-600 mt-0.5">→</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Specific Recommendations */}
+                          {aiData.content_analysis.specific_recommendations && aiData.content_analysis.specific_recommendations.length > 0 && (
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                              <h5 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                                <Target className="w-4 h-4" />
+                                Recommended Actions
+                              </h5>
+                              <ul className="space-y-2">
+                                {aiData.content_analysis.specific_recommendations.map((item: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
+                                    <span className="text-blue-600 font-bold mt-0.5">{i + 1}.</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Delivery Analysis Section */}
+                      {aiData.delivery_analysis && (
+                        <div className="p-6 bg-white rounded-xl border-2 border-purple-200 shadow-sm">
+                          <div className="flex items-start gap-3 mb-4">
+                            <TrendingUp className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+                            <div className="flex-1">
+                              <h4 className="text-lg font-bold text-gray-900 mb-1">Delivery Analysis</h4>
+                              <p className="text-sm text-gray-600">Score: {aiData.delivery_analysis.score}/100</p>
+                            </div>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4 mb-4">
+                            {/* Vocal Strengths */}
+                            {aiData.delivery_analysis.vocal_strengths && aiData.delivery_analysis.vocal_strengths.length > 0 && (
+                              <div>
+                                <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4" />
+                                  Delivery Strengths
+                                </h5>
+                                <ul className="space-y-2">
+                                  {aiData.delivery_analysis.vocal_strengths.map((item: string, i: number) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                                      <span className="text-green-600 mt-0.5">✓</span>
+                                      <span>{item}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Vocal Improvements */}
+                            {aiData.delivery_analysis.vocal_improvements && aiData.delivery_analysis.vocal_improvements.length > 0 && (
+                              <div>
+                                <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                                  <AlertTriangle className="w-4 h-4" />
+                                  Delivery Improvements
+                                </h5>
+                                <ul className="space-y-2">
+                                  {aiData.delivery_analysis.vocal_improvements.map((item: string, i: number) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                                      <span className="text-orange-600 mt-0.5">→</span>
+                                      <span>{item}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Coaching Recommendations */}
+                          {aiData.delivery_analysis.coaching_recommendations && aiData.delivery_analysis.coaching_recommendations.length > 0 && (
+                            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                              <h5 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                                <Target className="w-4 h-4" />
+                                Coaching Recommendations
+                              </h5>
+                              <ul className="space-y-2">
+                                {aiData.delivery_analysis.coaching_recommendations.map((item: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
+                                    <span className="text-purple-600 font-bold mt-0.5">{i + 1}.</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Technical Metrics */}
+                          {aiData.delivery_analysis.technical_metrics && aiData.delivery_analysis.technical_metrics.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-purple-200">
+                              <h5 className="font-semibold text-gray-800 mb-2 text-xs uppercase">Technical Metrics</h5>
+                              <ul className="space-y-1">
+                                {aiData.delivery_analysis.technical_metrics.map((item: string, i: number) => (
+                                  <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
+                                    <span className="text-purple-400">•</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Action Plan */}
+                      {aiData.action_plan && aiData.action_plan.length > 0 && (
+                        <div className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-300 shadow-md">
+                          <div className="flex items-start gap-3">
+                            <Target className="w-7 h-7 text-indigo-600 flex-shrink-0 mt-1" />
+                            <div className="flex-1">
+                              <h4 className="text-lg font-bold text-gray-900 mb-4">Immediate Action Plan</h4>
+                              <div className="space-y-3">
+                                {aiData.action_plan.map((item: string, i: number) => (
+                                  <div key={i} className="bg-white p-4 rounded-lg border border-indigo-200 shadow-sm">
+                                    <div className="flex items-start gap-3">
+                                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center">
+                                        {i + 1}
+                                      </div>
+                                      <p className="text-sm text-gray-800 font-medium pt-1">{item}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Timeline Analysis */}
+                      {aiData.timeline_analysis?.problematic_moments && aiData.timeline_analysis.problematic_moments.length > 0 && (
+                        <div className="p-6 bg-yellow-50 rounded-xl border border-yellow-300">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle className="w-6 h-6 text-yellow-700 flex-shrink-0 mt-1" />
+                            <div className="flex-1">
+                              <h4 className="text-lg font-bold text-yellow-900 mb-3">Critical Moments Analysis</h4>
+                              <p className="text-sm text-yellow-800 mb-4">Key moments where delivery needs attention:</p>
+                              <div className="space-y-3">
+                                {aiData.timeline_analysis.problematic_moments.map((moment: any, i: number) => (
+                                  <div key={i} className="bg-white p-4 rounded-lg border border-yellow-200">
+                                    <div className="flex items-start gap-3">
+                                      <div className="flex-shrink-0 px-2 py-1 bg-yellow-600 text-white text-xs font-bold rounded">
+                                        {moment.timestamp}
+                                      </div>
+                                      <div className="flex-1">
+                                        <p className="text-sm text-gray-800 font-medium mb-1">{moment.issue}</p>
+                                        <p className="text-xs text-gray-600">
+                                          <strong className="text-yellow-700">Fix:</strong> {moment.recommendation}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            )}
 
                 {/* Key Metrics Visual Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
