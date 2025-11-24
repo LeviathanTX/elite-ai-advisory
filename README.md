@@ -83,8 +83,9 @@ ai-bod/
 
 ## Deployment
 
-**Production:** [https://elite-ai-advisory-clean.vercel.app](https://elite-ai-advisory-clean.vercel.app)
+**Production:** [https://ai-bod.vercel.app](https://ai-bod.vercel.app)
 **Brand Name:** Bearable AI Advisors
+**Domain:** bearableai.com
 
 ### Automated Deployments
 - **Main branch** → Auto-deploys to production

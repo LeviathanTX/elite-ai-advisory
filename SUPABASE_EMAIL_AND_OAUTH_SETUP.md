@@ -19,14 +19,13 @@ Supabase requires additional configuration beyond just adding `emailRedirectTo` 
 
 2. Set **Site URL**:
    ```
-   https://your-app.vercel.app
+   https://ai-bod.vercel.app
    ```
-   (Replace with your actual Vercel deployment URL)
 
 3. Add **Redirect URLs** (one per line):
    ```
-   https://your-app.vercel.app/auth/callback
-   https://your-app.vercel.app/reset-password
+   https://ai-bod.vercel.app/auth/callback
+   https://ai-bod.vercel.app/reset-password
    http://localhost:3000/auth/callback
    http://localhost:3000/reset-password
    ```

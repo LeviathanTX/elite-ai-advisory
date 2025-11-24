@@ -47,6 +47,12 @@ Fix in this order to avoid cascade failures:
 
 ## Project-Specific Behavior
 
+### Production Environment
+- **Production URL**: https://ai-bod.vercel.app
+- **Project Name**: AI-BoD (formerly Elite AI Advisory)
+- **Deployment**: Vercel (auto-deploy on push to main)
+- **Domain**: bearableai.com (email sending via Resend)
+
 ### File System
 - Working directory: `/Users/jeffl/projects/ai-bod/`
 - Never use `git add -A` from home directory
