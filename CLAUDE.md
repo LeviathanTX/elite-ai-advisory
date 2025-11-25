@@ -78,16 +78,40 @@ Fix in this order to avoid cascade failures:
 - Check Supabase connection
 - Don't assume env vars set
 
+## CLAUDE CAPABILITIES - DO NOT ASK USER TO DO THESE
+
+**Claude CAN and SHOULD do directly:**
+- Set environment variables using Bash tool (`export GITHUB_TOKEN="..."`)
+- Run curl commands for GitHub REST API operations
+- Create, check, and merge pull requests via API
+- Run npm/git/bash commands
+- Read, write, and edit files
+- Deploy using Vercel CLI
+- Run tests, linters, type checkers
+
+**ONLY ask user for:**
+- GitHub tokens (user must provide the token value)
+- Clarification on requirements or approach
+- Permission for destructive operations (force push, delete, etc.)
+- Confirmation when multiple valid approaches exist
+
 ## GitHub Automation (REST API)
 
 **Important:** GitHub CLI (`gh`) is not available in the Claude Code sandbox, but we can automate GitHub operations using `curl` and the REST API.
 
 ### Setup (Once per session)
 
-Set the GitHub token as an environment variable:
+**When user provides a GitHub token, Claude MUST store it in a file:**
 ```bash
-export GITHUB_TOKEN="your_github_pat_token_here"
+echo 'export GITHUB_TOKEN="token_value_from_user"' > ~/.github_token
 ```
+
+**Then source it before each GitHub API operation:**
+```bash
+source ~/.github_token && curl -H "Authorization: Bearer $GITHUB_TOKEN" ...
+```
+
+**DO NOT ask user to run these commands - Claude does them directly using the Bash tool.**
 
 **Token Requirements:**
 - Create at: https://github.com/settings/tokens
@@ -98,7 +122,7 @@ export GITHUB_TOKEN="your_github_pat_token_here"
 
 **Create Pull Request:**
 ```bash
-curl -X POST \
+source ~/.github_token && curl -X POST \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" \
   https://api.github.com/repos/LeviathanTX/AI-BoD/pulls \
@@ -112,7 +136,7 @@ curl -X POST \
 
 **Merge Pull Request:**
 ```bash
-curl -X PUT \
+source ~/.github_token && curl -X PUT \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" \
   https://api.github.com/repos/LeviathanTX/AI-BoD/pulls/{PR_NUMBER}/merge \
@@ -121,14 +145,14 @@ curl -X PUT \
 
 **Check PR Status:**
 ```bash
-curl -H "Authorization: Bearer $GITHUB_TOKEN" \
+source ~/.github_token && curl -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" \
   https://api.github.com/repos/LeviathanTX/AI-BoD/pulls/{PR_NUMBER}
 ```
 
 **List Open PRs:**
 ```bash
-curl -H "Authorization: Bearer $GITHUB_TOKEN" \
+source ~/.github_token && curl -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github+json" \
   https://api.github.com/repos/LeviathanTX/AI-BoD/pulls?state=open
 ```
@@ -141,10 +165,10 @@ curl -H "Authorization: Bearer $GITHUB_TOKEN" \
 
 ### Session Initialization
 
-At the start of each vibe coding session, request the user to run:
-```bash
-export GITHUB_TOKEN="token_here"
-```
+When user provides a GitHub token at the start of a session, Claude MUST:
+1. Immediately store it: `echo 'export GITHUB_TOKEN="token_value"' > ~/.github_token`
+2. NOT ask the user to run this command
+3. Verify it works by listing open PRs: `source ~/.github_token && curl ...`
 
 This enables automated PR creation, merging, and status checks throughout the session.
 
