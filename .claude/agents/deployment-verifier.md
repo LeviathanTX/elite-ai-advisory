@@ -19,7 +19,7 @@ vercel env ls          # Check env vars
 ```
 
 ## Production URL
-https://elite-ai-advisory-clean.vercel.app
+https://ai-bod-ochre.vercel.app
 
 ## Example Tasks
 - "Verify the latest deployment is working"
