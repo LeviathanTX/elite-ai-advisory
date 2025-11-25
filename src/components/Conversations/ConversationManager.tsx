@@ -18,7 +18,7 @@ import {
   Brain,
   Zap,
   TrendingUp,
-  ArrowRight,
+  ArrowLeft,
   Paperclip,
 } from 'lucide-react';
 import { AdvisoryConversation } from './AdvisoryConversation';
@@ -298,15 +298,15 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Conversations</h2>
-            <button
-              onClick={onBack}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Back to Dashboard</span>
+          </button>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Conversations</h2>
+
 
           {/* Search */}
           <div className="relative">

@@ -53,36 +53,9 @@ function LandingPage({
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
             Bearable AI Advisors
           </h1>
-          <p className="text-2xl md:text-3xl font-bold text-blue-600 mb-6">
+          <p className="text-2xl md:text-3xl font-bold text-blue-600 mb-8">
             Get advice from AI versions of leading investors and business legends
           </p>
-          <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-            Practice your pitch with AI advisors trained on insights from Mark Cuban, Reid Hoffman,
-            and other business legends. Transform how you prepare for investors and make strategic
-            decisions.
-          </p>
-
-          {/* Key Features */}
-          <div className="flex flex-wrap justify-center gap-6 mb-8">
-            <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-blue-600 font-bold text-xl">🎤</span>
-              <span className="text-sm text-gray-700">
-                <strong>Unlimited pitch practice</strong> with AI feedback
-              </span>
-            </div>
-            <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-purple-600 font-bold text-xl">🧠</span>
-              <span className="text-sm text-gray-700">
-                <strong>15+ expert AI advisors</strong> available 24/7
-              </span>
-            </div>
-            <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-green-600 font-bold text-xl">📄</span>
-              <span className="text-sm text-gray-700">
-                <strong>Document analysis</strong> for pitch decks & plans
-              </span>
-            </div>
-          </div>
 
           {/* Status Badge */}
           <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full font-medium">
@@ -91,80 +64,9 @@ function LandingPage({
           </div>
         </div>
 
-        {/* What You Get Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">
-            Built for Founders Who Take Preparation Seriously
-          </h2>
-          <p className="text-center text-gray-600 mb-10">
-            Real AI-powered advisory platform with advanced features
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-2xl">🎯</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Expert Panel Mode</div>
-                  <div className="text-sm text-gray-600">Multi-advisor collaboration</div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                Orchestrate conversations between multiple AI advisors - Mark Cuban debates with
-                Reid Hoffman while Barbara Corcoran adds her perspective. Get comprehensive
-                strategic insights from diverse viewpoints.
-              </p>
-              <div className="text-xs text-blue-600 font-medium">Available on all plans</div>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-2xl">💾</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Persistent Conversations</div>
-                  <div className="text-sm text-gray-600">Full memory & context</div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                Every conversation is saved and searchable. Advisors remember your business context,
-                previous discussions, and uploaded documents. Build on insights over time instead of
-                starting fresh each session.
-              </p>
-              <div className="text-xs text-purple-600 font-medium">Powered by Supabase</div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-2xl">📚</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Document Intelligence</div>
-                  <div className="text-sm text-gray-600">PDF, Word, Excel analysis</div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                Upload pitch decks, business plans, and financial models. AI advisors analyze your
-                documents and provide specific feedback referenced to actual content. Get VC-grade
-                critique before sending to investors.
-              </p>
-              <div className="text-xs text-green-600 font-medium">PDF.js + OpenAI embeddings</div>
-            </div>
-          </div>
-        </div>
 
         {/* Features Grid */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">
-            Everything You Need to Raise Capital & Scale Faster
-          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
