@@ -40,7 +40,15 @@
       "Bash(printf:*)",
       "Bash(vercel domains ls:*)",
       "Bash(vercel rm:*)",
-      "Bash(vercel alias:*)"
+      "Bash(vercel alias:*)",
+      "Bash(npm run orient:*)",
+      "Bash(git mv:*)",
+      "Bash(tree:*)",
+      "Bash(npm run verify:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm run test:ci:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []

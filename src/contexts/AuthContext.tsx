@@ -224,22 +224,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ): Promise<AuthResponse<SignInData>> => {
     const result = await signIn(email, password);
 
-    // In demo mode, manually set the user
+    // Fetch user profile from database
     if (!result.error && result.data?.user) {
-      const demoUser: User = {
-        id: result.data.user.id,
-        email: result.data.user.email!,
-        full_name: result.data.user.user_metadata?.full_name || 'Demo User',
-        subscription_tier: 'founder',
-        trial_start_date: new Date().toISOString(),
-        trial_end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        is_trial_active: true,
-        email_verified: false,
-        created_at: result.data.user.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setUser(demoUser);
       setSupabaseUser(result.data.user as any);
+
+      // Fetch the full user profile from the database
+      await fetchUserProfile(result.data.user.id);
 
       // Update session info
       if (result.data.session) {
@@ -257,31 +247,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ): Promise<AuthResponse<SignUpData>> => {
     const result = await signUp(email, password, fullName);
 
-    // In demo mode, manually set the user
-    if (!result.error && result.data?.user) {
-      const now = new Date();
-      const trialEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-      const demoUser: User = {
-        id: result.data.user.id,
-        email: result.data.user.email!,
-        full_name: result.data.user.user_metadata?.full_name || fullName || 'Demo User',
-        subscription_tier: 'founder',
-        trial_start_date: now.toISOString(),
-        trial_end_date: trialEnd.toISOString(),
-        is_trial_active: true,
-        email_verified: false,
-        created_at: result.data.user.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setUser(demoUser);
-      setSupabaseUser(result.data.user as any);
-
-      // Update session info
-      if (result.data.session) {
-        setSessionInfo(calculateSessionInfo(result.data.session));
-      }
-    }
+    // Note: For signup, user profile will be created by database trigger
+    // We don't set the user here because they need to verify their email first
+    // The user will be loaded via fetchUserProfile after email verification
 
     return result;
   };

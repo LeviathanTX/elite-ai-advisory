@@ -496,6 +496,7 @@ function AppContent() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
   const [isPasswordReset, setIsPasswordReset] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
   const [prefilledEmail, setPrefilledEmail] = useState<string | undefined>();
   const [prefilledPassword, setPrefilledPassword] = useState<string | undefined>();
 
@@ -538,8 +539,9 @@ function AppContent() {
   const handleLogin = (email?: string, password?: string) => {
     // SECURITY: Never log credentials or credential metadata
     console.log('Opening login modal');
-    // Set a flag to indicate this is for login, not signup
-    setPrefilledEmail(email || 'LOGIN_MODE');
+    // Set mode to signin and pass credentials if provided
+    setAuthMode('signin');
+    setPrefilledEmail(email);
     setPrefilledPassword(password);
     setShowAuthModal(true);
   };
@@ -549,6 +551,7 @@ function AppContent() {
       <LandingPage
         onGetStarted={() => {
           console.log('Setting showAuthModal to true for signup');
+          setAuthMode('signup');
           setPrefilledEmail(undefined);
           setPrefilledPassword(undefined);
           setShowAuthModal(true);
@@ -560,9 +563,11 @@ function AppContent() {
         onClose={() => {
           console.log('Closing auth modal');
           setShowAuthModal(false);
+          setAuthMode('signup');
           setPrefilledEmail(undefined);
           setPrefilledPassword(undefined);
         }}
+        defaultMode={authMode}
         initialEmail={prefilledEmail}
         initialPassword={prefilledPassword}
         onForgotPassword={() => {

@@ -8,6 +8,7 @@ interface AuthModalProps {
   initialEmail?: string;
   initialPassword?: string;
   onForgotPassword?: () => void;
+  defaultMode?: 'signin' | 'signup';
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -16,17 +17,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialEmail,
   initialPassword,
   onForgotPassword,
+  defaultMode,
 }) => {
-  console.log('AuthModal render:', { isOpen, initialEmail, hasInitialPassword: !!initialPassword });
+  console.log('AuthModal render:', {
+    isOpen,
+    initialEmail,
+    hasInitialPassword: !!initialPassword,
+    defaultMode,
+  });
 
   const { signIn, signUp } = useAuth();
 
-  // Set initial mode: if initialEmail is 'LOGIN_MODE', it's a login request
-  const isLoginMode = initialEmail === 'LOGIN_MODE';
-  const [mode, setMode] = useState<'signin' | 'signup'>(
-    isLoginMode || (initialEmail && initialEmail !== 'LOGIN_MODE') ? 'signin' : 'signup'
+  // Determine initial mode based on defaultMode prop or initialEmail/Password
+  const determineInitialMode = () => {
+    if (defaultMode) return defaultMode;
+    if (initialEmail && initialEmail !== 'LOGIN_MODE') return 'signin';
+    if (initialPassword) return 'signin';
+    return 'signup';
+  };
+
+  const [mode, setMode] = useState<'signin' | 'signup'>(determineInitialMode());
+  const [email, setEmail] = useState(
+    initialEmail && initialEmail !== 'LOGIN_MODE' ? initialEmail : ''
   );
-  const [email, setEmail] = useState(isLoginMode ? '' : initialEmail || '');
   const [password, setPassword] = useState(initialPassword || '');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,37 +60,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   }, []);
 
-  // Reset form when modal opens/closes
+  // Reset form and mode when modal opens with new props
   React.useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      // Set mode based on props when modal opens
+      const newMode = defaultMode || determineInitialMode();
+      setMode(newMode);
+
+      // Set email if provided (but not 'LOGIN_MODE' flag)
+      if (initialEmail && initialEmail !== 'LOGIN_MODE') {
+        setEmail(initialEmail);
+      } else {
+        setEmail('');
+      }
+
+      // Set password if provided
+      if (initialPassword) {
+        setPassword(initialPassword);
+      } else {
+        setPassword('');
+      }
+    } else {
       // Reset form when modal closes
       resetForm();
     }
-  }, [isOpen]);
-
-  // Update email and password when initialEmail/initialPassword change
-  React.useEffect(() => {
-    if (!isOpen) return; // Don't update if modal is closed
-
-    console.log('AuthModal useEffect - updating credentials:', {
-      initialEmail,
-      initialPassword: !!initialPassword,
-    });
-    const isLogin = initialEmail === 'LOGIN_MODE';
-    if (isLogin) {
-      setEmail('');
-      setMode('signin');
-    } else if (initialEmail && initialEmail !== 'LOGIN_MODE') {
-      setEmail(initialEmail);
-      setMode('signin'); // Switch to signin mode when credentials are pre-filled
-    } else if (!initialEmail) {
-      // No initial email means signup mode
-      setMode('signup');
-    }
-    if (initialPassword) {
-      setPassword(initialPassword);
-    }
-  }, [initialEmail, initialPassword, isOpen]);
+  }, [isOpen, defaultMode, initialEmail, initialPassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
