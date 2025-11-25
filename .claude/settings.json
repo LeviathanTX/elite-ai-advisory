@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allowed": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "LS(*)",
+      "Grep(*)",
+      "Git(*)"
+    ]
+  }
+}
