@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../utils';
+import { analytics } from '../../services/analytics';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -85,6 +86,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setPassword('');
       }
     } else {
+      // Track abandonment if modal closes with form data but not completed
+      if ((email || password || fullName) && !signupSuccess) {
+        analytics.trackAuth.authPageAbandoned(mode === 'signin' ? 'login' : 'signup');
+      }
       // Reset form when modal closes
       resetForm();
     }
@@ -94,6 +99,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Track attempt
+    if (mode === 'signup') {
+      analytics.trackAuth.signupAttempt(email);
+    } else {
+      analytics.trackAuth.loginAttempt(email);
+    }
 
     try {
       let result;
@@ -105,12 +117,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       if (result.error) {
         setError(result.error.message);
-      } else {
+        // Track failure
         if (mode === 'signup') {
+          analytics.trackAuth.signupFailed(result.error.message);
+        } else {
+          analytics.trackAuth.loginFailed(result.error.message);
+        }
+      } else {
+        // Track success
+        if (mode === 'signup') {
+          analytics.trackAuth.signupSuccess(result.data?.user?.id || 'unknown');
           // Show verification message for signup
           setSignupSuccess(true);
           setSignupEmail(email);
         } else {
+          analytics.trackAuth.loginSuccess(result.data?.user?.id || 'unknown');
           // Close modal immediately for sign-in
           onClose();
           resetForm();
@@ -118,6 +139,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
     } catch (err) {
       setError('An unexpected error occurred');
+      // Track failure
+      if (mode === 'signup') {
+        analytics.trackAuth.signupFailed('Unexpected error');
+      } else {
+        analytics.trackAuth.loginFailed('Unexpected error');
+      }
     } finally {
       setLoading(false);
     }

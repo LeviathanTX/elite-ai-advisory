@@ -14,6 +14,7 @@ import { TrialBanner } from '../Subscription/TrialBanner';
 import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
 import { cn, formatCurrency, calculatePercentage } from '../../utils';
 import { ApplicationMode } from '../../types';
+import { analytics } from '../../services/analytics';
 
 interface DashboardProps {
   onModeSelect: (mode: ApplicationMode) => void;
@@ -75,6 +76,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     );
   };
 
+  // Track dashboard view
+  useEffect(() => {
+    analytics.trackNavigation.dashboardView();
+  }, []);
+
   useEffect(() => {
     if (isDemoMode) {
       loadLocalConversations();
@@ -119,13 +125,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
       description: 'Strategic planning, due diligence, consultations & document analysis',
       icon: '💼',
       color: 'from-blue-500 to-cyan-500',
-    },
-    {
-      id: 'test_document' as any,
-      title: '🧪 Test Document Features',
-      description: 'Test the new document management and MCP folder features',
-      icon: '📄',
-      color: 'from-green-500 to-emerald-500',
     },
   ];
 
@@ -315,6 +314,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                   if (mode.id === 'test_document') {
                     setShowTestDocument(true);
                   } else {
+                    // Track mode selection
+                    analytics.trackNavigation.modeSelected(mode.id);
                     onModeSelect(mode.id);
                   }
                 }}

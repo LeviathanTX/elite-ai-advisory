@@ -48,7 +48,8 @@
       "Bash(npm run format:*)",
       "Bash(npm run test:ci:*)",
       "Bash(npm test:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(supabase migration:*)"
     ],
     "deny": [],
     "ask": []
