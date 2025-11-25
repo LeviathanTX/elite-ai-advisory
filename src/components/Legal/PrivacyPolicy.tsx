@@ -40,7 +40,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
 
           <div className="prose max-w-none text-gray-800">
             <p className="text-sm text-gray-600 mb-6">
-              <strong>Effective Date: January 16, 2025</strong>
+              <strong>Effective Date: November 25, 2025</strong>
             </p>
 
             <h3 className="text-xl font-bold mb-4">1. INFORMATION WE COLLECT</h3>
@@ -55,36 +55,32 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             </ul>
 
             <h4 className="text-lg font-semibold mb-3">1.2 Usage Data</h4>
-            <p className="mb-3">We collect information about how you use our service:</p>
+            <p className="mb-3">We store information you create while using our service:</p>
             <ul className="list-disc list-inside mb-4 space-y-1">
               <li>Conversations with AI advisors</li>
               <li>Pitch practice sessions and recordings</li>
               <li>Documents you upload for analysis</li>
-              <li>Feature usage patterns</li>
-              <li>Session duration and frequency</li>
             </ul>
+            <p className="text-sm text-gray-600 mb-4">
+              Note: We store this information to provide you with access to your data across sessions.
+              We do not access, read, or analyze your uploaded content for any purpose other than
+              providing the AI advisory services you request.
+            </p>
 
-            <h4 className="text-lg font-semibold mb-3">1.3 Technical Information</h4>
-            <p className="mb-3">We automatically collect certain technical data:</p>
-            <ul className="list-disc list-inside mb-6 space-y-1">
-              <li>IP address</li>
-              <li>Browser type and version</li>
-              <li>Device information</li>
-              <li>Operating system</li>
-              <li>Referring URLs</li>
-            </ul>
 
             <h3 className="text-xl font-bold mb-4">2. HOW WE USE YOUR INFORMATION</h3>
-            <p className="mb-3">We use collected information to:</p>
+            <p className="mb-3">We use your information to:</p>
             <ul className="list-disc list-inside mb-6 space-y-1">
               <li>Provide and maintain our AI advisory services</li>
-              <li>Improve our AI models and features</li>
-              <li>Personalize your experience</li>
-              <li>Send service-related communications</li>
-              <li>Analyze platform usage and performance</li>
-              <li>Detect and prevent fraud or abuse</li>
+              <li>Authenticate your account and maintain session security</li>
+              <li>Store your conversations and uploaded documents for your access</li>
+              <li>Send service-related communications (account verification, password resets)</li>
               <li>Comply with legal obligations</li>
             </ul>
+            <p className="text-sm text-gray-600 mb-6">
+              <strong>Important:</strong> We do not use your data to train or improve AI models. Your
+              conversations and documents are only used to provide the services you request.
+            </p>
 
             <h3 className="text-xl font-bold mb-4">3. THIRD-PARTY SERVICES</h3>
 
@@ -93,9 +89,6 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             <ul className="list-disc list-inside mb-4 space-y-1">
               <li>
                 <strong>Supabase:</strong> Database, authentication, and file storage
-              </li>
-              <li>
-                <strong>OpenAI:</strong> AI language model processing
               </li>
               <li>
                 <strong>Vercel:</strong> Hosting and deployment infrastructure
@@ -107,19 +100,42 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
               <p className="font-semibold mb-2">⚠️ Important: AI Processing</p>
-              <p className="text-sm">
-                Your conversations and uploaded documents are processed by OpenAI's API. While
-                OpenAI states they do not use API data to train models, you should review their
-                privacy policy at{' '}
-                <a
-                  href="https://openai.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  openai.com/privacy
-                </a>
+              <p className="text-sm mb-2">
+                Your conversations and uploaded documents are processed by third-party AI services.
+                By default, we use <strong>Google Gemini</strong> and <strong>Anthropic Claude</strong>.
               </p>
+              <p className="text-sm mb-2">
+                <strong>User API Keys:</strong> You may add your own API keys to access other AI
+                services (OpenAI, DeepSeek, Groq, etc.) on the platform. When using your own API keys,
+                your data is sent directly to those providers according to their privacy policies.
+              </p>
+              <p className="text-sm">
+                We recommend reviewing the privacy policies of any AI provider you use:
+              </p>
+              <ul className="list-disc list-inside text-sm mt-2 ml-4">
+                <li>
+                  Google Gemini:{' '}
+                  <a
+                    href="https://policies.google.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    policies.google.com/privacy
+                  </a>
+                </li>
+                <li>
+                  Anthropic Claude:{' '}
+                  <a
+                    href="https://www.anthropic.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    anthropic.com/privacy
+                  </a>
+                </li>
+              </ul>
             </div>
 
             <h4 className="text-lg font-semibold mb-3">3.2 No Third-Party Advertising</h4>
@@ -133,12 +149,14 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             <ul className="list-disc list-inside mb-4 space-y-1">
               <li>Encrypted data transmission (HTTPS/TLS)</li>
               <li>Secure password hashing</li>
-              <li>Regular security audits</li>
               <li>Access controls and authentication</li>
-              <li>Automated backups</li>
             </ul>
+            <p className="mb-3 text-red-600 font-semibold">
+              ⚠️ Important: We do not maintain automated backups of your data. You are responsible for
+              maintaining your own backups of important information.
+            </p>
             <p className="mb-6">
-              However, no internet transmission is 100% secure. Use our service at your own risk and
+              No internet transmission is 100% secure. Use our service at your own risk and
               do not upload highly confidential or sensitive information.
             </p>
 
@@ -171,25 +189,20 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <li>
                 <strong>Deletion:</strong> Request deletion of your account and data
               </li>
-              <li>
-                <strong>Export:</strong> Download your conversation history
-              </li>
-              <li>
-                <strong>Opt-out:</strong> Unsubscribe from marketing emails
-              </li>
             </ul>
 
-            <h3 className="text-xl font-bold mb-4">7. COOKIES AND TRACKING</h3>
-            <p className="mb-3">We use cookies and similar technologies for:</p>
+            <h3 className="text-xl font-bold mb-4">7. LOCAL STORAGE AND SESSION MANAGEMENT</h3>
+            <p className="mb-3">
+              We use browser localStorage (not cookies) to store:
+            </p>
             <ul className="list-disc list-inside mb-6 space-y-1">
-              <li>Authentication and session management</li>
+              <li>Authentication session data</li>
               <li>User preferences and settings</li>
-              <li>Analytics and performance monitoring</li>
-              <li>Security and fraud prevention</li>
             </ul>
             <p className="mb-6">
-              You can control cookies through your browser settings, but disabling them may affect
-              platform functionality.
+              If your browser blocks localStorage (e.g., in private/incognito mode), you may need to
+              sign in each time you visit the platform. No tracking cookies or third-party analytics
+              cookies are used.
             </p>
 
             <h3 className="text-xl font-bold mb-4">8. CHILDREN'S PRIVACY</h3>
@@ -253,7 +266,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             </div>
 
             <div className="text-center text-sm text-gray-600 mb-4">
-              Last Updated: January 16, 2025
+              Last Updated: November 25, 2025
             </div>
           </div>
         </div>

@@ -283,14 +283,8 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
     return (
       <AdvisoryConversation
         onBack={() => {
-          setSelectedConversation(null);
-          setShowNewConversation(false);
-          // Reload conversations when coming back
-          if (isDemoMode) {
-            loadLocalStorageConversations();
-          } else if (user?.id) {
-            loadConversationsFromService();
-          }
+          // "Back to Dashboard" should always go to dashboard
+          onBack();
         }}
         conversationId={selectedConversation || undefined}
       />

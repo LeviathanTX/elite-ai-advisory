@@ -99,10 +99,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        setSupabaseUser(currentUser);
         if (currentUser) {
+          console.log('✅ Session found on page load, user:', currentUser.email);
+          setSupabaseUser(currentUser);
           await fetchUserProfile(currentUser.id);
         } else {
+          console.log('ℹ️  No active session found on page load');
           setLoading(false);
         }
       } catch (err: any) {
