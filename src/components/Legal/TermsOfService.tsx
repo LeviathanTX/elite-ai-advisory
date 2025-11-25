@@ -47,10 +47,13 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
                   </p>
                   <h4 className="font-semibold mb-2 mt-4">Celebrity Advisor Disclaimer</h4>
                   <p>
-                    <strong>None of the Celebrity Advisors have authorized or are even aware of this
-                    platform, yet.</strong> I hope to introduce it to them in the near future. These AI
-                    personas are based on publicly available information and do not represent actual
-                    endorsements or participation by the individuals portrayed.
+                    <strong>
+                      None of the Celebrity Advisors have authorized or are even aware of this
+                      platform, yet.
+                    </strong>{' '}
+                    I hope to introduce it to them in the near future. These AI personas are based
+                    on publicly available information and do not represent actual endorsements or
+                    participation by the individuals portrayed.
                   </p>
                 </div>
               </div>

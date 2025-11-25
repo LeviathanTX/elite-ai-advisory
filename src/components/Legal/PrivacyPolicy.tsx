@@ -91,10 +91,18 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             <h4 className="text-lg font-semibold mb-3">3.1 Service Providers</h4>
             <p className="mb-3">We share data with trusted third-party providers:</p>
             <ul className="list-disc list-inside mb-4 space-y-1">
-              <li><strong>Supabase:</strong> Database, authentication, and file storage</li>
-              <li><strong>OpenAI:</strong> AI language model processing</li>
-              <li><strong>Vercel:</strong> Hosting and deployment infrastructure</li>
-              <li><strong>Sentry:</strong> Error monitoring and performance tracking</li>
+              <li>
+                <strong>Supabase:</strong> Database, authentication, and file storage
+              </li>
+              <li>
+                <strong>OpenAI:</strong> AI language model processing
+              </li>
+              <li>
+                <strong>Vercel:</strong> Hosting and deployment infrastructure
+              </li>
+              <li>
+                <strong>Sentry:</strong> Error monitoring and performance tracking
+              </li>
             </ul>
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
@@ -137,20 +145,38 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             <h3 className="text-xl font-bold mb-4">5. DATA RETENTION</h3>
             <p className="mb-3">We retain your data as follows:</p>
             <ul className="list-disc list-inside mb-6 space-y-1">
-              <li><strong>Account data:</strong> Until you delete your account</li>
-              <li><strong>Conversations:</strong> Stored indefinitely unless manually deleted</li>
-              <li><strong>Uploaded documents:</strong> Stored until you delete them</li>
-              <li><strong>Analytics data:</strong> Aggregated and anonymized after 90 days</li>
+              <li>
+                <strong>Account data:</strong> Until you delete your account
+              </li>
+              <li>
+                <strong>Conversations:</strong> Stored indefinitely unless manually deleted
+              </li>
+              <li>
+                <strong>Uploaded documents:</strong> Stored until you delete them
+              </li>
+              <li>
+                <strong>Analytics data:</strong> Aggregated and anonymized after 90 days
+              </li>
             </ul>
 
             <h3 className="text-xl font-bold mb-4">6. YOUR RIGHTS</h3>
             <p className="mb-3">You have the right to:</p>
             <ul className="list-disc list-inside mb-6 space-y-1">
-              <li><strong>Access:</strong> Request a copy of your personal data</li>
-              <li><strong>Correction:</strong> Update or correct your information</li>
-              <li><strong>Deletion:</strong> Request deletion of your account and data</li>
-              <li><strong>Export:</strong> Download your conversation history</li>
-              <li><strong>Opt-out:</strong> Unsubscribe from marketing emails</li>
+              <li>
+                <strong>Access:</strong> Request a copy of your personal data
+              </li>
+              <li>
+                <strong>Correction:</strong> Update or correct your information
+              </li>
+              <li>
+                <strong>Deletion:</strong> Request deletion of your account and data
+              </li>
+              <li>
+                <strong>Export:</strong> Download your conversation history
+              </li>
+              <li>
+                <strong>Opt-out:</strong> Unsubscribe from marketing emails
+              </li>
             </ul>
 
             <h3 className="text-xl font-bold mb-4">7. COOKIES AND TRACKING</h3>
@@ -220,9 +246,9 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <p className="font-bold text-blue-800 mb-2">🔒 Your Privacy Commitment</p>
               <p className="text-blue-700 text-sm">
                 We take your privacy seriously and are committed to protecting your personal
-                information. While we implement industry-standard security measures, please
-                remember that this is an entertainment platform and you should not upload highly
-                confidential business information.
+                information. While we implement industry-standard security measures, please remember
+                that this is an entertainment platform and you should not upload highly confidential
+                business information.
               </p>
             </div>
 

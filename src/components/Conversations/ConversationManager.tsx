@@ -110,7 +110,12 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
 
   // Auto-start new conversation if no conversations exist after loading
   useEffect(() => {
-    if (!isLoading && localConversations.length === 0 && !showNewConversation && !selectedConversation) {
+    if (
+      !isLoading &&
+      localConversations.length === 0 &&
+      !showNewConversation &&
+      !selectedConversation
+    ) {
       console.log('📝 No conversations found, auto-starting new general discussion');
       setShowNewConversation(true);
     }

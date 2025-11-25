@@ -243,9 +243,7 @@ function LandingPage({
                   <span className="text-3xl">🎯</span>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Try Our Demo Account</h3>
-                <p className="text-gray-600 text-sm">
-                  No credit card required • Instant access
-                </p>
+                <p className="text-gray-600 text-sm">No credit card required • Instant access</p>
               </div>
 
               <div className="bg-white rounded-lg p-4 border border-blue-100 mb-6">

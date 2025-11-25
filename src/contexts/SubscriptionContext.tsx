@@ -99,7 +99,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   ];
   const isOwnerAccount =
     ownerEmails.some(email => user?.email?.toLowerCase() === email.toLowerCase()) ||
-    (user?.full_name?.toLowerCase().includes('jeff') && user?.full_name?.toLowerCase().includes('levine'));
+    (user?.full_name?.toLowerCase().includes('jeff') &&
+      user?.full_name?.toLowerCase().includes('levine'));
 
   // Owner accounts have full access, not trial
   const isTrialActive = isOwnerAccount ? false : (user?.is_trial_active ?? false);

@@ -351,10 +351,10 @@ git push origin main
 ## 📞 Support & Resources
 
 ### Documentation
-- [Deployment Guide](./DEPLOYMENT.md)
-- [User Guide](./docs/USER_GUIDE.md)
-- [Demo Script](./docs/CAPITAL_FACTORY_DEMO.md)
-- [Environment Template](./.env.local.template)
+- [Deployment Guide](../guides/DEPLOYMENT.md)
+- [User Guide](../USER_GUIDE.md)
+- [Demo Script](../CAPITAL_FACTORY_DEMO.md)
+- [Environment Template](../../.env.local.template)
 
 ### External Resources
 - Supabase Docs: https://supabase.com/docs

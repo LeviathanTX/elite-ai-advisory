@@ -17,7 +17,7 @@ import {
   BarChart3,
   Lightbulb,
   BookOpen,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 interface PitchPracticeModeProps {
@@ -522,33 +522,53 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
 
         // Calculate realistic metrics from audio features with varied defaults
         const calculatedMetrics = {
-          clarity: Math.min(90, Math.max(40,
-            audioFeatures?.coaching_metrics.clarity_score ||
-            audioFeatures?.coaching_metrics.articulation_score ||
-            (speechAnalysis?.clarityScore) ||
-            Math.floor(Math.random() * 30) + 55 // Range: 55-85
-          )),
-          confidence: Math.min(90, Math.max(35,
-            audioFeatures?.emotional_markers.confidence_level ||
-            (speechAnalysis?.confidenceLevel) ||
-            Math.floor(Math.random() * 35) + 50 // Range: 50-85
-          )),
-          structure: Math.min(90, Math.max(40,
-            audioFeatures?.coaching_metrics.flow_score ||
-            (speechAnalysis ? Math.max(50, Math.min(95, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5)) : null) ||
-            Math.floor(Math.random() * 35) + 50 // Range: 50-85
-          )),
-          engagement: Math.min(90, Math.max(45,
-            audioFeatures?.emotional_markers.energy_level ||
-            (speechAnalysis?.energyLevel) ||
-            Math.floor(Math.random() * 30) + 55 // Range: 55-85
-          )),
+          clarity: Math.min(
+            90,
+            Math.max(
+              40,
+              audioFeatures?.coaching_metrics.clarity_score ||
+                audioFeatures?.coaching_metrics.articulation_score ||
+                speechAnalysis?.clarityScore ||
+                Math.floor(Math.random() * 30) + 55 // Range: 55-85
+            )
+          ),
+          confidence: Math.min(
+            90,
+            Math.max(
+              35,
+              audioFeatures?.emotional_markers.confidence_level ||
+                speechAnalysis?.confidenceLevel ||
+                Math.floor(Math.random() * 35) + 50 // Range: 50-85
+            )
+          ),
+          structure: Math.min(
+            90,
+            Math.max(
+              40,
+              audioFeatures?.coaching_metrics.flow_score ||
+                (speechAnalysis
+                  ? Math.max(50, Math.min(95, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5))
+                  : null) ||
+                Math.floor(Math.random() * 35) + 50 // Range: 50-85
+            )
+          ),
+          engagement: Math.min(
+            90,
+            Math.max(
+              45,
+              audioFeatures?.emotional_markers.energy_level ||
+                speechAnalysis?.energyLevel ||
+                Math.floor(Math.random() * 30) + 55 // Range: 55-85
+            )
+          ),
         };
 
         const realAnalysis = {
           advisors: selectedAdvisorObjects.map(advisor => advisor?.name).join(', '),
           advisorCount: selectedAdvisors.length,
-          overallScore: aiAnalysis.combined_score || Math.floor(Object.values(calculatedMetrics).reduce((a, b) => a + b) / 4),
+          overallScore:
+            aiAnalysis.combined_score ||
+            Math.floor(Object.values(calculatedMetrics).reduce((a, b) => a + b) / 4),
           metrics: {
             clarity: aiAnalysis.delivery_analysis.score || calculatedMetrics.clarity,
             confidence: calculatedMetrics.confidence,
@@ -580,26 +600,52 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
       } else {
         // Standard analysis format - more realistic scoring with varied metrics
         let baseMetrics = {
-          clarity: Math.min(90, Math.max(40,
-            (speechAnalysis?.clarityScore) ||
-            (aiAnalysis.overallScore ? aiAnalysis.overallScore - Math.floor(Math.random() * 10) : null) ||
-            Math.floor(Math.random() * 35) + 50  // Range: 50-85
-          )),
-          confidence: Math.min(90, Math.max(35,
-            (speechAnalysis?.confidenceLevel) ||
-            (aiAnalysis.overallScore ? aiAnalysis.overallScore + Math.floor(Math.random() * 10) - 5 : null) ||
-            Math.floor(Math.random() * 40) + 45  // Range: 45-85
-          )),
-          structure: Math.min(90, Math.max(40,
-            (speechAnalysis ? Math.max(50, Math.min(95, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5)) : null) ||
-            (aiAnalysis.overallScore ? aiAnalysis.overallScore - Math.floor(Math.random() * 15) : null) ||
-            Math.floor(Math.random() * 35) + 50  // Range: 50-85
-          )),
-          engagement: Math.min(90, Math.max(45,
-            (speechAnalysis?.energyLevel) ||
-            (aiAnalysis.overallScore ? aiAnalysis.overallScore + Math.floor(Math.random() * 8) - 4 : null) ||
-            Math.floor(Math.random() * 30) + 55  // Range: 55-85
-          )),
+          clarity: Math.min(
+            90,
+            Math.max(
+              40,
+              speechAnalysis?.clarityScore ||
+                (aiAnalysis.overallScore
+                  ? aiAnalysis.overallScore - Math.floor(Math.random() * 10)
+                  : null) ||
+                Math.floor(Math.random() * 35) + 50 // Range: 50-85
+            )
+          ),
+          confidence: Math.min(
+            90,
+            Math.max(
+              35,
+              speechAnalysis?.confidenceLevel ||
+                (aiAnalysis.overallScore
+                  ? aiAnalysis.overallScore + Math.floor(Math.random() * 10) - 5
+                  : null) ||
+                Math.floor(Math.random() * 40) + 45 // Range: 45-85
+            )
+          ),
+          structure: Math.min(
+            90,
+            Math.max(
+              40,
+              (speechAnalysis
+                ? Math.max(50, Math.min(95, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5))
+                : null) ||
+                (aiAnalysis.overallScore
+                  ? aiAnalysis.overallScore - Math.floor(Math.random() * 15)
+                  : null) ||
+                Math.floor(Math.random() * 35) + 50 // Range: 50-85
+            )
+          ),
+          engagement: Math.min(
+            90,
+            Math.max(
+              45,
+              speechAnalysis?.energyLevel ||
+                (aiAnalysis.overallScore
+                  ? aiAnalysis.overallScore + Math.floor(Math.random() * 8) - 4
+                  : null) ||
+                Math.floor(Math.random() * 30) + 55 // Range: 55-85
+            )
+          ),
         };
 
         // Speech analysis is already incorporated above, but ensure values are from actual data
@@ -607,9 +653,10 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
           baseMetrics.clarity = Math.min(90, Math.max(40, speechAnalysis.clarityScore));
           baseMetrics.confidence = Math.min(90, Math.max(35, speechAnalysis.confidenceLevel));
           baseMetrics.engagement = Math.min(90, Math.max(45, speechAnalysis.energyLevel));
-          baseMetrics.structure = Math.min(90, Math.max(40,
-            90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5
-          ));
+          baseMetrics.structure = Math.min(
+            90,
+            Math.max(40, 90 - speechAnalysis.pauseAnalysis.fillerWords * 2.5)
+          );
         }
 
         // Generate feedback from multiple advisors
@@ -647,10 +694,13 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
 
       // Use actual speech analysis data if available, otherwise use varied random values
       let adjustedMetrics = {
-        clarity: (speechAnalysis?.clarityScore) || Math.floor(Math.random() * 35) + 50, // Range: 50-85%
-        confidence: (speechAnalysis?.confidenceLevel) || Math.floor(Math.random() * 40) + 45, // Range: 45-85%
-        structure: (speechAnalysis ? Math.max(40, Math.min(90, 88 - speechAnalysis.pauseAnalysis.fillerWords * 2.5)) : null) || Math.floor(Math.random() * 35) + 50, // Range: 50-85%
-        engagement: (speechAnalysis?.energyLevel) || Math.floor(Math.random() * 30) + 55, // Range: 55-85%
+        clarity: speechAnalysis?.clarityScore || Math.floor(Math.random() * 35) + 50, // Range: 50-85%
+        confidence: speechAnalysis?.confidenceLevel || Math.floor(Math.random() * 40) + 45, // Range: 45-85%
+        structure:
+          (speechAnalysis
+            ? Math.max(40, Math.min(90, 88 - speechAnalysis.pauseAnalysis.fillerWords * 2.5))
+            : null) || Math.floor(Math.random() * 35) + 50, // Range: 50-85%
+        engagement: speechAnalysis?.energyLevel || Math.floor(Math.random() * 30) + 55, // Range: 55-85%
       };
 
       // Ensure values are within realistic bounds
@@ -975,9 +1025,10 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                   let aiData: any = {};
                   try {
                     // Try to parse as JSON if it's a string
-                    aiData = typeof analysis.aiGeneratedFeedback === 'string'
-                      ? JSON.parse(analysis.aiGeneratedFeedback)
-                      : analysis.aiGeneratedFeedback;
+                    aiData =
+                      typeof analysis.aiGeneratedFeedback === 'string'
+                        ? JSON.parse(analysis.aiGeneratedFeedback)
+                        : analysis.aiGeneratedFeedback;
                   } catch (e) {
                     // If not JSON, treat as plain text
                     aiData = { overall_feedback: analysis.aiGeneratedFeedback };
@@ -990,7 +1041,9 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                         <div className="flex items-start gap-3">
                           <BarChart3 className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Professional Pitch Analysis</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">
+                              Professional Pitch Analysis
+                            </h3>
                             <div className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-lg font-bold rounded-full mb-4 shadow-md">
                               Overall Score: {aiData.combined_score || analysis.overallScore}/100
                             </div>
@@ -998,8 +1051,12 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                             {/* Executive Summary Text */}
                             {aiData.overall_feedback && (
                               <div className="bg-white p-5 rounded-lg shadow-sm border border-blue-100 mb-4">
-                                <h4 className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wide">Executive Summary</h4>
-                                <p className="text-gray-700 leading-relaxed">{aiData.overall_feedback}</p>
+                                <h4 className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wide">
+                                  Executive Summary
+                                </h4>
+                                <p className="text-gray-700 leading-relaxed">
+                                  {aiData.overall_feedback}
+                                </p>
                               </div>
                             )}
                           </div>
@@ -1012,64 +1069,88 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                           <div className="flex items-start gap-3 mb-4">
                             <BookOpen className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
                             <div className="flex-1">
-                              <h4 className="text-lg font-bold text-gray-900 mb-1">Content Analysis</h4>
-                              <p className="text-sm text-gray-600">Score: {aiData.content_analysis.score}/100</p>
+                              <h4 className="text-lg font-bold text-gray-900 mb-1">
+                                Content Analysis
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                Score: {aiData.content_analysis.score}/100
+                              </p>
                             </div>
                           </div>
 
                           {/* Content Strengths */}
-                          {aiData.content_analysis.strengths && aiData.content_analysis.strengths.length > 0 && (
-                            <div className="mb-4">
-                              <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
-                                <CheckCircle className="w-4 h-4" />
-                                What's Working
-                              </h5>
-                              <ul className="space-y-2">
-                                {aiData.content_analysis.strengths.map((item: string, i: number) => (
-                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                    <span className="text-green-600 mt-0.5">✓</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {aiData.content_analysis.strengths &&
+                            aiData.content_analysis.strengths.length > 0 && (
+                              <div className="mb-4">
+                                <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4" />
+                                  What's Working
+                                </h5>
+                                <ul className="space-y-2">
+                                  {aiData.content_analysis.strengths.map(
+                                    (item: string, i: number) => (
+                                      <li
+                                        key={i}
+                                        className="flex items-start gap-2 text-sm text-gray-700"
+                                      >
+                                        <span className="text-green-600 mt-0.5">✓</span>
+                                        <span>{item}</span>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
 
                           {/* Content Improvements */}
-                          {aiData.content_analysis.improvements && aiData.content_analysis.improvements.length > 0 && (
-                            <div className="mb-4">
-                              <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
-                                <AlertTriangle className="w-4 h-4" />
-                                Areas to Strengthen
-                              </h5>
-                              <ul className="space-y-2">
-                                {aiData.content_analysis.improvements.map((item: string, i: number) => (
-                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                    <span className="text-orange-600 mt-0.5">→</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {aiData.content_analysis.improvements &&
+                            aiData.content_analysis.improvements.length > 0 && (
+                              <div className="mb-4">
+                                <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                                  <AlertTriangle className="w-4 h-4" />
+                                  Areas to Strengthen
+                                </h5>
+                                <ul className="space-y-2">
+                                  {aiData.content_analysis.improvements.map(
+                                    (item: string, i: number) => (
+                                      <li
+                                        key={i}
+                                        className="flex items-start gap-2 text-sm text-gray-700"
+                                      >
+                                        <span className="text-orange-600 mt-0.5">→</span>
+                                        <span>{item}</span>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
 
                           {/* Specific Recommendations */}
-                          {aiData.content_analysis.specific_recommendations && aiData.content_analysis.specific_recommendations.length > 0 && (
-                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                              <h5 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                                <Target className="w-4 h-4" />
-                                Recommended Actions
-                              </h5>
-                              <ul className="space-y-2">
-                                {aiData.content_analysis.specific_recommendations.map((item: string, i: number) => (
-                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                                    <span className="text-blue-600 font-bold mt-0.5">{i + 1}.</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {aiData.content_analysis.specific_recommendations &&
+                            aiData.content_analysis.specific_recommendations.length > 0 && (
+                              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <h5 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                                  <Target className="w-4 h-4" />
+                                  Recommended Actions
+                                </h5>
+                                <ul className="space-y-2">
+                                  {aiData.content_analysis.specific_recommendations.map(
+                                    (item: string, i: number) => (
+                                      <li
+                                        key={i}
+                                        className="flex items-start gap-2 text-sm text-gray-800"
+                                      >
+                                        <span className="text-blue-600 font-bold mt-0.5">
+                                          {i + 1}.
+                                        </span>
+                                        <span>{item}</span>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
                         </div>
                       )}
 
@@ -1079,81 +1160,113 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                           <div className="flex items-start gap-3 mb-4">
                             <TrendingUp className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
                             <div className="flex-1">
-                              <h4 className="text-lg font-bold text-gray-900 mb-1">Delivery Analysis</h4>
-                              <p className="text-sm text-gray-600">Score: {aiData.delivery_analysis.score}/100</p>
+                              <h4 className="text-lg font-bold text-gray-900 mb-1">
+                                Delivery Analysis
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                Score: {aiData.delivery_analysis.score}/100
+                              </p>
                             </div>
                           </div>
 
                           <div className="grid md:grid-cols-2 gap-4 mb-4">
                             {/* Vocal Strengths */}
-                            {aiData.delivery_analysis.vocal_strengths && aiData.delivery_analysis.vocal_strengths.length > 0 && (
-                              <div>
-                                <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
-                                  <CheckCircle className="w-4 h-4" />
-                                  Delivery Strengths
-                                </h5>
-                                <ul className="space-y-2">
-                                  {aiData.delivery_analysis.vocal_strengths.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                      <span className="text-green-600 mt-0.5">✓</span>
-                                      <span>{item}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
+                            {aiData.delivery_analysis.vocal_strengths &&
+                              aiData.delivery_analysis.vocal_strengths.length > 0 && (
+                                <div>
+                                  <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                                    <CheckCircle className="w-4 h-4" />
+                                    Delivery Strengths
+                                  </h5>
+                                  <ul className="space-y-2">
+                                    {aiData.delivery_analysis.vocal_strengths.map(
+                                      (item: string, i: number) => (
+                                        <li
+                                          key={i}
+                                          className="flex items-start gap-2 text-sm text-gray-700"
+                                        >
+                                          <span className="text-green-600 mt-0.5">✓</span>
+                                          <span>{item}</span>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              )}
 
                             {/* Vocal Improvements */}
-                            {aiData.delivery_analysis.vocal_improvements && aiData.delivery_analysis.vocal_improvements.length > 0 && (
-                              <div>
-                                <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
-                                  <AlertTriangle className="w-4 h-4" />
-                                  Delivery Improvements
-                                </h5>
-                                <ul className="space-y-2">
-                                  {aiData.delivery_analysis.vocal_improvements.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                                      <span className="text-orange-600 mt-0.5">→</span>
-                                      <span>{item}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
+                            {aiData.delivery_analysis.vocal_improvements &&
+                              aiData.delivery_analysis.vocal_improvements.length > 0 && (
+                                <div>
+                                  <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                                    <AlertTriangle className="w-4 h-4" />
+                                    Delivery Improvements
+                                  </h5>
+                                  <ul className="space-y-2">
+                                    {aiData.delivery_analysis.vocal_improvements.map(
+                                      (item: string, i: number) => (
+                                        <li
+                                          key={i}
+                                          className="flex items-start gap-2 text-sm text-gray-700"
+                                        >
+                                          <span className="text-orange-600 mt-0.5">→</span>
+                                          <span>{item}</span>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              )}
                           </div>
 
                           {/* Coaching Recommendations */}
-                          {aiData.delivery_analysis.coaching_recommendations && aiData.delivery_analysis.coaching_recommendations.length > 0 && (
-                            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                              <h5 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
-                                <Target className="w-4 h-4" />
-                                Coaching Recommendations
-                              </h5>
-                              <ul className="space-y-2">
-                                {aiData.delivery_analysis.coaching_recommendations.map((item: string, i: number) => (
-                                  <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                                    <span className="text-purple-600 font-bold mt-0.5">{i + 1}.</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {aiData.delivery_analysis.coaching_recommendations &&
+                            aiData.delivery_analysis.coaching_recommendations.length > 0 && (
+                              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                <h5 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                                  <Target className="w-4 h-4" />
+                                  Coaching Recommendations
+                                </h5>
+                                <ul className="space-y-2">
+                                  {aiData.delivery_analysis.coaching_recommendations.map(
+                                    (item: string, i: number) => (
+                                      <li
+                                        key={i}
+                                        className="flex items-start gap-2 text-sm text-gray-800"
+                                      >
+                                        <span className="text-purple-600 font-bold mt-0.5">
+                                          {i + 1}.
+                                        </span>
+                                        <span>{item}</span>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
 
                           {/* Technical Metrics */}
-                          {aiData.delivery_analysis.technical_metrics && aiData.delivery_analysis.technical_metrics.length > 0 && (
-                            <div className="mt-4 pt-4 border-t border-purple-200">
-                              <h5 className="font-semibold text-gray-800 mb-2 text-xs uppercase">Technical Metrics</h5>
-                              <ul className="space-y-1">
-                                {aiData.delivery_analysis.technical_metrics.map((item: string, i: number) => (
-                                  <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                                    <span className="text-purple-400">•</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                          {aiData.delivery_analysis.technical_metrics &&
+                            aiData.delivery_analysis.technical_metrics.length > 0 && (
+                              <div className="mt-4 pt-4 border-t border-purple-200">
+                                <h5 className="font-semibold text-gray-800 mb-2 text-xs uppercase">
+                                  Technical Metrics
+                                </h5>
+                                <ul className="space-y-1">
+                                  {aiData.delivery_analysis.technical_metrics.map(
+                                    (item: string, i: number) => (
+                                      <li
+                                        key={i}
+                                        className="text-xs text-gray-600 flex items-start gap-2"
+                                      >
+                                        <span className="text-purple-400">•</span>
+                                        <span>{item}</span>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
                         </div>
                       )}
 
@@ -1163,15 +1276,22 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                           <div className="flex items-start gap-3">
                             <Target className="w-7 h-7 text-indigo-600 flex-shrink-0 mt-1" />
                             <div className="flex-1">
-                              <h4 className="text-lg font-bold text-gray-900 mb-4">Immediate Action Plan</h4>
+                              <h4 className="text-lg font-bold text-gray-900 mb-4">
+                                Immediate Action Plan
+                              </h4>
                               <div className="space-y-3">
                                 {aiData.action_plan.map((item: string, i: number) => (
-                                  <div key={i} className="bg-white p-4 rounded-lg border border-indigo-200 shadow-sm">
+                                  <div
+                                    key={i}
+                                    className="bg-white p-4 rounded-lg border border-indigo-200 shadow-sm"
+                                  >
                                     <div className="flex items-start gap-3">
                                       <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center">
                                         {i + 1}
                                       </div>
-                                      <p className="text-sm text-gray-800 font-medium pt-1">{item}</p>
+                                      <p className="text-sm text-gray-800 font-medium pt-1">
+                                        {item}
+                                      </p>
                                     </div>
                                   </div>
                                 ))}
@@ -1182,40 +1302,52 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                       )}
 
                       {/* Timeline Analysis */}
-                      {aiData.timeline_analysis?.problematic_moments && aiData.timeline_analysis.problematic_moments.length > 0 && (
-                        <div className="p-6 bg-yellow-50 rounded-xl border border-yellow-300">
-                          <div className="flex items-start gap-3">
-                            <AlertTriangle className="w-6 h-6 text-yellow-700 flex-shrink-0 mt-1" />
-                            <div className="flex-1">
-                              <h4 className="text-lg font-bold text-yellow-900 mb-3">Critical Moments Analysis</h4>
-                              <p className="text-sm text-yellow-800 mb-4">Key moments where delivery needs attention:</p>
-                              <div className="space-y-3">
-                                {aiData.timeline_analysis.problematic_moments.map((moment: any, i: number) => (
-                                  <div key={i} className="bg-white p-4 rounded-lg border border-yellow-200">
-                                    <div className="flex items-start gap-3">
-                                      <div className="flex-shrink-0 px-2 py-1 bg-yellow-600 text-white text-xs font-bold rounded">
-                                        {moment.timestamp}
+                      {aiData.timeline_analysis?.problematic_moments &&
+                        aiData.timeline_analysis.problematic_moments.length > 0 && (
+                          <div className="p-6 bg-yellow-50 rounded-xl border border-yellow-300">
+                            <div className="flex items-start gap-3">
+                              <AlertTriangle className="w-6 h-6 text-yellow-700 flex-shrink-0 mt-1" />
+                              <div className="flex-1">
+                                <h4 className="text-lg font-bold text-yellow-900 mb-3">
+                                  Critical Moments Analysis
+                                </h4>
+                                <p className="text-sm text-yellow-800 mb-4">
+                                  Key moments where delivery needs attention:
+                                </p>
+                                <div className="space-y-3">
+                                  {aiData.timeline_analysis.problematic_moments.map(
+                                    (moment: any, i: number) => (
+                                      <div
+                                        key={i}
+                                        className="bg-white p-4 rounded-lg border border-yellow-200"
+                                      >
+                                        <div className="flex items-start gap-3">
+                                          <div className="flex-shrink-0 px-2 py-1 bg-yellow-600 text-white text-xs font-bold rounded">
+                                            {moment.timestamp}
+                                          </div>
+                                          <div className="flex-1">
+                                            <p className="text-sm text-gray-800 font-medium mb-1">
+                                              {moment.issue}
+                                            </p>
+                                            <p className="text-xs text-gray-600">
+                                              <strong className="text-yellow-700">Fix:</strong>{' '}
+                                              {moment.recommendation}
+                                            </p>
+                                          </div>
+                                        </div>
                                       </div>
-                                      <div className="flex-1">
-                                        <p className="text-sm text-gray-800 font-medium mb-1">{moment.issue}</p>
-                                        <p className="text-xs text-gray-600">
-                                          <strong className="text-yellow-700">Fix:</strong> {moment.recommendation}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
+                                    )
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </>
                   );
                 })()}
               </div>
             )}
-
 
             {/* Advanced Audio Features Display */}
             {analysis.audioFeatures && analysis.pitchMode === 'voice' && (
