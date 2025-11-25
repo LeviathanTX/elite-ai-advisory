@@ -9,6 +9,8 @@ interface AuthModalProps {
   initialPassword?: string;
   onForgotPassword?: () => void;
   defaultMode?: 'signin' | 'signup';
+  onShowTerms?: () => void;
+  onShowPrivacy?: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -18,6 +20,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialPassword,
   onForgotPassword,
   defaultMode,
+  onShowTerms,
+  onShowPrivacy,
 }) => {
   console.log('AuthModal render:', {
     isOpen,
@@ -281,6 +285,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <p className="text-red-600 text-sm">{error}</p>
                 </div>
               )}
+
+              {/* Terms of Service Acknowledgement */}
+              <div className="text-xs text-gray-600 text-center">
+                By {mode === 'signin' ? 'signing in' : 'creating an account'}, you agree to our{' '}
+                {onShowTerms ? (
+                  <button
+                    type="button"
+                    onClick={onShowTerms}
+                    className="text-blue-600 hover:text-blue-700 underline"
+                  >
+                    Terms of Service
+                  </button>
+                ) : (
+                  <span className="text-blue-600">Terms of Service</span>
+                )}{' '}
+                and{' '}
+                {onShowPrivacy ? (
+                  <button
+                    type="button"
+                    onClick={onShowPrivacy}
+                    className="text-blue-600 hover:text-blue-700 underline"
+                  >
+                    Privacy Policy
+                  </button>
+                ) : (
+                  <span className="text-blue-600">Privacy Policy</span>
+                )}
+                .
+              </div>
 
               <button
                 type="submit"

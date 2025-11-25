@@ -91,142 +91,6 @@ function LandingPage({
           </div>
         </div>
 
-        {/* What You Get Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">
-            Built for Founders Who Take Preparation Seriously
-          </h2>
-          <p className="text-center text-gray-600 mb-10">
-            Real AI-powered advisory platform with advanced features
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-2xl">🎯</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Expert Panel Mode</div>
-                  <div className="text-sm text-gray-600">Multi-advisor collaboration</div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                Orchestrate conversations between multiple AI advisors - Mark Cuban debates with
-                Reid Hoffman while Barbara Corcoran adds her perspective. Get comprehensive
-                strategic insights from diverse viewpoints.
-              </p>
-              <div className="text-xs text-blue-600 font-medium">Available on all plans</div>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-2xl">💾</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Persistent Conversations</div>
-                  <div className="text-sm text-gray-600">Full memory & context</div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                Every conversation is saved and searchable. Advisors remember your business context,
-                previous discussions, and uploaded documents. Build on insights over time instead of
-                starting fresh each session.
-              </p>
-              <div className="text-xs text-purple-600 font-medium">Powered by Supabase</div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-2xl">📚</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Document Intelligence</div>
-                  <div className="text-sm text-gray-600">PDF, Word, Excel analysis</div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                Upload pitch decks, business plans, and financial models. AI advisors analyze your
-                documents and provide specific feedback referenced to actual content. Get VC-grade
-                critique before sending to investors.
-              </p>
-              <div className="text-xs text-green-600 font-medium">PDF.js + OpenAI embeddings</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-10">
-            Everything You Need to Raise Capital & Scale Faster
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                🎤
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2 text-center">Pitch Practice</h3>
-              <p className="text-sm text-gray-600 mb-3 text-center">
-                AI-powered analysis of delivery, pacing, content, and confidence
-              </p>
-              <div className="bg-purple-50 rounded-lg p-3 text-xs">
-                <p className="text-purple-900 font-medium mb-1">What You Get:</p>
-                <p className="text-gray-700">→ Unlimited practice sessions</p>
-                <p className="text-gray-700">→ Real-time delivery feedback</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                🧠
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2 text-center">Strategic Planning</h3>
-              <p className="text-sm text-gray-600 mb-3 text-center">
-                Multi-advisor discussions with celebrity-grade insights
-              </p>
-              <div className="bg-blue-50 rounded-lg p-3 text-xs">
-                <p className="text-blue-900 font-medium mb-1">What You Get:</p>
-                <p className="text-gray-700">→ Expert panel orchestration</p>
-                <p className="text-gray-700">→ Diverse strategic perspectives</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                📊
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2 text-center">Document Analysis</h3>
-              <p className="text-sm text-gray-600 mb-3 text-center">
-                VC-grade analysis of pitch decks, business plans, and financials
-              </p>
-              <div className="bg-green-50 rounded-lg p-3 text-xs">
-                <p className="text-green-900 font-medium mb-1">What You Get:</p>
-                <p className="text-gray-700">→ PDF, Word, Excel support</p>
-                <p className="text-gray-700">→ AI embeddings analysis</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                ⚡
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2 text-center">Quick Consultation</h3>
-              <p className="text-sm text-gray-600 mb-3 text-center">
-                Instant expert advice 24/7 for urgent decisions
-              </p>
-              <div className="bg-orange-50 rounded-lg p-3 text-xs">
-                <p className="text-orange-900 font-medium mb-1">What You Get:</p>
-                <p className="text-gray-700">→ 24/7 instant responses</p>
-                <p className="text-gray-700">→ 15+ advisor personas</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Get Started Options */}
         <div className="mb-16">
@@ -313,69 +177,6 @@ function LandingPage({
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-10 text-white shadow-2xl text-center">
-          <h2 className="text-3xl font-bold mb-3">Ready to Transform Your Fundraising Strategy?</h2>
-          <p className="text-blue-100 mb-6 text-lg">
-            Get started with AI-powered advisory for pitch preparation, strategic planning, and
-            investor readiness
-          </p>
-
-          {/* Use Cases */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-left">
-            <div className="bg-white bg-opacity-10 rounded-lg p-4">
-              <p className="text-white text-sm">
-                <span className="font-semibold">🎯 Fundraising in next 3-6 months?</span>
-                <br />
-                Practice your pitch 20+ times before investor meetings
-              </p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4">
-              <p className="text-white text-sm">
-                <span className="font-semibold">📊 Need strategic clarity?</span>
-                <br />
-                Get Mark Cuban & Reid Hoffman's advice 24/7
-              </p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4">
-              <p className="text-white text-sm">
-                <span className="font-semibold">💰 Spending $2K+/year on coaching?</span>
-                <br />
-                Replace expensive advisors with AI-powered expertise
-              </p>
-            </div>
-            <div className="bg-white bg-opacity-10 rounded-lg p-4">
-              <p className="text-white text-sm">
-                <span className="font-semibold">⚡ Struggling with pitch deck?</span>
-                <br />
-                Get VC-grade analysis and improve before sending
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white bg-opacity-20 rounded-lg p-6 mb-6">
-            <p className="text-2xl font-bold mb-2">7-Day Free Trial</p>
-            <p className="text-blue-100 text-sm mb-4">No credit card required • Cancel anytime</p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => {
-                  console.log('Start Free Trial clicked - 7 days free');
-                  onGetStarted();
-                }}
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
-              >
-                Start Free Trial
-              </button>
-              <button
-                onClick={() => onLogin()}
-                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
-              >
-                Login
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Footer */}
         <div className="mt-12 pt-8 border-t border-gray-200">
@@ -495,6 +296,8 @@ function AppContent() {
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
+  const [showTermsOfService, setShowTermsOfService] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [isPasswordReset, setIsPasswordReset] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
   const [prefilledEmail, setPrefilledEmail] = useState<string | undefined>();
@@ -573,11 +376,15 @@ function AppContent() {
         onForgotPassword={() => {
           setShowPasswordResetModal(true);
         }}
+        onShowTerms={() => setShowTermsOfService(true)}
+        onShowPrivacy={() => setShowPrivacyPolicy(true)}
       />
       <PasswordResetModal
         isOpen={showPasswordResetModal}
         onClose={() => setShowPasswordResetModal(false)}
       />
+      <TermsOfService isOpen={showTermsOfService} onClose={() => setShowTermsOfService(false)} />
+      <PrivacyPolicy isOpen={showPrivacyPolicy} onClose={() => setShowPrivacyPolicy(false)} />
     </>
   );
 }
