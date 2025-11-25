@@ -88,20 +88,21 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const limits = SUBSCRIPTION_LIMITS[currentTier];
 
   // Calculate trial status
-  // Special handling: Owner accounts are not on trial (full permanent access)
-  const ownerEmails = [
+  // Special handling: Owner accounts and demo accounts are not on trial (full permanent access)
+  const permanentAccessEmails = [
     'leviathanTX@gmail.com',
     'LeviathanTX@gmail.com',
     'jeff@leviantx.com',
     'jeffrey@leviantx.com',
     'jeff.levine@gmail.com',
     'jeffrey.levine@gmail.com',
+    'founder@demo.com', // Demo founder account - permanent access, no trial
   ];
   const isOwnerAccount =
-    ownerEmails.some(email => user?.email?.toLowerCase() === email.toLowerCase()) ||
+    permanentAccessEmails.some(email => user?.email?.toLowerCase() === email.toLowerCase()) ||
     (user?.full_name?.toLowerCase().includes('jeff') && user?.full_name?.toLowerCase().includes('levine'));
 
-  // Owner accounts have full access, not trial
+  // Owner and demo accounts have full access, not trial
   const isTrialActive = isOwnerAccount ? false : (user?.is_trial_active ?? false);
   const trialEndDate = user?.trial_end_date ? new Date(user.trial_end_date) : null;
 
