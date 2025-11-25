@@ -91,7 +91,6 @@ function LandingPage({
           </div>
         </div>
 
-
         {/* Get Started Options */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-3">Get Started</h2>
@@ -176,7 +175,6 @@ function LandingPage({
             </div>
           </div>
         </div>
-
 
         {/* Footer */}
         <div className="mt-12 pt-8 border-t border-gray-200">

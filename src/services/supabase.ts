@@ -338,38 +338,14 @@ export const signIn = async (
     console.log('Has anon key:', !!supabaseAnonKey);
     const startTime = Date.now();
 
-    // Use auth state listener instead of waiting for promise (more reliable)
     console.log('Calling supabase.auth.signInWithPassword...');
 
-    // Create a promise that resolves when auth state changes
-    const authStatePromise = new Promise((resolve, reject) => {
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          clearTimeout(timeout);
-          subscription.unsubscribe();
-          resolve({ data: { user: session.user, session }, error: null });
-        } else if (event === 'SIGNED_OUT') {
-          clearTimeout(timeout);
-          subscription.unsubscribe();
-          reject(new Error('Sign in failed'));
-        }
-      });
-
-      const timeout = setTimeout(() => {
-        subscription.unsubscribe();
-        reject(new Error('Authentication timed out after 30 seconds'));
-      }, 30000);
+    // Call signInWithPassword and wait for the response
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
-    // Fire the sign-in request (don't wait for it)
-    supabase.auth.signInWithPassword({ email, password }).catch(err => {
-      console.warn('signInWithPassword promise error (ignored):', err);
-    });
-
-    console.log('Waiting for auth state change...');
-    const { data, error } = (await authStatePromise) as any;
     const duration = Date.now() - startTime;
 
     console.log('Supabase auth response:', {
@@ -383,6 +359,7 @@ export const signIn = async (
 
     // Check for errors and categorize them
     if (error) {
+      console.error('Sign in error:', error);
       return {
         data: null,
         error: categorizeAuthError(error),

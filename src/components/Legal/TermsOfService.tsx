@@ -11,9 +11,9 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">Terms of Service</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="w-6 h-6" />
@@ -21,7 +21,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Critical Warning Banner */}
           <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
             <div className="flex">
@@ -222,7 +222,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-6">
+        <div className="border-t border-gray-200 p-6 flex-shrink-0">
           <div className="flex justify-end">
             <button
               onClick={onClose}

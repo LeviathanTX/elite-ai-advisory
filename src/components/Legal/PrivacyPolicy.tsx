@@ -11,9 +11,9 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">Privacy Policy</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="w-6 h-6" />
@@ -21,7 +21,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Privacy Notice Banner */}
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
             <div className="flex">
@@ -62,11 +62,10 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <li>Documents you upload for analysis</li>
             </ul>
             <p className="text-sm text-gray-600 mb-4">
-              Note: We store this information to provide you with access to your data across sessions.
-              We do not access, read, or analyze your uploaded content for any purpose other than
-              providing the AI advisory services you request.
+              Note: We store this information to provide you with access to your data across
+              sessions. We do not access, read, or analyze your uploaded content for any purpose
+              other than providing the AI advisory services you request.
             </p>
-
 
             <h3 className="text-xl font-bold mb-4">2. HOW WE USE YOUR INFORMATION</h3>
             <p className="mb-3">We use your information to:</p>
@@ -78,8 +77,8 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <li>Comply with legal obligations</li>
             </ul>
             <p className="text-sm text-gray-600 mb-6">
-              <strong>Important:</strong> We do not use your data to train or improve AI models. Your
-              conversations and documents are only used to provide the services you request.
+              <strong>Important:</strong> We do not use your data to train or improve AI models.
+              Your conversations and documents are only used to provide the services you request.
             </p>
 
             <h3 className="text-xl font-bold mb-4">3. THIRD-PARTY SERVICES</h3>
@@ -102,12 +101,14 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <p className="font-semibold mb-2">⚠️ Important: AI Processing</p>
               <p className="text-sm mb-2">
                 Your conversations and uploaded documents are processed by third-party AI services.
-                By default, we use <strong>Google Gemini</strong> and <strong>Anthropic Claude</strong>.
+                By default, we use <strong>Google Gemini</strong> and{' '}
+                <strong>Anthropic Claude</strong>.
               </p>
               <p className="text-sm mb-2">
                 <strong>User API Keys:</strong> You may add your own API keys to access other AI
-                services (OpenAI, DeepSeek, Groq, etc.) on the platform. When using your own API keys,
-                your data is sent directly to those providers according to their privacy policies.
+                services (OpenAI, DeepSeek, Groq, etc.) on the platform. When using your own API
+                keys, your data is sent directly to those providers according to their privacy
+                policies.
               </p>
               <p className="text-sm">
                 We recommend reviewing the privacy policies of any AI provider you use:
@@ -152,12 +153,12 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <li>Access controls and authentication</li>
             </ul>
             <p className="mb-3 text-red-600 font-semibold">
-              ⚠️ Important: We do not maintain automated backups of your data. You are responsible for
-              maintaining your own backups of important information.
+              ⚠️ Important: We do not maintain automated backups of your data. You are responsible
+              for maintaining your own backups of important information.
             </p>
             <p className="mb-6">
-              No internet transmission is 100% secure. Use our service at your own risk and
-              do not upload highly confidential or sensitive information.
+              No internet transmission is 100% secure. Use our service at your own risk and do not
+              upload highly confidential or sensitive information.
             </p>
 
             <h3 className="text-xl font-bold mb-4">5. DATA RETENTION</h3>
@@ -192,9 +193,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
             </ul>
 
             <h3 className="text-xl font-bold mb-4">7. LOCAL STORAGE AND SESSION MANAGEMENT</h3>
-            <p className="mb-3">
-              We use browser localStorage (not cookies) to store:
-            </p>
+            <p className="mb-3">We use browser localStorage (not cookies) to store:</p>
             <ul className="list-disc list-inside mb-6 space-y-1">
               <li>Authentication session data</li>
               <li>User preferences and settings</li>
@@ -272,7 +271,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-6">
+        <div className="border-t border-gray-200 p-6 flex-shrink-0">
           <div className="flex justify-end">
             <button
               onClick={onClose}
