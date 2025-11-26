@@ -1477,13 +1477,21 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!user) return;
 
     try {
+      console.log('📋 Loading conversations for user:', user.id);
       const { data, error } = await supabase
         .from('conversations')
         .select('*')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false });
 
+      console.log('📋 Conversations query result:', {
+        count: data?.length || 0,
+        error: error?.message,
+        hasData: !!data
+      });
+
       if (error) {
+        console.error('❌ Error loading conversations:', error.message, error.code);
         // Table might not exist in bypass mode or demo - that's OK
         if (
           error.code === 'PGRST200' ||
@@ -1497,9 +1505,10 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
         throw error;
       }
+      console.log('✅ Loaded', data?.length || 0, 'conversations');
       setConversations(data || []);
     } catch (error) {
-      console.error('Error loading conversations:', error);
+      console.error('❌ Exception loading conversations:', error);
       setConversations([]); // Fail gracefully
     }
   };
@@ -1593,7 +1602,10 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     advisorType: 'celebrity' | 'custom',
     mode: ApplicationMode
   ): Promise<AdvisorConversation | null> => {
-    if (!user) return null;
+    if (!user) {
+      console.warn('⚠️ Cannot start conversation - no user');
+      return null;
+    }
 
     try {
       const conversationData = {
@@ -1604,14 +1616,20 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         messages: [],
       };
 
+      console.log('💬 Starting conversation:', conversationData);
+
       const { data, error } = await supabase
         .from('conversations')
         .insert([conversationData])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error creating conversation:', error.message, error.code);
+        throw error;
+      }
 
+      console.log('✅ Conversation created:', data.id);
       setConversations(prev => [data, ...prev]);
       setActiveConversation(data);
       return data;
