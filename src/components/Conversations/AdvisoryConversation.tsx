@@ -173,7 +173,7 @@ export function AdvisoryConversation({
       setSelectedAdvisors([activeConversation.advisor_id]);
       setSelectedMode((activeConversation.mode || 'general') as any);
       const metadata = (activeConversation as any).metadata || {};
-      setUploadedFiles(metadata.files || []);
+      setUploadedFiles((metadata.files || []) as any);
       setSelectedDocuments(metadata.selectedDocuments || []);
       setConversationDocuments(metadata.conversationDocuments || []);
       console.log(
@@ -191,7 +191,7 @@ export function AdvisoryConversation({
           setMessages((conversation.messages || []) as any);
           setSelectedAdvisors(conversation.advisors?.map(a => a.id) || []);
           setSelectedMode((conversation.mode || 'general') as any);
-          setUploadedFiles(conversation.files || []);
+          setUploadedFiles((conversation.files || []) as any);
           setSelectedDocuments(conversation.selectedDocuments || []);
           setConversationDocuments(conversation.conversationDocuments || []);
           console.log(
@@ -215,7 +215,7 @@ export function AdvisoryConversation({
         setMessages((data.messages || []) as any);
         setSelectedAdvisors(data.advisors || []);
         setSelectedMode((data.mode || 'general') as any);
-        setUploadedFiles(data.files || []);
+        setUploadedFiles((data.files || []) as any);
         setSelectedDocuments(data.selectedDocuments || []);
         setConversationDocuments(data.conversationDocuments || []);
         console.log(
