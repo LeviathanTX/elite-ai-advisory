@@ -54,7 +54,12 @@
       "Bash(supabase db remote exec:*)",
       "Bash(xargs:*)",
       "WebSearch",
-      "Bash(export SUPABASE_DB_PASSWORD=LeviathanHexara)"
+      "Bash(export SUPABASE_DB_PASSWORD=LeviathanHexara)",
+      "Bash(for advisor in mark-cuban daniel-lubetzky lori-greiner kevin-oleary kendra-scott daymond-john robert-herjavec barbara-corcoran)",
+      "Bash(do echo \"Checking $advisor...\" curl -sI \"https://ai-bod.vercel.app/images/advisors/$advisor.jpg\")",
+      "Bash(sort:*)",
+      "Bash(for advisor in mark-cuban daniel-lubetzky lori-greiner kevin-oleary kendra-scott daymond-john robert-herjavec barbara-corcoran reid-hoffman jason-calacanis sheryl-sandberg)",
+      "Bash(do echo \"Checking $advisor...\" curl -sI \"https://ai-bod-ochre.vercel.app/images/advisors/$advisor.jpg\")"
     ],
     "deny": [],
     "ask": []

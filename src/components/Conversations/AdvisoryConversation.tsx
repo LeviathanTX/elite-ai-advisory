@@ -36,6 +36,7 @@ import {
   saveConversation as saveConversationToDb,
   loadConversation as loadConversationFromService,
 } from '../../services/conversationService';
+import { Avatar } from '../Common/Avatar';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -1322,10 +1323,16 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   >
                     <div className="flex items-center space-x-3">
                       <div
-                        className="text-2xl cursor-pointer"
+                        className="cursor-pointer"
                         onClick={() => toggleAdvisor(advisor.id)}
                       >
-                        {advisor.avatar_emoji || '👤'}
+                        <Avatar
+                          avatar_emoji={advisor.avatar_emoji}
+                          avatar_image={advisor.avatar_image}
+                          avatar_url={advisor.avatar_url}
+                          name={advisor.name}
+                          size="md"
+                        />
                       </div>
                       <div
                         className="flex-1 min-w-0 cursor-pointer"
@@ -1520,7 +1527,13 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                 {message.advisor && (
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg">{message.advisor.avatar_emoji || '👤'}</span>
+                      <Avatar
+                        avatar_emoji={message.advisor.avatar_emoji}
+                        avatar_image={message.advisor.avatar_image}
+                        avatar_url={message.advisor.avatar_url}
+                        name={message.advisor.name}
+                        size="sm"
+                      />
                       <span className="font-semibold text-purple-700 text-sm">
                         {message.advisor.name}
                       </span>
