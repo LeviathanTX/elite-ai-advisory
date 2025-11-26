@@ -1071,23 +1071,37 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                                       // Check if this is a section header (ends with : and is short)
                                       if (trimmed.endsWith(':') && trimmed.length < 60) {
                                         sections.push(
-                                          <h5 key={sections.length} className="font-semibold text-gray-900 mt-4 first:mt-0">
+                                          <h5
+                                            key={sections.length}
+                                            className="font-semibold text-gray-900 mt-4 first:mt-0"
+                                          >
                                             {trimmed}
                                           </h5>
                                         );
                                       }
                                       // Check if this contains bullet points
-                                      else if (trimmed.match(/^[-•*]\s/) || trimmed.includes('\n- ') || trimmed.includes('\n• ')) {
+                                      else if (
+                                        trimmed.match(/^[-•*]\s/) ||
+                                        trimmed.includes('\n- ') ||
+                                        trimmed.includes('\n• ')
+                                      ) {
                                         const items = trimmed
                                           .split(/\n(?=[-•*]\s)/)
-                                          .map((item: string) => item.replace(/^[-•*]\s/, '').trim())
+                                          .map((item: string) =>
+                                            item.replace(/^[-•*]\s/, '').trim()
+                                          )
                                           .filter((item: string) => item);
 
                                         sections.push(
                                           <ul key={sections.length} className="space-y-2">
                                             {items.map((item: string, i: number) => (
-                                              <li key={i} className="flex items-start gap-2 text-gray-700 leading-relaxed">
-                                                <span className="text-blue-600 mt-1 flex-shrink-0">•</span>
+                                              <li
+                                                key={i}
+                                                className="flex items-start gap-2 text-gray-700 leading-relaxed"
+                                              >
+                                                <span className="text-blue-600 mt-1 flex-shrink-0">
+                                                  •
+                                                </span>
                                                 <span>{item}</span>
                                               </li>
                                             ))}
@@ -1095,16 +1109,27 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                                         );
                                       }
                                       // Check if this is a numbered list
-                                      else if (trimmed.match(/^\d+\.\s/) || trimmed.includes('\n1. ')) {
+                                      else if (
+                                        trimmed.match(/^\d+\.\s/) ||
+                                        trimmed.includes('\n1. ')
+                                      ) {
                                         const items = trimmed
                                           .split(/\n(?=\d+\.\s)/)
-                                          .map((item: string) => item.replace(/^\d+\.\s/, '').trim())
+                                          .map((item: string) =>
+                                            item.replace(/^\d+\.\s/, '').trim()
+                                          )
                                           .filter((item: string) => item);
 
                                         sections.push(
-                                          <ol key={sections.length} className="space-y-2 list-decimal list-inside">
+                                          <ol
+                                            key={sections.length}
+                                            className="space-y-2 list-decimal list-inside"
+                                          >
                                             {items.map((item: string, i: number) => (
-                                              <li key={i} className="text-gray-700 leading-relaxed pl-2">
+                                              <li
+                                                key={i}
+                                                className="text-gray-700 leading-relaxed pl-2"
+                                              >
                                                 {item}
                                               </li>
                                             ))}
@@ -1114,7 +1139,10 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                                       // Regular paragraph
                                       else {
                                         sections.push(
-                                          <p key={sections.length} className="text-gray-700 leading-relaxed">
+                                          <p
+                                            key={sections.length}
+                                            className="text-gray-700 leading-relaxed"
+                                          >
                                             {trimmed}
                                           </p>
                                         );

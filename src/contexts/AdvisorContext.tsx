@@ -1487,7 +1487,7 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.log('📋 Conversations query result:', {
         count: data?.length || 0,
         error: error?.message,
-        hasData: !!data
+        hasData: !!data,
       });
 
       if (error) {

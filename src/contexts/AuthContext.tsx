@@ -161,10 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { data, error };
       })();
 
-      const { data, error } = (await Promise.race([
-        fetchPromise,
-        timeoutPromise,
-      ])) as any;
+      const { data, error } = (await Promise.race([fetchPromise, timeoutPromise])) as any;
 
       if (error) {
         console.error('❌ Error fetching user profile:', error);

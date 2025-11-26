@@ -148,11 +148,9 @@ class AnalyticsService {
    * Check if event should be flushed immediately
    */
   private isCriticalEvent(eventType: EventType): boolean {
-    return [
-      EventType.LOGIN_SUCCESS,
-      EventType.SIGNUP_SUCCESS,
-      EventType.SESSION_END,
-    ].includes(eventType);
+    return [EventType.LOGIN_SUCCESS, EventType.SIGNUP_SUCCESS, EventType.SESSION_END].includes(
+      eventType
+    );
   }
 
   /**
@@ -173,12 +171,12 @@ class AnalyticsService {
 
       const {
         data: { user },
-      } = await Promise.race([userPromise, timeoutPromise]).catch(() => ({
+      } = (await Promise.race([userPromise, timeoutPromise]).catch(() => ({
         data: { user: null },
-      })) as any;
+      }))) as any;
 
       // Add user_id to events if authenticated
-      const eventsWithUser = eventsToFlush.map((event) => ({
+      const eventsWithUser = eventsToFlush.map(event => ({
         ...event,
         user_id: user?.id || null,
       }));
@@ -189,10 +187,10 @@ class AnalyticsService {
         setTimeout(() => reject(new Error('insert timeout')), 3000)
       );
 
-      const { error } = await Promise.race([insertPromise, insertTimeoutPromise]).catch((err) => {
+      const { error } = (await Promise.race([insertPromise, insertTimeoutPromise]).catch(err => {
         console.warn('Analytics insert timed out or failed:', err);
         return { error: err };
-      }) as any;
+      })) as any;
 
       if (error) {
         console.warn('Analytics flush error (non-blocking):', error.message);
@@ -248,12 +246,9 @@ class AnalyticsService {
       this.trackEvent(EventType.LOGOUT, EventCategory.AUTH, 'Logout');
     },
     authPageAbandoned: (formType: 'login' | 'signup') => {
-      this.trackEvent(
-        EventType.AUTH_PAGE_ABANDONED,
-        EventCategory.AUTH,
-        'Auth Page Abandoned',
-        { form_type: formType }
-      );
+      this.trackEvent(EventType.AUTH_PAGE_ABANDONED, EventCategory.AUTH, 'Auth Page Abandoned', {
+        form_type: formType,
+      });
     },
   };
 
@@ -270,12 +265,10 @@ class AnalyticsService {
       );
     },
     conversationMessageSent: (conversationId: string, messageLength: number) => {
-      this.trackEvent(
-        EventType.CONVERSATION_MESSAGE_SENT,
-        EventCategory.FEATURE,
-        'Message Sent',
-        { conversation_id: conversationId, message_length: messageLength }
-      );
+      this.trackEvent(EventType.CONVERSATION_MESSAGE_SENT, EventCategory.FEATURE, 'Message Sent', {
+        conversation_id: conversationId,
+        message_length: messageLength,
+      });
     },
     conversationCompleted: (conversationId: string, messageCount: number, duration: number) => {
       this.trackEvent(
@@ -314,11 +307,7 @@ class AnalyticsService {
       );
     },
     voicePitchStarted: () => {
-      this.trackEvent(
-        EventType.VOICE_PITCH_STARTED,
-        EventCategory.FEATURE,
-        'Voice Pitch Started'
-      );
+      this.trackEvent(EventType.VOICE_PITCH_STARTED, EventCategory.FEATURE, 'Voice Pitch Started');
     },
     voicePitchCompleted: (duration: number) => {
       this.trackEvent(

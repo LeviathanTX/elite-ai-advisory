@@ -53,8 +53,11 @@ interface ConversationManagerProps {
 
 export function ConversationManager({ onBack }: ConversationManagerProps) {
   const { user } = useAuth();
-  const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations, activeConversation } =
-    useAdvisor();
+  const {
+    conversations: supabaseConversations,
+    loadConversations: reloadSupabaseConversations,
+    activeConversation,
+  } = useAdvisor();
   const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [showNewConversation, setShowNewConversation] = useState(false);

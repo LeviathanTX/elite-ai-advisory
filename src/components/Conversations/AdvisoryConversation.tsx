@@ -32,7 +32,10 @@ import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
 import { CelebrityAdvisorCustomizationModal } from '../Modals/CelebrityAdvisorCustomizationModal';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
-import { saveConversation as saveConversationToDb, loadConversation as loadConversationFromService } from '../../services/conversationService';
+import {
+  saveConversation as saveConversationToDb,
+  loadConversation as loadConversationFromService,
+} from '../../services/conversationService';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -168,8 +171,12 @@ export function AdvisoryConversation({
 
     // First, check if activeConversation from context has this conversation already loaded
     if (activeConversation?.id === id && activeConversation.messages?.length > 0) {
-      console.log('✅ Loading from activeConversation context:', activeConversation.messages.length, 'messages');
-      setMessages(activeConversation.messages as any || []);
+      console.log(
+        '✅ Loading from activeConversation context:',
+        activeConversation.messages.length,
+        'messages'
+      );
+      setMessages((activeConversation.messages as any) || []);
       setSelectedAdvisors([activeConversation.advisor_id]);
       setSelectedMode((activeConversation.mode || 'general') as any);
       const metadata = (activeConversation as any).metadata || {};
@@ -1169,7 +1176,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
             </div>
 
             {/* Mode Selection */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Conversation Type</label>
               <div className="grid grid-cols-2 gap-2">
                 {conversationModes.map(mode => (
@@ -1187,6 +1194,31 @@ The committee unanimously recommends proceeding with measured optimism while sys
                     <span>{mode.name}</span>
                   </button>
                 ))}
+              </div>
+
+              {/* Configuration Actions */}
+              <div className="flex gap-2 pt-1">
+                <button
+                  onClick={handleCreateNewAdvisor}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                  title="Create a new custom advisor"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>New Advisor</span>
+                </button>
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  className={cn(
+                    'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors',
+                    showSettings
+                      ? 'text-blue-700 bg-blue-100'
+                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                  )}
+                  title="Configure enhanced meeting settings"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
+                </button>
               </div>
             </div>
           </div>
