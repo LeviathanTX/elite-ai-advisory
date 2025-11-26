@@ -416,9 +416,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                       }}
                       className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
                     >
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
-                        {advisor?.name.charAt(0) || '?'}
-                      </div>
+                      <Avatar
+                        avatar_emoji={advisor?.avatar_emoji}
+                        avatar_image={advisor?.avatar_image}
+                        avatar_url={(advisor as any)?.avatar_url}
+                        name={advisor?.name || 'Unknown'}
+                        size="md"
+                      />
                       <div className="flex-1 min-w-0 text-left">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {advisor?.name || 'Unknown Advisor'}
