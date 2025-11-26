@@ -33,6 +33,11 @@ CREATE INDEX IF NOT EXISTS user_events_category_type_created_idx
 ALTER TABLE public.user_events ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can read own events" ON public.user_events;
+DROP POLICY IF EXISTS "Service role can insert events" ON public.user_events;
+DROP POLICY IF EXISTS "Users can insert own events" ON public.user_events;
+
 -- Users can only read their own events
 CREATE POLICY "Users can read own events" ON public.user_events
   FOR SELECT USING (auth.uid() = user_id);
@@ -64,6 +69,7 @@ CREATE INDEX IF NOT EXISTS analytics_summary_metric_type_idx ON public.analytics
 ALTER TABLE public.analytics_summary ENABLE ROW LEVEL SECURITY;
 
 -- Only authenticated users can read summary (for admin dashboard)
+DROP POLICY IF EXISTS "Authenticated users can read summary" ON public.analytics_summary;
 CREATE POLICY "Authenticated users can read summary" ON public.analytics_summary
   FOR SELECT USING (auth.role() = 'authenticated');
 

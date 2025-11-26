@@ -3,6 +3,7 @@
 
 -- Drop the restrictive policy
 DROP POLICY IF EXISTS "Users can insert own events" ON public.user_events;
+DROP POLICY IF EXISTS "Allow event tracking" ON public.user_events;
 
 -- Create a more permissive policy that allows:
 -- 1. Authenticated users to insert events where user_id matches
