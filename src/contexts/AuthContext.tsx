@@ -137,31 +137,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching user profile for:', userId);
 
-      // Wait a moment for the database trigger to create the profile
-      // (the trigger runs AFTER INSERT on auth.users)
-      let retries = 3;
-      let data = null;
-      let error = null;
+      // Add timeout protection for the entire profile fetch
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+      );
 
-      while (retries > 0) {
-        const result = await supabase.from('users').select('*').eq('id', userId).single();
-        data = result.data;
-        error = result.error;
+      const fetchPromise = (async () => {
+        // Wait a moment for the database trigger to create the profile
+        // (the trigger runs AFTER INSERT on auth.users)
+        let retries = 3;
+        let data = null;
+        let error = null;
 
-        if (!error && data) {
-          break;
+        while (retries > 0) {
+          const result = await supabase.from('users').select('*').eq('id', userId).single();
+          data = result.data;
+          error = result.error;
+
+          if (!error && data) {
+            break;
+          }
+
+          if (error?.code === 'PGRST116') {
+            // Profile doesn't exist yet, wait and retry
+            console.log(`⏳ Profile not found, retrying... (${retries} attempts left)`);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            retries--;
+          } else {
+            // Different error, don't retry
+            break;
+          }
         }
 
-        if (error?.code === 'PGRST116') {
-          // Profile doesn't exist yet, wait and retry
-          console.log(`⏳ Profile not found, retrying... (${retries} attempts left)`);
-          await new Promise(resolve => setTimeout(resolve, 500));
-          retries--;
-        } else {
-          // Different error, don't retry
-          break;
-        }
-      }
+        return { data, error };
+      })();
+
+      const { data, error } = (await Promise.race([
+        fetchPromise,
+        timeoutPromise,
+      ])) as any;
 
       if (error) {
         console.error('❌ Error fetching user profile:', error);
@@ -177,9 +191,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       console.log('✅ User profile loaded');
       setUser(data);
-    } catch (error) {
-      console.error('❌ Exception in fetchUserProfile:', error);
-    } finally {
+    } catch (error: any) {
+      console.error('❌ Exception in fetchUserProfile:', error?.message || error);
       setLoading(false);
     }
   };
