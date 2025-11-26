@@ -188,7 +188,7 @@ export function AdvisoryConversation({
         const conversation = await loadConversationFromService(id, user.id);
         if (conversation) {
           console.log('✅ Loaded from database:', conversation.messages?.length, 'messages');
-          setMessages(conversation.messages || []);
+          setMessages((conversation.messages || []) as any);
           setSelectedAdvisors(conversation.advisors?.map(a => a.id) || []);
           setSelectedMode((conversation.mode || 'general') as any);
           setUploadedFiles(conversation.files || []);
@@ -212,7 +212,7 @@ export function AdvisoryConversation({
       try {
         const data = JSON.parse(saved);
         console.log('✅ Loaded from localStorage:', data.messages?.length, 'messages');
-        setMessages(data.messages || []);
+        setMessages((data.messages || []) as any);
         setSelectedAdvisors(data.advisors || []);
         setSelectedMode((data.mode || 'general') as any);
         setUploadedFiles(data.files || []);
