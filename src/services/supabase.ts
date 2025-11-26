@@ -535,9 +535,9 @@ export const getCurrentUser = async () => {
   try {
     console.log('🔍 Checking current user session...');
 
-    // Add timeout protection (15 seconds)
+    // Add timeout protection (3 seconds to prevent blocking)
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Auth check timed out after 15 seconds')), 15000)
+      setTimeout(() => reject(new Error('Auth check timed out after 3 seconds')), 3000)
     );
 
     const authPromise = supabase.auth.getUser();

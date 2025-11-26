@@ -137,10 +137,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching user profile for:', userId);
 
-      // Check email verification status from Supabase auth
-      const { data: authUser } = await supabase.auth.getUser();
-      const isEmailVerified = !!authUser.user?.email_confirmed_at;
-
       // Wait a moment for the database trigger to create the profile
       // (the trigger runs AFTER INSERT on auth.users)
       let retries = 3;
@@ -180,14 +176,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       console.log('✅ User profile loaded');
-
-      // Sync email verification status if it has changed
-      if (data.email_verified !== isEmailVerified) {
-        console.log('📧 Syncing email verification status:', isEmailVerified);
-        await supabase.from('users').update({ email_verified: isEmailVerified }).eq('id', userId);
-        data.email_verified = isEmailVerified;
-      }
-
       setUser(data);
     } catch (error) {
       console.error('❌ Exception in fetchUserProfile:', error);
