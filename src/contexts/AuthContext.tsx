@@ -77,25 +77,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     console.log('🔐 Initializing authentication...');
 
-    // Check active sessions with timeout protection
+    // Check active sessions - let onAuthStateChange handle the heavy lifting
     const initAuth = async () => {
       try {
-        // Add a timeout wrapper for the entire auth initialization
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth initialization timeout')), 8000)
-        );
-
-        const authPromise = getCurrentUser();
-
-        const { user: currentUser, error } = (await Promise.race([
-          authPromise,
-          timeoutPromise,
-        ])) as any;
+        const { user: currentUser, error } = await getCurrentUser();
 
         if (error) {
           console.error('❌ Auth initialization error:', error.message);
-          // If auth check fails, set loading to false so app can still load
-          setLoading(false);
+          // Don't setLoading(false) here - let onAuthStateChange handle it
           return;
         }
 
@@ -109,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (err: any) {
         console.error('❌ Auth initialization failed:', err?.message || err);
-        setLoading(false); // Always set loading false to prevent infinite spinner
+        // Don't setLoading(false) here - let onAuthStateChange handle auth state
       }
     };
 
@@ -137,9 +126,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👤 Fetching user profile for:', userId);
 
-      // Add timeout protection for the entire profile fetch
+      // Add timeout protection for the entire profile fetch (increased to 10s for page refreshes)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
       );
 
       const fetchPromise = (async () => {

@@ -53,7 +53,7 @@ interface ConversationManagerProps {
 
 export function ConversationManager({ onBack }: ConversationManagerProps) {
   const { user } = useAuth();
-  const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations } =
+  const { conversations: supabaseConversations, loadConversations: reloadSupabaseConversations, activeConversation } =
     useAdvisor();
   const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -279,14 +279,17 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
     }
   };
 
-  if (selectedConversation || showNewConversation) {
+  // Check for activeConversation from Dashboard or selectedConversation from this component
+  const conversationToLoad = activeConversation?.id || selectedConversation;
+
+  if (conversationToLoad || showNewConversation) {
     return (
       <AdvisoryConversation
         onBack={() => {
           // "Back to Dashboard" should always go to dashboard
           onBack();
         }}
-        conversationId={selectedConversation || undefined}
+        conversationId={conversationToLoad || undefined}
       />
     );
   }

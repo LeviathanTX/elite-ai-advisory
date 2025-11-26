@@ -23,7 +23,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   const { user, signOut } = useAuth();
   const { currentTier, limits, usage, pricing } = useSubscription();
-  const { celebrityAdvisors, customAdvisors, conversations } = useAdvisor();
+  const { celebrityAdvisors, customAdvisors, conversations, setActiveConversation } = useAdvisor();
   const {
     showHelpModal,
     showOnboarding,
@@ -408,7 +408,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                   return (
                     <button
                       key={conversation.id}
-                      onClick={() => onModeSelect('advisory_conversation')}
+                      onClick={() => {
+                        // Set the active conversation before navigating
+                        setActiveConversation(conversation);
+                        onModeSelect('advisory_conversation');
+                      }}
                       className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
                     >
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
