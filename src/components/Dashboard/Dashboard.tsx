@@ -12,6 +12,7 @@ import { OnboardingFlow } from '../Help/OnboardingFlow';
 import { QuickStartGuide } from '../Help/QuickStartGuide';
 import { TrialBanner } from '../Subscription/TrialBanner';
 import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
+import { Avatar } from '../Common/Avatar';
 import { cn, formatCurrency, calculatePercentage } from '../../utils';
 import { ApplicationMode } from '../../types';
 import { analytics } from '../../services/analytics';
@@ -488,9 +489,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                   className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
                   title={`Start conversation with ${advisor.name}`}
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
-                    {advisor.name.charAt(0)}
-                  </div>
+                  <Avatar
+                    avatar_emoji={advisor.avatar_emoji}
+                    avatar_image={advisor.avatar_image}
+                    avatar_url={advisor.avatar_url}
+                    name={advisor.name}
+                    size="md"
+                  />
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium text-gray-900">{advisor.name}</p>
                     <p className="text-xs text-gray-500 truncate">{advisor.title}</p>
@@ -507,9 +512,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                   className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
                   title={`Start conversation with ${advisor.name}`}
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-semibold">
-                    {advisor.name.charAt(0)}
-                  </div>
+                  <Avatar
+                    avatar_emoji={advisor.avatar_emoji}
+                    avatar_image={advisor.avatar_image}
+                    avatar_url={advisor.avatar_url}
+                    name={advisor.name}
+                    size="md"
+                  />
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium text-gray-900">{advisor.name}</p>
                     <p className="text-xs text-gray-500 truncate">{advisor.title}</p>
