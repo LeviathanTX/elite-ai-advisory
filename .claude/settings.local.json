@@ -49,7 +49,9 @@
       "Bash(npm run test:ci:*)",
       "Bash(npm test:*)",
       "Bash(npm run lint:*)",
-      "Bash(supabase migration:*)"
+      "Bash(supabase migration:*)",
+      "Bash(grep:*)",
+      "Bash(supabase db remote exec:*)"
     ],
     "deny": [],
     "ask": []

@@ -101,28 +101,9 @@ export async function saveConversation(
       throw new Error('Conversation must have at least one advisor');
     }
 
-    // Check if conversation exists
-    const { data: existing } = await supabase
-      .from('conversations')
-      .select('id')
-      .eq('id', conversation.id)
-      .single();
-
-    if (existing) {
-      // Update existing conversation
-      const { error } = await supabase
-        .from('conversations')
-        .update({
-          messages: conversation.messages,
-          metadata,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', conversation.id);
-
-      if (error) throw error;
-    } else {
-      // Insert new conversation
-      const { error } = await supabase.from('conversations').insert({
+    // Use upsert to insert or update - avoids the 406 error from existence check
+    const { error } = await supabase.from('conversations').upsert(
+      {
         id: conversation.id,
         user_id: conversation.user_id,
         advisor_id: primaryAdvisor.id,
@@ -130,10 +111,14 @@ export async function saveConversation(
         mode: conversation.mode,
         messages: conversation.messages,
         metadata,
-      });
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'id',
+      }
+    );
 
-      if (error) throw error;
-    }
+    if (error) throw error;
 
     console.log('✅ Conversation saved to database:', conversation.id);
     return { success: true };
