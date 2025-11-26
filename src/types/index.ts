@@ -67,6 +67,7 @@ export interface CustomAdvisor {
   personality_description: string;
   communication_style: string;
   background_context: string;
+  avatar_url?: string;
   avatar_image?: string; // URL or base64 data for custom uploaded image
   system_prompt?: string; // Advanced AI system prompt for custom advisors
   created_at: string;
