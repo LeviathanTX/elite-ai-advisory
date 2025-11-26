@@ -32,7 +32,7 @@ import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
 import { CelebrityAdvisorCustomizationModal } from '../Modals/CelebrityAdvisorCustomizationModal';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
-import { saveConversation as saveConversationToDb } from '../../services/conversationService';
+import { saveConversation as saveConversationToDb, loadConversation as loadConversationFromService } from '../../services/conversationService';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -73,7 +73,7 @@ export function AdvisoryConversation({
   initialMode = 'general',
   conversationId,
 }: AdvisoryConversationProps) {
-  const { celebrityAdvisors, customAdvisors } = useAdvisor();
+  const { celebrityAdvisors, customAdvisors, activeConversation } = useAdvisor();
   const { user } = useAuth();
   const { settings, isConfigured } = useSettings();
   const {
@@ -163,15 +163,55 @@ export function AdvisoryConversation({
     }
   }, [conversationId]);
 
-  const loadConversation = (id: string) => {
+  const loadConversation = async (id: string) => {
     console.log('Loading conversation:', id);
+
+    // First, check if activeConversation from context has this conversation already loaded
+    if (activeConversation?.id === id && activeConversation.messages?.length > 0) {
+      console.log('✅ Loading from activeConversation context:', activeConversation.messages.length, 'messages');
+      setMessages(activeConversation.messages || []);
+      setSelectedAdvisors([activeConversation.advisor_id]);
+      setSelectedMode(activeConversation.mode || 'general');
+      const metadata = activeConversation.metadata || {};
+      setUploadedFiles(metadata.files || []);
+      setSelectedDocuments(metadata.selectedDocuments || []);
+      setConversationDocuments(metadata.conversationDocuments || []);
+      console.log(
+        `📚 Loaded ${metadata.conversationDocuments?.length || 0} persistent documents from context`
+      );
+      return;
+    }
+
+    // Try to load from database using conversationService
+    if (user?.id) {
+      try {
+        const conversation = await loadConversationFromService(id, user.id);
+        if (conversation) {
+          console.log('✅ Loaded from database:', conversation.messages?.length, 'messages');
+          setMessages(conversation.messages || []);
+          setSelectedAdvisors(conversation.advisors?.map(a => a.id) || []);
+          setSelectedMode(conversation.mode || 'general');
+          setUploadedFiles(conversation.files || []);
+          setSelectedDocuments(conversation.selectedDocuments || []);
+          setConversationDocuments(conversation.conversationDocuments || []);
+          console.log(
+            `📚 Loaded ${conversation.conversationDocuments?.length || 0} persistent documents from database`
+          );
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading from database:', error);
+      }
+    }
+
+    // Fallback to localStorage
     const saved = localStorage.getItem(`conversation-${id}`);
-    console.log('Saved conversation data:', saved);
+    console.log('Fallback: Loading from localStorage');
 
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        console.log('Parsed conversation data:', data);
+        console.log('✅ Loaded from localStorage:', data.messages?.length, 'messages');
         setMessages(data.messages || []);
         setSelectedAdvisors(data.advisors || []);
         setSelectedMode(data.mode || 'general');
@@ -179,13 +219,13 @@ export function AdvisoryConversation({
         setSelectedDocuments(data.selectedDocuments || []);
         setConversationDocuments(data.conversationDocuments || []);
         console.log(
-          `📚 Loaded ${data.conversationDocuments?.length || 0} persistent documents from saved conversation`
+          `📚 Loaded ${data.conversationDocuments?.length || 0} persistent documents from localStorage`
         );
       } catch (error) {
         console.error('Error parsing conversation data:', error);
       }
     } else {
-      console.warn('No conversation found with id:', id);
+      console.warn('❌ No conversation found with id:', id);
     }
   };
 

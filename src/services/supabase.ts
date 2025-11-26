@@ -535,17 +535,12 @@ export const getCurrentUser = async () => {
   try {
     console.log('🔍 Checking current user session...');
 
-    // Add timeout protection (3 seconds to prevent blocking)
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Auth check timed out after 3 seconds')), 3000)
-    );
-
-    const authPromise = supabase.auth.getUser();
-
+    // Get user session without timeout - let Supabase handle it
+    // This prevents logout on page refresh when session check is slow
     const {
       data: { user },
       error,
-    } = (await Promise.race([authPromise, timeoutPromise])) as any;
+    } = await supabase.auth.getUser();
 
     if (error) {
       console.error('❌ Auth check error:', error.message);
