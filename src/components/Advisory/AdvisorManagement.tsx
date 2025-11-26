@@ -234,6 +234,7 @@ export function AdvisorManagement({ onBack }: AdvisorManagementProps) {
                     <Avatar
                       avatar_emoji={advisor.avatar_emoji}
                       avatar_image={advisor.avatar_image}
+                      avatar_url={advisor.avatar_url}
                       name={advisor.name}
                       size="lg"
                     />

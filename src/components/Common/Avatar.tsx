@@ -4,6 +4,7 @@ import { cn } from '../../utils';
 interface AvatarProps {
   avatar_emoji?: string;
   avatar_image?: string;
+  avatar_url?: string;
   name?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -19,16 +20,20 @@ const sizeClasses = {
 export const Avatar: React.FC<AvatarProps> = ({
   avatar_emoji = '👤',
   avatar_image,
+  avatar_url,
   name = 'Advisor',
   size = 'md',
   className = '',
 }) => {
   const baseClasses = `${sizeClasses[size]} rounded-full flex items-center justify-center bg-gray-100 border-2 border-gray-200`;
 
-  if (avatar_image) {
+  // Use avatar_url if provided, otherwise fall back to avatar_image
+  const imageUrl = avatar_url || avatar_image;
+
+  if (imageUrl) {
     return (
       <img
-        src={avatar_image}
+        src={imageUrl}
         alt={`${name} avatar`}
         className={cn(baseClasses, 'object-cover', className)}
         onError={e => {
