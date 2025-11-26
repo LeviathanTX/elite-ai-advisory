@@ -165,10 +165,17 @@ class AnalyticsService {
     this.eventQueue = [];
 
     try {
-      // Get current user if authenticated
+      // Get current user if authenticated (with timeout to prevent blocking)
+      const userPromise = supabase.auth.getUser();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('getUser timeout')), 2000)
+      );
+
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await Promise.race([userPromise, timeoutPromise]).catch(() => ({
+        data: { user: null },
+      })) as any;
 
       // Add user_id to events if authenticated
       const eventsWithUser = eventsToFlush.map((event) => ({
@@ -176,17 +183,24 @@ class AnalyticsService {
         user_id: user?.id || null,
       }));
 
-      const { error } = await supabase.from('user_events').insert(eventsWithUser);
+      // Insert with timeout to prevent blocking
+      const insertPromise = supabase.from('user_events').insert(eventsWithUser);
+      const insertTimeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('insert timeout')), 3000)
+      );
+
+      const { error } = await Promise.race([insertPromise, insertTimeoutPromise]).catch((err) => {
+        console.warn('Analytics insert timed out or failed:', err);
+        return { error: err };
+      }) as any;
 
       if (error) {
-        console.error('Analytics flush error:', error);
-        // Re-add events to queue if flush failed (up to 100 events)
-        if (this.eventQueue.length < 100) {
-          this.eventQueue.unshift(...eventsToFlush);
-        }
+        console.warn('Analytics flush error (non-blocking):', error.message);
+        // Don't re-queue on error to prevent blocking
       }
     } catch (err) {
-      console.error('Analytics flush exception:', err);
+      console.warn('Analytics flush exception (non-blocking):', err);
+      // Never throw - analytics should never block the app
     }
   }
 
