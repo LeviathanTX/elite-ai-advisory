@@ -172,7 +172,7 @@ export function AdvisoryConversation({
       setMessages(activeConversation.messages as any || []);
       setSelectedAdvisors([activeConversation.advisor_id]);
       setSelectedMode((activeConversation.mode || 'general') as any);
-      const metadata = activeConversation.metadata || {};
+      const metadata = (activeConversation as any).metadata || {};
       setUploadedFiles(metadata.files || []);
       setSelectedDocuments(metadata.selectedDocuments || []);
       setConversationDocuments(metadata.conversationDocuments || []);
