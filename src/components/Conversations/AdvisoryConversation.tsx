@@ -171,7 +171,7 @@ export function AdvisoryConversation({
       console.log('✅ Loading from activeConversation context:', activeConversation.messages.length, 'messages');
       setMessages(activeConversation.messages as any || []);
       setSelectedAdvisors([activeConversation.advisor_id]);
-      setSelectedMode(activeConversation.mode || 'general');
+      setSelectedMode((activeConversation.mode || 'general') as any);
       const metadata = activeConversation.metadata || {};
       setUploadedFiles(metadata.files || []);
       setSelectedDocuments(metadata.selectedDocuments || []);
@@ -190,7 +190,7 @@ export function AdvisoryConversation({
           console.log('✅ Loaded from database:', conversation.messages?.length, 'messages');
           setMessages(conversation.messages || []);
           setSelectedAdvisors(conversation.advisors?.map(a => a.id) || []);
-          setSelectedMode(conversation.mode || 'general');
+          setSelectedMode((conversation.mode || 'general') as any);
           setUploadedFiles(conversation.files || []);
           setSelectedDocuments(conversation.selectedDocuments || []);
           setConversationDocuments(conversation.conversationDocuments || []);
@@ -214,7 +214,7 @@ export function AdvisoryConversation({
         console.log('✅ Loaded from localStorage:', data.messages?.length, 'messages');
         setMessages(data.messages || []);
         setSelectedAdvisors(data.advisors || []);
-        setSelectedMode(data.mode || 'general');
+        setSelectedMode((data.mode || 'general') as any);
         setUploadedFiles(data.files || []);
         setSelectedDocuments(data.selectedDocuments || []);
         setConversationDocuments(data.conversationDocuments || []);
