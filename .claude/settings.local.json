@@ -52,7 +52,9 @@
       "Bash(supabase migration:*)",
       "Bash(grep:*)",
       "Bash(supabase db remote exec:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "WebSearch",
+      "Bash(export SUPABASE_DB_PASSWORD=LeviathanHexara)"
     ],
     "deny": [],
     "ask": []

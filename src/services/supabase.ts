@@ -139,6 +139,7 @@ export interface Database {
           avatar_url: string | null;
           bio: string;
           investment_thesis: string | null;
+          display_order: number | null;
           created_at: string;
         };
       };

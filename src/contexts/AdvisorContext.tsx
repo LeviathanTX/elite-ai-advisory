@@ -1431,16 +1431,78 @@ export const useAdvisor = () => {
 export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [customAdvisors, setCustomAdvisors] = useState<CustomAdvisor[]>([]);
+  const [databaseCelebrityAdvisors, setDatabaseCelebrityAdvisors] = useState<CelebrityAdvisor[]>(
+    []
+  );
   const [activeConversation, setActiveConversation] = useState<AdvisorConversation | null>(null);
   const [conversations, setConversations] = useState<AdvisorConversation[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Load celebrity advisors from database (no auth required - public data)
+    loadCelebrityAdvisors();
+
     if (user) {
       loadCustomAdvisors();
       loadConversations();
     }
   }, [user]);
+
+  const loadCelebrityAdvisors = async () => {
+    try {
+      console.log('📚 Loading celebrity advisors from database...');
+      const { data, error } = await supabase
+        .from('celebrity_advisors')
+        .select('*')
+        .order('display_order', { ascending: true, nullsFirst: false });
+
+      if (error) {
+        // Table might not exist in bypass mode or demo - that's OK, use hardcoded advisors
+        if (
+          error.code === 'PGRST200' ||
+          error.code === 'PGRST205' ||
+          error.message?.includes('does not exist') ||
+          error.message?.includes('Could not find the table')
+        ) {
+          console.log(
+            '✅ Celebrity advisors table not available (using hardcoded advisors only)'
+          );
+          setDatabaseCelebrityAdvisors([]);
+          return;
+        }
+        throw error;
+      }
+
+      // Convert database records to CelebrityAdvisor format and enhance with system prompts
+      const enhancedAdvisors = (data || []).map(dbAdvisor => {
+        const advisor: CelebrityAdvisor = {
+          id: dbAdvisor.id,
+          name: dbAdvisor.name,
+          title: dbAdvisor.title,
+          company: dbAdvisor.company,
+          expertise: dbAdvisor.expertise || [],
+          personality_traits: dbAdvisor.personality_traits || [],
+          communication_style: dbAdvisor.communication_style,
+          avatar_url: dbAdvisor.avatar_url || undefined,
+          bio: dbAdvisor.bio,
+          investment_thesis: dbAdvisor.investment_thesis || undefined,
+          role: dbAdvisor.title, // Use title as role
+          avatar_emoji: '🦈', // Default emoji for Shark Tank investors
+          ai_service: 'claude',
+          type: 'celebrity',
+        };
+        return enhanceAdvisorWithSystemPrompt(advisor);
+      });
+
+      console.log(
+        `✅ Loaded ${enhancedAdvisors.length} celebrity advisors from database`
+      );
+      setDatabaseCelebrityAdvisors(enhancedAdvisors);
+    } catch (error) {
+      console.error('Error loading celebrity advisors from database:', error);
+      setDatabaseCelebrityAdvisors([]); // Fail gracefully, use hardcoded advisors
+    }
+  };
 
   const loadCustomAdvisors = async () => {
     if (!user) return;
@@ -1513,8 +1575,23 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  // Merge database and hardcoded celebrity advisors
+  // Database advisors take priority over hardcoded ones with the same ID
+  const mergedCelebrityAdvisors = React.useMemo(() => {
+    const hardcodedIds = new Set(CELEBRITY_ADVISORS.map(a => a.id));
+    const dbIds = new Set(databaseCelebrityAdvisors.map(a => a.id));
+
+    // Start with database advisors (they're already sorted by display_order)
+    const merged = [...databaseCelebrityAdvisors];
+
+    // Add hardcoded advisors that aren't in the database
+    const hardcodedOnly = CELEBRITY_ADVISORS.filter(a => !dbIds.has(a.id));
+
+    return [...merged, ...hardcodedOnly];
+  }, [databaseCelebrityAdvisors]);
+
   const getCelebrityAdvisor = (id: string): CelebrityAdvisor | undefined => {
-    return CELEBRITY_ADVISORS.find(advisor => advisor.id === id);
+    return mergedCelebrityAdvisors.find(advisor => advisor.id === id);
   };
 
   const createCustomAdvisor = async (
@@ -1748,7 +1825,7 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Unified advisor functions
   const advisors: Advisor[] = [
-    ...(CELEBRITY_ADVISORS.map(advisor => ({ ...advisor, type: 'celebrity' as const })) as any),
+    ...(mergedCelebrityAdvisors.map(advisor => ({ ...advisor, type: 'celebrity' as const })) as any),
     ...(customAdvisors.map(advisor => ({ ...advisor, type: 'custom' as const })) as any),
   ];
 
@@ -1798,7 +1875,7 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const value = {
-    celebrityAdvisors: CELEBRITY_ADVISORS,
+    celebrityAdvisors: mergedCelebrityAdvisors,
     customAdvisors,
     advisors,
     activeConversation,
