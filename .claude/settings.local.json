@@ -51,7 +51,8 @@
       "Bash(npm run lint:*)",
       "Bash(supabase migration:*)",
       "Bash(grep:*)",
-      "Bash(supabase db remote exec:*)"
+      "Bash(supabase db remote exec:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": []
