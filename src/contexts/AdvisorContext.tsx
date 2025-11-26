@@ -1491,9 +1491,7 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
           error.message?.includes('does not exist') ||
           error.message?.includes('Could not find the table')
         ) {
-          console.log(
-            '✅ Celebrity advisors table not available (using hardcoded advisors only)'
-          );
+          console.log('✅ Celebrity advisors table not available (using hardcoded advisors only)');
           setDatabaseCelebrityAdvisors([]);
           return;
         }
@@ -1521,9 +1519,7 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return enhanceAdvisorWithSystemPrompt(advisor);
       });
 
-      console.log(
-        `✅ Loaded ${enhancedAdvisors.length} celebrity advisors from database`
-      );
+      console.log(`✅ Loaded ${enhancedAdvisors.length} celebrity advisors from database`);
       setDatabaseCelebrityAdvisors(enhancedAdvisors);
     } catch (error) {
       console.error('Error loading celebrity advisors from database:', error);
@@ -1852,7 +1848,10 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Unified advisor functions
   const advisors: Advisor[] = [
-    ...(mergedCelebrityAdvisors.map(advisor => ({ ...advisor, type: 'celebrity' as const })) as any),
+    ...(mergedCelebrityAdvisors.map(advisor => ({
+      ...advisor,
+      type: 'celebrity' as const,
+    })) as any),
     ...(customAdvisors.map(advisor => ({ ...advisor, type: 'custom' as const })) as any),
   ];
 

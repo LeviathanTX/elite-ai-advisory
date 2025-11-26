@@ -1322,10 +1322,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
                     )}
                   >
                     <div className="flex items-center space-x-3">
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => toggleAdvisor(advisor.id)}
-                      >
+                      <div className="cursor-pointer" onClick={() => toggleAdvisor(advisor.id)}>
                         <Avatar
                           avatar_emoji={advisor.avatar_emoji}
                           avatar_image={advisor.avatar_image}
