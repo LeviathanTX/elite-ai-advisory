@@ -175,7 +175,7 @@ export function AdvisoryConversation({
       const metadata = (activeConversation as any).metadata || {};
       setUploadedFiles((metadata.files || []) as any);
       setSelectedDocuments(metadata.selectedDocuments || []);
-      setConversationDocuments(metadata.conversationDocuments || []);
+      setConversationDocuments((metadata.conversationDocuments || []) as any);
       console.log(
         `📚 Loaded ${metadata.conversationDocuments?.length || 0} persistent documents from context`
       );
@@ -193,7 +193,7 @@ export function AdvisoryConversation({
           setSelectedMode((conversation.mode || 'general') as any);
           setUploadedFiles((conversation.files || []) as any);
           setSelectedDocuments(conversation.selectedDocuments || []);
-          setConversationDocuments(conversation.conversationDocuments || []);
+          setConversationDocuments((conversation.conversationDocuments || []) as any);
           console.log(
             `📚 Loaded ${conversation.conversationDocuments?.length || 0} persistent documents from database`
           );
@@ -217,7 +217,7 @@ export function AdvisoryConversation({
         setSelectedMode((data.mode || 'general') as any);
         setUploadedFiles((data.files || []) as any);
         setSelectedDocuments(data.selectedDocuments || []);
-        setConversationDocuments(data.conversationDocuments || []);
+        setConversationDocuments((data.conversationDocuments || []) as any);
         console.log(
           `📚 Loaded ${data.conversationDocuments?.length || 0} persistent documents from localStorage`
         );
