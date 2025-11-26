@@ -169,7 +169,7 @@ export function AdvisoryConversation({
     // First, check if activeConversation from context has this conversation already loaded
     if (activeConversation?.id === id && activeConversation.messages?.length > 0) {
       console.log('✅ Loading from activeConversation context:', activeConversation.messages.length, 'messages');
-      setMessages(activeConversation.messages || []);
+      setMessages(activeConversation.messages as any || []);
       setSelectedAdvisors([activeConversation.advisor_id]);
       setSelectedMode(activeConversation.mode || 'general');
       const metadata = activeConversation.metadata || {};
