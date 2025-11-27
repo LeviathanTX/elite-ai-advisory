@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { cn } from '../../utils';
+import { Avatar } from '../Common/Avatar';
 
 interface StrategicPlanningModeProps {
   onBack: () => void;
@@ -285,6 +286,15 @@ export const StrategicPlanningMode: React.FC<StrategicPlanningModeProps> = ({ on
                           <span className="text-white text-sm">✓</span>
                         </div>
                       )}
+                      <div className="flex items-center mb-3">
+                        <Avatar
+                          avatar_emoji={advisor.avatar_emoji}
+                          avatar_image={advisor.avatar_image}
+                          avatar_url={(advisor as any).avatar_url}
+                          name={advisor.name}
+                          size="lg"
+                        />
+                      </div>
                       <div className="font-semibold text-gray-900">{advisor.name}</div>
                       <div className="text-sm text-gray-600">{advisor.title}</div>
                       <div className="text-sm text-gray-500 mt-1">{advisor.company}</div>

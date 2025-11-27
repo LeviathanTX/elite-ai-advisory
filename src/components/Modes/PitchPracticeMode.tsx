@@ -9,6 +9,7 @@ import {
 } from '../../services/AudioAnalysisEngine';
 import RealTimeAudioFeedback from '../Audio/RealTimeAudioFeedback';
 import { LiveCoachingChart } from '../Charts/LiveCoachingChart';
+import { Avatar } from '../Common/Avatar';
 import {
   CheckCircle,
   AlertTriangle,
@@ -1905,10 +1906,19 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                         <span className="text-white text-sm">✓</span>
                       </div>
                     )}
+                    <div className="flex items-center mb-3">
+                      <Avatar
+                        avatar_emoji={advisor.avatar_emoji}
+                        avatar_image={advisor.avatar_image}
+                        avatar_url={(advisor as any).avatar_url}
+                        name={advisor.name}
+                        size="lg"
+                      />
+                    </div>
                     <div
                       className={cn(
                         'font-semibold',
-                        isHost ? 'text-amber-900 mt-6' : 'text-gray-900'
+                        isHost ? 'text-amber-900' : 'text-gray-900'
                       )}
                     >
                       {advisor.name}

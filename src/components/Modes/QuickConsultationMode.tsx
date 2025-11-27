@@ -3,6 +3,7 @@ import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { createAdvisorAI } from '../../services/advisorAI';
 import { cn } from '../../utils';
+import { Avatar } from '../Common/Avatar';
 
 interface QuickConsultationModeProps {
   onBack: () => void;
@@ -690,10 +691,19 @@ export const QuickConsultationMode: React.FC<QuickConsultationModeProps> = ({ on
                         <span className="text-white text-sm">✓</span>
                       </div>
                     )}
+                    <div className={cn('flex items-center mb-3', isHost && 'mt-6')}>
+                      <Avatar
+                        avatar_emoji={advisor.avatar_emoji}
+                        avatar_image={advisor.avatar_image}
+                        avatar_url={(advisor as any).avatar_url}
+                        name={advisor.name}
+                        size="lg"
+                      />
+                    </div>
                     <div
                       className={cn(
                         'font-semibold',
-                        isHost ? 'text-amber-900 mt-6' : 'text-gray-900'
+                        isHost ? 'text-amber-900' : 'text-gray-900'
                       )}
                     >
                       {advisor.name}

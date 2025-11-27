@@ -9,7 +9,9 @@
       "Bash(do echo \"Processing $img...\")",
       "Bash(for img in james-wilson.jpg jamie-dimon.jpg jason-calacanis.jpg jeff-levine.jpg jennifer-doudna.jpg jensen-huang.jpg kendra-scott.jpg kevin-oleary.jpg)",
       "Bash(for img in lori-greiner.jpg marc-benioff.jpg mark-cuban.jpg mary-barra.jpg masayoshi-son.jpg michael-porter.jpg patricia-williams.jpg rebecca-goldman.jpg)",
-      "Bash(for img in reid-hoffman.jpg robert-herjavec.jpg sarah-chen.jpg satya-nadella.jpg sheryl-sandberg.jpg tim-cook.jpg whitney-wolfe-herd.jpg)"
+      "Bash(for img in reid-hoffman.jpg robert-herjavec.jpg sarah-chen.jpg satya-nadella.jpg sheryl-sandberg.jpg tim-cook.jpg whitney-wolfe-herd.jpg)",
+      "Bash(for advisor in mark-cuban gordon-daugherty jeff-levine barbara-corcoran)",
+      "Bash(do echo \"Checking $advisor...\")"
     ],
     "deny": [],
     "ask": []

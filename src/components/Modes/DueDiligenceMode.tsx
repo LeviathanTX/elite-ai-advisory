@@ -13,6 +13,7 @@ import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import { createAdvisorAI } from '../../services/advisorAI';
 import { cn } from '../../utils';
+import { Avatar } from '../Common/Avatar';
 
 interface DueDiligenceModeProps {
   onBack: () => void;
@@ -633,7 +634,13 @@ INSTRUCTIONS:
                       </div>
                     )}
                     <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{(advisor as any).avatar_emoji || '👤'}</div>
+                      <Avatar
+                        avatar_emoji={advisor.avatar_emoji}
+                        avatar_image={advisor.avatar_image}
+                        avatar_url={(advisor as any).avatar_url}
+                        name={advisor.name}
+                        size="md"
+                      />
                       <div className="min-w-0 flex-1">
                         <p
                           className={cn(
