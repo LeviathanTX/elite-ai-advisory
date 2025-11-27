@@ -171,21 +171,22 @@ This enables automated PR creation, merging, and status checks throughout the se
 
 ---
 
-## Current State (Updated: 2025-11-26)
+## Current State (Updated: 2025-11-27)
 
 ### Recent Achievements
-- **Custom Advisor Avatars**: All 30 celebrity advisors now have custom teddy bear avatar images
-  - Images optimized to 34K-96K (85-95% reduction from original 400KB-1.1MB)
-  - 25 advisors configured with avatar_url properties in AdvisorContext.tsx
-  - Database migration applied for 8 Shark Tank advisors
-  - Avatar component enhanced to support both avatar_url and avatar_image props
+- **Avatar Display Consistency**: All advisor avatars now display uniformly across all pages
+  - Re-cropped all 32 avatar images to 512x512 showing complete heads
+  - Added Avatar component to all advisor mode selection pages
+  - Fixed Recent Conversations avatar display on Dashboard
+  - Updated production URL alias (ai-bod.vercel.app)
 
 ### Active Features
-- Celebrity advisor selection and customization
+- Celebrity advisor selection and customization with visual avatars
 - Document upload and analysis (PDF, Word, Excel)
 - Multiple consultation modes (Pitch Practice, Strategic Planning, Due Diligence, Quick Consultation)
 - Supabase authentication and data persistence
 - Vercel auto-deployment on push to main
+- Consistent avatar display across all modes and components
 
 ### Known Issues
 - None currently blocking
@@ -197,6 +198,57 @@ This enables automated PR creation, merging, and status checks throughout the se
 ---
 
 ## Session Log
+
+### 2025-11-27: Avatar Display Consistency Across All Pages
+**Commits**: `03a86d5`, `c36d9d7`
+**Deployed**: ✅ Production (https://ai-bod.vercel.app)
+
+**Work Completed**:
+1. **Avatar Image Re-cropping**:
+   - Re-cropped all 32 advisor avatar images to 512x512 pixels
+   - Updated cropping to show complete heads (previously showed only middle portions)
+   - Used batch processing with sips command for consistency
+   - All images now show full head and proper framing
+
+2. **Dashboard Updates**:
+   - Fixed Recent Conversations avatar display in Dashboard.tsx (lines 419-425)
+   - Replaced letter circle with Avatar component
+   - Added proper avatar_url prop support
+
+3. **Mode Selection Pages - Avatar Component Integration**:
+   - **PitchPracticeMode.tsx** (lines 1909-1917): Added Avatar component to advisor tiles
+   - **StrategicPlanningMode.tsx** (lines 289-297): Added Avatar component to advisor cards
+   - **QuickConsultationMode.tsx** (lines 694-702): Added Avatar component to advisor grid
+   - **DueDiligenceMode.tsx** (lines 637-643): Replaced emoji with full Avatar component
+
+4. **Deployment & URL Updates**:
+   - Pushed all changes to main branch (commits 03a86d5, c36d9d7)
+   - Deployed to production via Vercel
+   - Updated Vercel alias: ai-bod.vercel.app now points to latest deployment
+   - Verified production accessibility (HTTP 200)
+
+**Files Modified**:
+- `src/components/Dashboard/Dashboard.tsx` - Recent Conversations avatar fix
+- `src/components/Modes/PitchPracticeMode.tsx` - Added Avatar import and component
+- `src/components/Modes/StrategicPlanningMode.tsx` - Added Avatar import and component
+- `src/components/Modes/QuickConsultationMode.tsx` - Added Avatar import and component
+- `src/components/Modes/DueDiligenceMode.tsx` - Added Avatar import and component
+- `public/images/advisors/*.jpg` - All 32 images re-cropped
+
+**Technical Details**:
+- Avatar component consistently used across all advisor displays
+- All mode selection pages now show professional teddy bear portraits
+- Images load from /images/advisors/ with proper 512x512 dimensions
+- TypeScript compilation verified with no errors
+- Consistent UX across Dashboard, Pitch Practice, Strategic Planning, Quick Consultation, and Due Diligence modes
+
+**User Feedback Addressed**:
+- ✅ Avatar images now show entire heads (not just middle portions)
+- ✅ Avatars display on Recent Conversation blocks
+- ✅ Avatars display on all advisor selection tiles/cards
+- ✅ Production URL ai-bod.vercel.app properly aliased
+
+---
 
 ### 2025-11-26: Custom Advisor Avatars Implementation
 **Commits**: `410f403`, `2a90209`, `22ae7d0`
