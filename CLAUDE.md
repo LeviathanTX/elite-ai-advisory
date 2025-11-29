@@ -1,5 +1,39 @@
 # AI-BoD (AI Board of Directors) - Project Instructions
 
+---
+
+## ⚠️ CRITICAL: DUAL DEPLOYMENT WARNING ⚠️
+
+**THIS REPOSITORY HAS TWO INDEPENDENT PRODUCTION DEPLOYMENTS:**
+
+### 1. AI-BoD (Main Branch) - LIVE WITH EARLY ADOPTERS
+- **URL:** https://ai-bod.vercel.app
+- **Branch:** `main`
+- **Status:** PRODUCTION - DO NOT DISRUPT
+- **Audience:** Early adopters actively using the platform
+- **Features:** Full advisor roster (30+ advisors), teddy bear avatars
+
+### 2. Bear Trap (bear-trap Branch) - SEPARATE PRODUCT
+- **URL:** TBD (will need separate Vercel project)
+- **Branch:** `bear-trap`
+- **Status:** Development/Preview
+- **Audience:** Different target market (Shark Tank focused)
+- **Features:** 8 Shark Tank advisors only, real photos, voice conversations
+
+### ❌ NEVER DO THIS:
+- **NEVER** merge `bear-trap` into `main`
+- **NEVER** run `vercel --prod` from the `bear-trap` branch
+- **NEVER** deploy bear-trap changes to ai-bod.vercel.app
+- **NEVER** modify `main` branch with Bear Trap features
+
+### ✅ CORRECT WORKFLOW:
+- Keep `main` and `bear-trap` as **completely separate branches**
+- Deploy Bear Trap to its **own Vercel project** when ready
+- Bug fixes for AI-BoD go to `main` only
+- Bear Trap features stay in `bear-trap` only
+
+---
+
 ## Multi-Interface Development Model
 
 This project uses our enhanced vibe coding architecture:
