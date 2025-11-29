@@ -53,7 +53,7 @@ export const VoiceConversationButton = memo(function VoiceConversationButton({
         onTranscript(text);
       }
     },
-    onResponse: (text) => {
+    onResponse: text => {
       onResponse?.(text);
     },
   });
@@ -92,7 +92,13 @@ export const VoiceConversationButton = memo(function VoiceConversationButton({
           isListening && 'animate-pulse bg-red-500 hover:bg-red-600',
           className
         )}
-        title={isConnected ? (isListening ? 'Stop listening' : 'Start voice') : 'Start voice conversation'}
+        title={
+          isConnected
+            ? isListening
+              ? 'Stop listening'
+              : 'Start voice'
+            : 'Start voice conversation'
+        }
       >
         {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
       </button>
@@ -191,11 +197,7 @@ export const VoiceConversationButton = memo(function VoiceConversationButton({
                           : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
                       )}
                     >
-                      {isListening ? (
-                        <MicOff className="w-4 h-4" />
-                      ) : (
-                        <Mic className="w-4 h-4" />
-                      )}
+                      {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                     </button>
                   )}
                 </div>

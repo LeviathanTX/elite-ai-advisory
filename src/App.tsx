@@ -73,8 +73,9 @@ function LandingPage({
             Pitch to the Sharks. Get Real Advice.
           </p>
           <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">
-            Practice your pitch with AI versions of Mark Cuban, Barbara Corcoran, Kevin O'Leary,
-            and the entire Shark Tank panel. Get brutally honest feedback before you face real investors.
+            Practice your pitch with AI versions of Mark Cuban, Barbara Corcoran, Kevin O'Leary, and
+            the entire Shark Tank panel. Get brutally honest feedback before you face real
+            investors.
           </p>
 
           {/* Key Features */}
@@ -134,7 +135,9 @@ function LandingPage({
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400 font-medium">Password:</span>
-                    <code className="bg-amber-500/20 px-3 py-1 rounded text-amber-400">demo123</code>
+                    <code className="bg-amber-500/20 px-3 py-1 rounded text-amber-400">
+                      demo123
+                    </code>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3 text-center">

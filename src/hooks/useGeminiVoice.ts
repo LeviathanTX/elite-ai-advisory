@@ -93,7 +93,7 @@ export function useGeminiVoice(options: UseGeminiVoiceOptions = {}): UseGeminiVo
   const requestMicrophonePermission = useCallback(async (): Promise<boolean> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
+      stream.getTracks().forEach(track => track.stop());
       setHasMicrophonePermission(true);
       return true;
     } catch (err) {
@@ -133,17 +133,17 @@ export function useGeminiVoice(options: UseGeminiVoiceOptions = {}): UseGeminiVo
           setTranscript(text);
           onTranscript?.(text, isFinal);
         },
-        onResponse: (text) => {
-          setResponse((prev) => prev + text);
+        onResponse: text => {
+          setResponse(prev => prev + text);
           onResponse?.(text);
         },
-        onStateChange: (state) => {
+        onStateChange: state => {
           if (state.isConnected !== undefined) setIsConnected(state.isConnected);
           if (state.isListening !== undefined) setIsListening(state.isListening);
           if (state.isSpeaking !== undefined) setIsSpeaking(state.isSpeaking);
           if (state.error !== undefined) setError(state.error);
         },
-        onError: (err) => {
+        onError: err => {
           setError(err.message);
           onError?.(err);
         },

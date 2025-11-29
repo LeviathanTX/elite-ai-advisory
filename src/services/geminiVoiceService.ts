@@ -8,12 +8,15 @@
  */
 
 // Voice profiles for each Shark Tank advisor
-export const ADVISOR_VOICE_PROFILES: Record<string, {
-  voice: string;
-  style: string;
-  pitch: number;
-  rate: number;
-}> = {
+export const ADVISOR_VOICE_PROFILES: Record<
+  string,
+  {
+    voice: string;
+    style: string;
+    pitch: number;
+    rate: number;
+  }
+> = {
   'mark-cuban': {
     voice: 'Puck', // Energetic, direct
     style: 'direct and no-nonsense',
@@ -174,17 +177,17 @@ export class GeminiVoiceService {
         this.ws?.send(JSON.stringify(setupMessage));
       };
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = event => {
         this.handleMessage(event.data);
       };
 
-      this.ws.onerror = (error) => {
+      this.ws.onerror = error => {
         console.error('[GeminiVoice] WebSocket error:', error);
         this.updateState({ error: 'Connection error' });
         this.callbacks.onError?.(new Error('WebSocket connection error'));
       };
 
-      this.ws.onclose = (event) => {
+      this.ws.onclose = event => {
         console.log('[GeminiVoice] WebSocket closed:', event.code, event.reason);
         this.updateState({ isConnected: false, isListening: false });
         this.cleanup();
@@ -282,7 +285,7 @@ export class GeminiVoiceService {
       // (AudioWorklet would be better for production)
       const processor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
-      processor.onaudioprocess = (event) => {
+      processor.onaudioprocess = event => {
         if (!this.state.isListening || !this.ws) return;
 
         const inputData = event.inputBuffer.getChannelData(0);
@@ -328,7 +331,7 @@ export class GeminiVoiceService {
 
     // Stop media tracks
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => track.stop());
+      this.mediaStream.getTracks().forEach(track => track.stop());
       this.mediaStream = null;
     }
 
@@ -385,7 +388,7 @@ export class GeminiVoiceService {
     }
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => track.stop());
+      this.mediaStream.getTracks().forEach(track => track.stop());
       this.mediaStream = null;
     }
   }

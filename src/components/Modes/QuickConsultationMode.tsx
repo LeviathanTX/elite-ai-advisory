@@ -701,10 +701,7 @@ export const QuickConsultationMode: React.FC<QuickConsultationModeProps> = ({ on
                       />
                     </div>
                     <div
-                      className={cn(
-                        'font-semibold',
-                        isHost ? 'text-amber-900' : 'text-gray-900'
-                      )}
+                      className={cn('font-semibold', isHost ? 'text-amber-900' : 'text-gray-900')}
                     >
                       {advisor.name}
                     </div>

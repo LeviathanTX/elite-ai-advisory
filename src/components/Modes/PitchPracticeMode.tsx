@@ -1916,10 +1916,7 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                       />
                     </div>
                     <div
-                      className={cn(
-                        'font-semibold',
-                        isHost ? 'text-amber-900' : 'text-gray-900'
-                      )}
+                      className={cn('font-semibold', isHost ? 'text-amber-900' : 'text-gray-900')}
                     >
                       {advisor.name}
                     </div>

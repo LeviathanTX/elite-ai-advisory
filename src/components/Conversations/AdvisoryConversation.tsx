@@ -1513,7 +1513,7 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
           <AdvisorPresenceBar
             advisors={selectedAdvisors
               .map(id => [...celebrityAdvisors, ...customAdvisors].find(a => a.id === id))
-              .filter((a): a is typeof celebrityAdvisors[0] => a !== undefined)}
+              .filter((a): a is (typeof celebrityAdvisors)[0] => a !== undefined)}
             speakingAdvisorId={null}
             typingAdvisorId={isTyping ? selectedAdvisors[0] : null}
           />

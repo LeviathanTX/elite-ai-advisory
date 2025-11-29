@@ -50,9 +50,7 @@ export const useAdvisorPresence = ({
   const getRecentSpeaker = useCallback((): string | null => {
     // Look at the last few messages to find the most recent advisor
     // The global ConversationMessage type uses 'role'
-    const recentAdvisorMessages = messages
-      .filter(m => m.role === 'advisor')
-      .slice(-3);
+    const recentAdvisorMessages = messages.filter(m => m.role === 'advisor').slice(-3);
 
     if (recentAdvisorMessages.length > 0) {
       // Return the last advisor's ID (we track by order in selectedAdvisorIds)

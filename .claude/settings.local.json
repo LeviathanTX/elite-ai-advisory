@@ -22,7 +22,9 @@
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm run verify:*)",
+      "Bash(npm run format:*)"
     ],
     "deny": [],
     "ask": []
