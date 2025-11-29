@@ -24,7 +24,17 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(npm run verify:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(vercel --yes:*)",
+      "Bash(curl:*)",
+      "Bash(vercel projects ls:*)",
+      "Bash(vercel projects:*)",
+      "Bash(vercel link:*)",
+      "Bash(vercel alias:*)",
+      "Bash(vercel domains ls:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(vercel env:*)",
+      "Bash(yes:*)"
     ],
     "deny": [],
     "ask": []

@@ -1897,11 +1897,11 @@ Be direct, technical, and focused on first principles. Push entrepreneurs to thi
 ];
 
 // Enhanced advisors with world-class system prompts
-// In Bear Trap mode, filter to only Shark Tank advisors
+// In Bear Trap mode, filter to only Shark Tank advisors and preserve SHARK_TANK_ADVISOR_IDS order
 const CELEBRITY_ADVISORS: CelebrityAdvisor[] = BEAR_TRAP_MODE
-  ? CELEBRITY_ADVISORS_BASE.filter(advisor => SHARK_TANK_ADVISOR_IDS.includes(advisor.id)).map(
-      enhanceAdvisorWithSystemPrompt
-    )
+  ? SHARK_TANK_ADVISOR_IDS.map(id => CELEBRITY_ADVISORS_BASE.find(advisor => advisor.id === id))
+      .filter((advisor): advisor is CelebrityAdvisor => advisor !== undefined)
+      .map(enhanceAdvisorWithSystemPrompt)
   : CELEBRITY_ADVISORS_BASE.map(enhanceAdvisorWithSystemPrompt);
 
 interface AdvisorContextType {

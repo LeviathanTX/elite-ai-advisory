@@ -110,7 +110,7 @@ export class GeminiVoiceService {
 
   constructor(config: GeminiLiveConfig) {
     this.config = {
-      model: 'gemini-2.0-flash-exp', // Latest model with Live API support
+      model: 'gemini-2.0-flash-live-001', // Gemini Live API model
       voice: 'Puck',
       ...config,
     };
@@ -150,21 +150,21 @@ export class GeminiVoiceService {
         console.log('[GeminiVoice] WebSocket connected');
         this.updateState({ isConnected: true, error: null });
 
-        // Send setup message
+        // Send setup message per Gemini Live API spec
         const setupMessage = {
           setup: {
             model: `models/${this.config.model}`,
-            generationConfig: {
-              responseModalities: ['AUDIO', 'TEXT'],
-              speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: {
-                    voiceName: voice,
+            generation_config: {
+              response_modalities: ['AUDIO'],
+              speech_config: {
+                voice_config: {
+                  prebuilt_voice_config: {
+                    voice_name: voice,
                   },
                 },
               },
             },
-            systemInstruction: {
+            system_instruction: {
               parts: [
                 {
                   text: this.config.systemInstruction || 'You are a helpful assistant.',
@@ -174,6 +174,7 @@ export class GeminiVoiceService {
           },
         };
 
+        console.log('[GeminiVoice] Sending setup:', JSON.stringify(setupMessage));
         this.ws?.send(JSON.stringify(setupMessage));
       };
 

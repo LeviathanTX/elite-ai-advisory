@@ -602,12 +602,19 @@ export function AdvisoryConversation({
       .map(id => allAdvisors.find(a => a.id === id))
       .filter(Boolean);
 
+    // Prioritize Mark Cuban - always responds first when selected
+    const prioritizedAdvisors = [...selectedAdvisorObjects].sort((a, b) => {
+      if (a?.id === 'mark-cuban') return -1;
+      if (b?.id === 'mark-cuban') return 1;
+      return 0;
+    });
+
     // Enhanced meeting mode - generate debate or consensus
-    if (enhancedSettings.enableDebate && selectedAdvisorObjects.length > 1) {
-      await generateEnhancedDiscussion(selectedAdvisorObjects, userInput, files);
+    if (enhancedSettings.enableDebate && prioritizedAdvisors.length > 1) {
+      await generateEnhancedDiscussion(prioritizedAdvisors, userInput, files);
     } else {
       // Standard individual responses
-      await generateIndividualResponses(selectedAdvisorObjects, userInput, files);
+      await generateIndividualResponses(prioritizedAdvisors, userInput, files);
     }
   };
 
