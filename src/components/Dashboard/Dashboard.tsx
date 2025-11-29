@@ -122,8 +122,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     {
       id: 'advisory_conversation',
       title: 'Swim with the Sharks',
-      description:
-        'Enter the tank and pitch your business idea to get real feedback from the Sharks',
+      description: 'Discuss your ideas with the Sharks',
       icon: '🦈',
       color: 'from-amber-500 to-orange-500',
     },
