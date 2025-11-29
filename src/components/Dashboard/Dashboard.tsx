@@ -81,6 +81,7 @@ interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
   lang: string;
+  onstart: (() => void) | null;
   onresult: ((event: SpeechRecognitionEvent) => void) | null;
   onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
   onend: (() => void) | null;
@@ -202,12 +203,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   // Initialize Web Speech API for transcription
   useEffect(() => {
     // Check for browser support
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    console.log('[Dashboard] SpeechRecognition API available:', !!SpeechRecognitionAPI);
+
+    if (SpeechRecognitionAPI) {
+      const recognition = new SpeechRecognitionAPI();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        console.log('[SpeechRecognition] ✅ Recognition started successfully');
+      };
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         let interimTranscript = '';
@@ -222,6 +229,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
           }
         }
 
+        console.log('[SpeechRecognition] Result:', { finalTranscript, interimTranscript });
+
         if (finalTranscript) {
           setPitchTranscript(prev => prev + finalTranscript);
         }
@@ -229,24 +238,31 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
       };
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('[SpeechRecognition] Error:', event.error);
+        console.error('[SpeechRecognition] ❌ Error:', event.error, event.message);
         if (event.error === 'not-allowed') {
           alert('Microphone permission denied. Please allow microphone access to use voice pitch.');
+        } else if (event.error === 'no-speech') {
+          console.log('[SpeechRecognition] No speech detected, will keep listening...');
         }
       };
 
       recognition.onend = () => {
+        console.log('[SpeechRecognition] Recognition ended, isPitchRecording:', isPitchRecording);
         // Restart if still in pitch mode (handles browser auto-stop)
         if (isPitchRecording && recognitionRef.current) {
           try {
+            console.log('[SpeechRecognition] Restarting recognition...');
             recognitionRef.current.start();
           } catch (e) {
-            // Already started, ignore
+            console.log('[SpeechRecognition] Already started or error:', e);
           }
         }
       };
 
       recognitionRef.current = recognition;
+      console.log('[Dashboard] SpeechRecognition initialized');
+    } else {
+      console.error('[Dashboard] ❌ SpeechRecognition API NOT available in this browser');
     }
 
     return () => {
@@ -299,19 +315,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
 
   // Start timed pitch
   const handleStartPitch = async () => {
+    console.log('[Dashboard] handleStartPitch called');
+    console.log('[Dashboard] selectedAdvisors:', selectedAdvisors);
+    console.log('[Dashboard] recognitionRef.current:', !!recognitionRef.current);
+
     if (selectedAdvisors.length === 0) {
       alert('Please select at least one Shark first!');
       return;
     }
 
     // Check for browser support
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
       alert(
         'Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.'
       );
       return;
     }
+
+    console.log('[Dashboard] Starting pitch mode...');
 
     // Set up pitch mode
     setIsPitchMode(true);
@@ -321,14 +343,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
 
     // Small delay then start listening
     setTimeout(() => {
+      console.log('[Dashboard] Starting speech recognition...');
       setIsPitchRecording(true);
       if (recognitionRef.current) {
         try {
           recognitionRef.current.start();
-          console.log('[SpeechRecognition] Started listening');
+          console.log('[SpeechRecognition] 🎤 Called start() on recognition');
         } catch (e) {
-          console.error('[SpeechRecognition] Failed to start:', e);
+          console.error('[SpeechRecognition] ❌ Failed to start:', e);
         }
+      } else {
+        console.error('[Dashboard] ❌ recognitionRef.current is null!');
       }
     }, 500);
   };
