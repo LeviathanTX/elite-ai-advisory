@@ -37,7 +37,6 @@ import { QuickStartGuide } from '../Help/QuickStartGuide';
 import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
 import { Avatar } from '../Common/Avatar';
 import { AdvisorPresenceBar } from '../Conversations/components/AdvisorPresenceBar';
-import { useGeminiVoice } from '../../hooks/useGeminiVoice';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
 import { AdvisorEditModal } from '../Modals/AdvisorEditModal';
@@ -50,6 +49,52 @@ import {
   saveConversation as saveConversationToDb,
   loadConversation as loadConversationFromService,
 } from '../../services/conversationService';
+
+// Web Speech API type declarations
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
 
 interface DashboardProps {
   onModeSelect: (mode: ApplicationMode) => void;
@@ -140,7 +185,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   const [pitchTimeRemaining, setPitchTimeRemaining] = useState(0);
   const [pitchTranscript, setPitchTranscript] = useState('');
   const [isPitchRecording, setIsPitchRecording] = useState(false);
+  const [liveTranscript, setLiveTranscript] = useState('');
   const pitchTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -152,33 +199,66 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   const primaryAdvisor =
     selectedAdvisors.length > 0 ? allAdvisors.find(a => a.id === selectedAdvisors[0]) : null;
 
-  // Gemini Voice Hook for pitch recording
-  const {
-    isConnected: voiceConnected,
-    isListening: voiceListening,
-    isSpeaking: voiceSpeaking,
-    error: voiceError,
-    transcript: liveTranscript,
-    connect: voiceConnect,
-    disconnect: voiceDisconnect,
-    startListening: voiceStartListening,
-    stopListening: voiceStopListening,
-    hasMicrophonePermission,
-    requestMicrophonePermission,
-  } = useGeminiVoice({
-    advisorId: primaryAdvisor?.id,
-    systemPrompt:
-      (primaryAdvisor as CelebrityAdvisor)?.system_prompt ||
-      'You are a Shark Tank investor. Listen to the pitch and provide feedback.',
-    onTranscript: (text, isFinal) => {
-      if (isPitchMode && isPitchRecording) {
-        setPitchTranscript(prev => prev + ' ' + text);
+  // Initialize Web Speech API for transcription
+  useEffect(() => {
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        if (finalTranscript) {
+          setPitchTranscript(prev => prev + finalTranscript);
+        }
+        setLiveTranscript(interimTranscript);
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        console.error('[SpeechRecognition] Error:', event.error);
+        if (event.error === 'not-allowed') {
+          alert('Microphone permission denied. Please allow microphone access to use voice pitch.');
+        }
+      };
+
+      recognition.onend = () => {
+        // Restart if still in pitch mode (handles browser auto-stop)
+        if (isPitchRecording && recognitionRef.current) {
+          try {
+            recognitionRef.current.start();
+          } catch (e) {
+            // Already started, ignore
+          }
+        }
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // Ignore errors on cleanup
+        }
       }
-    },
-    onResponse: text => {
-      console.log('Voice response:', text);
-    },
-  });
+    };
+  }, [isPitchRecording]);
 
   // Track dashboard view
   useEffect(() => {
@@ -195,8 +275,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
       pitchTimerRef.current = setInterval(() => {
         setPitchTimeRemaining(prev => {
           if (prev <= 1) {
-            // Time's up! Stop recording
-            handleStopPitch();
+            // Time's up! Stop recording - handled in separate effect
             return 0;
           }
           return prev - 1;
@@ -209,7 +288,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
         clearInterval(pitchTimerRef.current);
       }
     };
-  }, [isPitchMode, isPitchRecording, pitchTimeRemaining]);
+  }, [isPitchMode, isPitchRecording]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -225,67 +304,111 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
       return;
     }
 
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(
+        'Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.'
+      );
+      return;
+    }
+
     // Set up pitch mode
     setIsPitchMode(true);
     setPitchTimeRemaining(Math.round(enhancedSettings.pitchDuration * 60));
     setPitchTranscript('');
-
-    // Connect to voice if not connected
-    if (!voiceConnected) {
-      await voiceConnect();
-    }
+    setLiveTranscript('');
 
     // Small delay then start listening
-    setTimeout(async () => {
+    setTimeout(() => {
       setIsPitchRecording(true);
-      await voiceStartListening();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          console.log('[SpeechRecognition] Started listening');
+        } catch (e) {
+          console.error('[SpeechRecognition] Failed to start:', e);
+        }
+      }
     }, 500);
   };
 
+  // Ref to store the sendMessageWithContent function (to avoid circular dependency)
+  const sendMessageRef = useRef<((content: string) => Promise<void>) | undefined>(undefined);
+
   // Stop pitch and submit
-  const handleStopPitch = async () => {
+  const handleStopPitch = useCallback(async () => {
+    // Stop speech recognition
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // Ignore errors
+      }
+    }
+
     setIsPitchRecording(false);
-    voiceStopListening();
 
     // Clear the timer
     if (pitchTimerRef.current) {
       clearInterval(pitchTimerRef.current);
     }
 
-    // Get the final transcript
-    const finalTranscript = pitchTranscript.trim() || liveTranscript;
+    // Get the final transcript (combine accumulated + any live interim)
+    const finalTranscript = (pitchTranscript + ' ' + liveTranscript).trim();
 
     if (finalTranscript) {
       // Add user's pitch as a message
+      const pitchDuration = Math.round(enhancedSettings.pitchDuration * 60) - pitchTimeRemaining;
       const userMessage: ConversationMessage = {
         id: `user-${Date.now()}`,
         type: 'user',
-        content: `[Timed Pitch - ${formatTime(Math.round(enhancedSettings.pitchDuration * 60) - pitchTimeRemaining)} delivered]\n\n${finalTranscript}`,
+        content: `[Timed Pitch - ${formatTime(pitchDuration)} delivered]\n\n${finalTranscript}`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, userMessage]);
 
-      // Set input message to trigger response
-      setInputMessage(finalTranscript);
-
       // Auto-send to get Shark feedback
-      setTimeout(() => {
-        setInputMessage('');
-        sendMessageWithContent(finalTranscript);
-      }, 100);
-    }
+      setIsPitchMode(false);
+      setPitchTimeRemaining(0);
+      setLiveTranscript('');
 
-    setIsPitchMode(false);
-    setPitchTimeRemaining(0);
-  };
+      // Send to get AI responses using ref
+      setTimeout(() => {
+        sendMessageRef.current?.(finalTranscript);
+      }, 100);
+    } else {
+      // No transcript captured
+      alert('No speech was detected. Please try again and speak clearly into your microphone.');
+      setIsPitchMode(false);
+      setPitchTimeRemaining(0);
+      setLiveTranscript('');
+    }
+  }, [pitchTranscript, liveTranscript, pitchTimeRemaining, enhancedSettings.pitchDuration]);
+
+  // Handle timer expiration - must be after handleStopPitch is declared
+  useEffect(() => {
+    if (isPitchMode && isPitchRecording && pitchTimeRemaining === 0) {
+      handleStopPitch();
+    }
+  }, [isPitchMode, isPitchRecording, pitchTimeRemaining, handleStopPitch]);
 
   // Cancel pitch without submitting
   const handleCancelPitch = () => {
+    // Stop speech recognition
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // Ignore errors
+      }
+    }
+
     setIsPitchRecording(false);
     setIsPitchMode(false);
     setPitchTimeRemaining(0);
     setPitchTranscript('');
-    voiceStopListening();
+    setLiveTranscript('');
 
     if (pitchTimerRef.current) {
       clearInterval(pitchTimerRef.current);
@@ -317,10 +440,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   };
 
   // Send message with specific content (for pitch submissions)
-  const sendMessageWithContent = async (content: string) => {
-    if (!content.trim() || selectedAdvisors.length === 0) return;
-    await sendMessageInternal(content);
-  };
+  const sendMessageWithContent = useCallback(
+    async (content: string) => {
+      if (!content.trim() || selectedAdvisors.length === 0) return;
+      await sendMessageInternal(content);
+    },
+    [selectedAdvisors]
+  );
+
+  // Update ref whenever sendMessageWithContent changes
+  useEffect(() => {
+    sendMessageRef.current = sendMessageWithContent;
+  }, [sendMessageWithContent]);
 
   // Internal send message logic
   const sendMessageInternal = async (messageContent: string) => {
