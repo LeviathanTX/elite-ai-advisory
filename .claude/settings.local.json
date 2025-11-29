@@ -11,7 +11,17 @@
       "Bash(for img in lori-greiner.jpg marc-benioff.jpg mark-cuban.jpg mary-barra.jpg masayoshi-son.jpg michael-porter.jpg patricia-williams.jpg rebecca-goldman.jpg)",
       "Bash(for img in reid-hoffman.jpg robert-herjavec.jpg sarah-chen.jpg satya-nadella.jpg sheryl-sandberg.jpg tim-cook.jpg whitney-wolfe-herd.jpg)",
       "Bash(for advisor in mark-cuban gordon-daugherty jeff-levine barbara-corcoran)",
-      "Bash(do echo \"Checking $advisor...\")"
+      "Bash(do echo \"Checking $advisor...\")",
+      "WebSearch",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:ai.google.dev)",
+      "WebFetch(domain:apidog.com)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -37,6 +37,7 @@ import {
   loadConversation as loadConversationFromService,
 } from '../../services/conversationService';
 import { Avatar } from '../Common/Avatar';
+import { AdvisorPresenceBar } from './components/AdvisorPresenceBar';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -1479,6 +1480,17 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
             </div>
           </div>
         </div>
+
+        {/* Advisor Presence Bar - Shows selected advisors with speaking/typing indicators */}
+        {selectedAdvisors.length > 0 && (
+          <AdvisorPresenceBar
+            advisors={selectedAdvisors
+              .map(id => [...celebrityAdvisors, ...customAdvisors].find(a => a.id === id))
+              .filter((a): a is typeof celebrityAdvisors[0] => a !== undefined)}
+            speakingAdvisorId={null}
+            typingAdvisorId={isTyping ? selectedAdvisors[0] : null}
+          />
+        )}
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">

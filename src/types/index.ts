@@ -231,7 +231,11 @@ export type AdvisorRole =
   | 'Investment Partner'
   | 'Board Member'
   | 'Strategic Advisor'
-  | 'Consultant';
+  | 'Consultant'
+  // Shark Tank Specific Roles
+  | 'CEO & Inventor'
+  | 'Chairman'
+  | 'Founder & Executive Chairman';
 
 export type AdvisorExpertise =
   // Strategic & Financial
