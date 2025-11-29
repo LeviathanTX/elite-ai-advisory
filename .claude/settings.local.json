@@ -35,7 +35,8 @@
       "Bash(vercel inspect:*)",
       "Bash(vercel env:*)",
       "Bash(yes:*)",
-      "Bash(vercel:*)"
+      "Bash(vercel:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

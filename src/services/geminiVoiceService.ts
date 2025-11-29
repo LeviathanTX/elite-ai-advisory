@@ -110,7 +110,9 @@ export class GeminiVoiceService {
 
   constructor(config: GeminiLiveConfig) {
     this.config = {
-      model: 'gemini-2.0-flash-live-001', // Gemini Live API model
+      // Use gemini-2.0-flash-exp which is the current model supporting Live API
+      // See: https://ai.google.dev/api/live
+      model: 'gemini-2.0-flash-exp',
       voice: 'Puck',
       ...config,
     };
@@ -140,9 +142,11 @@ export class GeminiVoiceService {
       const voiceProfile = advisorId ? ADVISOR_VOICE_PROFILES[advisorId] : null;
       const voice = voiceProfile?.voice || this.config.voice;
 
-      // Build WebSocket URL
+      // Build WebSocket URL using v1beta API (per docs at https://ai.google.dev/api/live)
       // Note: In production, you'd get an ephemeral token from your backend
-      const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${this.config.apiKey}`;
+      const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${this.config.apiKey}`;
+
+      console.log('[GeminiVoice] Connecting to:', wsUrl.replace(this.config.apiKey, '***API_KEY***'));
 
       this.ws = new WebSocket(wsUrl);
 
@@ -150,22 +154,23 @@ export class GeminiVoiceService {
         console.log('[GeminiVoice] WebSocket connected');
         this.updateState({ isConnected: true, error: null });
 
-        // Send setup message per Gemini Live API spec
-        // Note: Gemini Live only supports AUDIO for response_modalities (not TEXT+AUDIO together)
+        // Send setup message per Gemini Live API spec (v1beta)
+        // See: https://ai.google.dev/api/live
+        // Note: Gemini Live only supports AUDIO for responseModalities (not TEXT+AUDIO together)
         const setupMessage = {
           setup: {
             model: `models/${this.config.model}`,
-            generation_config: {
-              response_modalities: ['AUDIO'],
-              speech_config: {
-                voice_config: {
-                  prebuilt_voice_config: {
-                    voice_name: voice,
+            generationConfig: {
+              responseModalities: ['AUDIO'],
+              speechConfig: {
+                voiceConfig: {
+                  prebuiltVoiceConfig: {
+                    voiceName: voice,
                   },
                 },
               },
             },
-            system_instruction: {
+            systemInstruction: {
               parts: [
                 {
                   text: this.config.systemInstruction || 'You are a helpful assistant.',
@@ -191,6 +196,31 @@ export class GeminiVoiceService {
 
       this.ws.onclose = event => {
         console.log('[GeminiVoice] WebSocket closed:', event.code, event.reason);
+
+        // Provide more specific error messages based on close codes
+        let errorMessage = '';
+        switch (event.code) {
+          case 1007:
+            errorMessage = 'Invalid API request format. Check model name and parameters.';
+            break;
+          case 1008:
+            errorMessage = 'Model not supported for Live API. Try gemini-2.0-flash-exp.';
+            break;
+          case 1011:
+            errorMessage = 'Server error. Please try again.';
+            break;
+          case 4001:
+            errorMessage = 'Invalid or missing API key.';
+            break;
+          default:
+            errorMessage = event.reason || '';
+        }
+
+        if (errorMessage) {
+          console.error('[GeminiVoice] Close reason:', errorMessage);
+          this.updateState({ error: errorMessage });
+        }
+
         this.updateState({ isConnected: false, isListening: false });
         this.cleanup();
       };
