@@ -1205,10 +1205,12 @@ The committee unanimously recommends proceeding with measured optimism while sys
 
           {/* Enhanced Settings */}
           {showSettings && (
-            <div className="mx-4 mt-4 p-4 border border-white/10 rounded-lg bg-white/5">
-              <h3 className="font-medium text-white mb-3">Pitch Settings</h3>
-              <div className="space-y-3">
-                <label className="flex items-center text-sm">
+            <div className="mx-4 mt-4 p-4 border border-amber-500/30 rounded-lg bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm">
+              <h3 className="font-semibold text-amber-400 mb-4 flex items-center gap-2">
+                <span className="text-lg">⚙️</span> Pitch Settings
+              </h3>
+              <div className="space-y-4">
+                <label className="flex items-center text-sm text-gray-200 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={enhancedSettings.enableDebate}
@@ -1218,11 +1220,13 @@ The committee unanimously recommends proceeding with measured optimism while sys
                         enableDebate: e.target.checked,
                       }))
                     }
-                    className="rounded border-gray-300 mr-2"
+                    className="rounded border-amber-500/50 bg-white/10 text-amber-500 mr-3 focus:ring-amber-500 focus:ring-offset-0"
                   />
-                  Enable Advisor Debate
+                  <span className="group-hover:text-white transition-colors">
+                    Enable Advisor Debate
+                  </span>
                 </label>
-                <label className="flex items-center text-sm">
+                <label className="flex items-center text-sm text-gray-200 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={enhancedSettings.enableConsensusBuilding}
@@ -1232,11 +1236,11 @@ The committee unanimously recommends proceeding with measured optimism while sys
                         enableConsensusBuilding: e.target.checked,
                       }))
                     }
-                    className="rounded border-gray-300 mr-2"
+                    className="rounded border-amber-500/50 bg-white/10 text-amber-500 mr-3 focus:ring-amber-500 focus:ring-offset-0"
                   />
-                  Build Consensus
+                  <span className="group-hover:text-white transition-colors">Build Consensus</span>
                 </label>
-                <label className="flex items-center text-sm">
+                <label className="flex items-center text-sm text-gray-200 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={enhancedSettings.enableExpertPanel}
@@ -1246,18 +1250,21 @@ The committee unanimously recommends proceeding with measured optimism while sys
                         enableExpertPanel: e.target.checked,
                       }))
                     }
-                    className="rounded border-gray-300 mr-2"
+                    className="rounded border-amber-500/50 bg-white/10 text-amber-500 mr-3 focus:ring-amber-500 focus:ring-offset-0"
                   />
-                  <span>
+                  <span className="group-hover:text-white transition-colors">
                     Expert Panel Mode{' '}
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       (Deep document analysis with cross-referencing)
                     </span>
                   </span>
                 </label>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Discussion Rounds: {enhancedSettings.discussionRounds}
+                <div className="pt-2 border-t border-white/10">
+                  <label className="block text-sm font-medium text-gray-200 mb-2">
+                    Discussion Rounds:{' '}
+                    <span className="text-amber-400 font-bold">
+                      {enhancedSettings.discussionRounds}
+                    </span>
                   </label>
                   <input
                     type="range"
@@ -1270,8 +1277,13 @@ The committee unanimously recommends proceeding with measured optimism while sys
                         discussionRounds: parseInt(e.target.value),
                       }))
                     }
-                    className="w-full"
+                    className="w-full accent-amber-500"
                   />
+                  <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>Quick</span>
+                    <span>Balanced</span>
+                    <span>Deep</span>
+                  </div>
                 </div>
               </div>
             </div>

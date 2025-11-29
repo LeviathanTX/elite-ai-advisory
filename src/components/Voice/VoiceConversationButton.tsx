@@ -252,8 +252,8 @@ export const VoiceConversationButton = memo(function VoiceConversationButton({
         className={cn(
           'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200',
           isConnected
-            ? 'bg-green-100 text-green-700 hover:bg-green-200'
-            : 'bg-amber-100 text-amber-700 hover:bg-amber-200',
+            ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30'
+            : 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30',
           !process.env.REACT_APP_GEMINI_API_KEY && 'opacity-50 cursor-not-allowed'
         )}
         title={
@@ -277,55 +277,77 @@ export const VoiceConversationButton = memo(function VoiceConversationButton({
         )}
       </button>
 
-      {/* Mic button (only when connected) */}
+      {/* Voice Chat Panel with Instructions (only when connected) */}
       <AnimatePresence>
         {isConnected && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={handleToggleListening}
-            className={cn(
-              'p-2 rounded-full transition-all duration-200',
-              isListening
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-            )}
+          <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            className="flex items-center gap-3 overflow-hidden"
           >
-            {isListening ? (
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1 }}
-              >
-                <MicOff className="w-5 h-5" />
-              </motion.div>
-            ) : (
-              <Mic className="w-5 h-5" />
-            )}
-          </motion.button>
+            {/* Mic button */}
+            <motion.button
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              onClick={handleToggleListening}
+              className={cn(
+                'p-2 rounded-full transition-all duration-200',
+                isListening
+                  ? 'bg-red-500 text-white hover:bg-red-600'
+                  : 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30'
+              )}
+              title={isListening ? 'Stop recording' : 'Start recording your pitch'}
+            >
+              {isListening ? (
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                >
+                  <MicOff className="w-5 h-5" />
+                </motion.div>
+              ) : (
+                <Mic className="w-5 h-5" />
+              )}
+            </motion.button>
+
+            {/* Contextual Help / Status */}
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-2 text-sm"
+            >
+              {!isListening && !isSpeaking && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/20 border border-blue-500/30">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-blue-300">
+                    Click <Mic className="w-3 h-3 inline mx-1" /> and deliver your pitch
+                  </span>
+                </div>
+              )}
+              {isListening && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500/30">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-red-300">Recording... Speak clearly into your mic</span>
+                </div>
+              )}
+              {isSpeaking && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
+                  <Volume2 className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <span className="text-amber-300">{advisorName} is responding...</span>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Status indicator */}
-      {isConnected && (
-        <div className="flex items-center gap-1 text-sm text-gray-500">
-          {isListening && (
-            <span className="flex items-center gap-1 text-red-500">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              Listening
-            </span>
-          )}
-          {isSpeaking && (
-            <span className="flex items-center gap-1 text-green-500">
-              <Volume2 className="w-4 h-4 animate-pulse" />
-              Speaking
-            </span>
-          )}
-        </div>
-      )}
-
       {/* Error display */}
-      {error && <span className="text-sm text-red-500">{error}</span>}
+      {error && (
+        <span className="text-sm text-red-400 bg-red-500/20 px-2 py-1 rounded border border-red-500/30">
+          {error}
+        </span>
+      )}
     </div>
   );
 });

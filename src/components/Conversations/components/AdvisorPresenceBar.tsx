@@ -43,9 +43,9 @@ const AdvisorPresenceCard = memo(function AdvisorPresenceCard({
       onClick={onClick}
       className={cn(
         'relative flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-300',
-        'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-        state === 'speaking' && 'bg-amber-50 ring-2 ring-amber-400',
-        state === 'typing' && 'bg-blue-50 ring-2 ring-blue-400',
+        'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-0',
+        state === 'speaking' && 'bg-amber-500/20 ring-2 ring-amber-400',
+        state === 'typing' && 'bg-blue-500/20 ring-2 ring-blue-400',
         isCompact ? 'min-w-[60px]' : 'min-w-[80px]'
       )}
       aria-label={`${advisor.name} is ${state === 'speaking' ? 'speaking' : state === 'typing' ? 'typing' : 'ready'}`}
@@ -55,9 +55,9 @@ const AdvisorPresenceCard = memo(function AdvisorPresenceCard({
         <div
           className={cn(
             'rounded-full transition-all duration-300',
-            state === 'speaking' && 'ring-2 ring-amber-400 ring-offset-2',
-            state === 'typing' && 'ring-2 ring-blue-400 ring-offset-2',
-            state === 'idle' && 'opacity-80'
+            state === 'speaking' && 'ring-2 ring-amber-400 ring-offset-2 ring-offset-gray-900',
+            state === 'typing' && 'ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-900',
+            state === 'idle' && 'opacity-90'
           )}
         >
           <Avatar
@@ -87,11 +87,11 @@ const AdvisorPresenceCard = memo(function AdvisorPresenceCard({
 
         {/* Typing Indicator */}
         {state === 'typing' && (
-          <div className="absolute -bottom-1 -right-1 flex gap-0.5 bg-white rounded-full p-1 shadow-sm">
+          <div className="absolute -bottom-1 -right-1 flex gap-0.5 bg-gray-800 rounded-full p-1 shadow-sm border border-gray-700">
             {[0, 1, 2].map(i => (
               <motion.div
                 key={i}
-                className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+                className="w-1.5 h-1.5 bg-amber-400 rounded-full"
                 animate={{ y: [-2, 2, -2] }}
                 transition={{
                   duration: 0.6,
@@ -105,7 +105,7 @@ const AdvisorPresenceCard = memo(function AdvisorPresenceCard({
 
         {/* Online Status Indicator */}
         {state === 'idle' && (
-          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm" />
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900 shadow-sm" />
         )}
       </div>
 
@@ -114,9 +114,9 @@ const AdvisorPresenceCard = memo(function AdvisorPresenceCard({
         <p
           className={cn(
             'font-medium text-xs truncate max-w-[70px]',
-            state === 'speaking' && 'text-amber-700',
-            state === 'typing' && 'text-blue-700',
-            state === 'idle' && 'text-gray-700'
+            state === 'speaking' && 'text-amber-400',
+            state === 'typing' && 'text-blue-400',
+            state === 'idle' && 'text-gray-300'
           )}
         >
           {advisor.name.split(' ')[0]}
@@ -125,9 +125,9 @@ const AdvisorPresenceCard = memo(function AdvisorPresenceCard({
           <p
             className={cn(
               'text-[10px] font-medium',
-              state === 'speaking' && 'text-amber-600',
-              state === 'typing' && 'text-blue-600',
-              state === 'idle' && 'text-gray-400'
+              state === 'speaking' && 'text-amber-500',
+              state === 'typing' && 'text-blue-500',
+              state === 'idle' && 'text-gray-500'
             )}
           >
             {state === 'speaking' ? 'Speaking' : state === 'typing' ? 'Typing...' : 'Ready'}
@@ -161,7 +161,7 @@ export const AdvisorPresenceBar = memo(function AdvisorPresenceBar({
   return (
     <div
       className={cn(
-        'sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm',
+        'sticky top-0 z-20 bg-gradient-to-r from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-sm border-b border-amber-500/20 shadow-lg',
         className
       )}
       role="region"
@@ -170,14 +170,14 @@ export const AdvisorPresenceBar = memo(function AdvisorPresenceBar({
       <div className="flex items-center gap-3 px-4 py-3 overflow-x-auto">
         {/* Label */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <span className="text-sm font-semibold text-gray-600">
-            {advisors.length === 1 ? 'Advisor' : 'Advisors'}
+          <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+          <span className="text-sm font-semibold text-amber-400">
+            🦈 {advisors.length === 1 ? 'Shark' : 'Sharks'}
           </span>
         </div>
 
         {/* Divider */}
-        <div className="h-8 w-px bg-gray-300 flex-shrink-0" />
+        <div className="h-8 w-px bg-amber-500/30 flex-shrink-0" />
 
         {/* Advisor Cards */}
         <AnimatePresence mode="popLayout">
@@ -201,8 +201,10 @@ export const AdvisorPresenceBar = memo(function AdvisorPresenceBar({
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className={cn(
-                'px-3 py-1 rounded-full text-xs font-medium',
-                speakingAdvisorId ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+                'px-3 py-1 rounded-full text-xs font-medium border',
+                speakingAdvisorId
+                  ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                  : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
               )}
             >
               {speakingAdvisorId
