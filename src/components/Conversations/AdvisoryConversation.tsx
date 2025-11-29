@@ -38,6 +38,7 @@ import {
 } from '../../services/conversationService';
 import { Avatar } from '../Common/Avatar';
 import { AdvisorPresenceBar } from './components/AdvisorPresenceBar';
+import { VoiceConversationButton } from '../Voice/VoiceConversationButton';
 import { cn } from '../../utils';
 
 interface ConversationMode {
@@ -1401,6 +1402,32 @@ The committee unanimously recommends proceeding with measured optimism while sys
               <span className="text-sm text-gray-600">
                 {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''} selected
               </span>
+
+              {/* Voice Conversation Button */}
+              {selectedAdvisors.length > 0 && (
+                <VoiceConversationButton
+                  advisorId={selectedAdvisors[0]}
+                  advisorName={
+                    celebrityAdvisors.find(a => a.id === selectedAdvisors[0])?.name || 'Advisor'
+                  }
+                  systemPrompt={
+                    celebrityAdvisors.find(a => a.id === selectedAdvisors[0])?.system_prompt ||
+                    'You are a helpful Shark Tank investor providing business advice.'
+                  }
+                  onTranscript={text => {
+                    // Add user's voice transcript as a message
+                    if (text.trim()) {
+                      setInputMessage(text);
+                    }
+                  }}
+                  onResponse={text => {
+                    // Handle voice response - could add to messages
+                    console.log('Voice response:', text);
+                  }}
+                  variant="default"
+                />
+              )}
+
               <button
                 onClick={() => {
                   // Share functionality
