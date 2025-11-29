@@ -119,7 +119,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     includeDocumentAnalysis: false,
     autoSummary: false,
     enableExpertPanel: true,
-    pitchDuration: 2, // Default 2 minutes
+    pitchDuration: 3, // Default 3 minutes
   });
 
   // Document selection state
@@ -292,17 +292,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     }
   };
 
-  // Pitch duration options (in minutes)
-  const pitchDurationOptions = [
-    { value: 0.5, label: '30 sec' },
-    { value: 1, label: '1 min' },
-    { value: 2, label: '2 min' },
-    { value: 3, label: '3 min' },
-    { value: 5, label: '5 min' },
-    { value: 10, label: '10 min' },
-    { value: 15, label: '15 min' },
-    { value: 20, label: '20 min' },
-  ];
+  // Format pitch duration for display
+  const formatPitchDuration = (minutes: number) => {
+    if (minutes < 1) {
+      return `${Math.round(minutes * 60)} seconds`;
+    } else if (minutes === 1) {
+      return '1 minute';
+    } else {
+      return `${minutes} minutes`;
+    }
+  };
 
   const toggleAdvisor = (advisorId: string) => {
     setSelectedAdvisors(prev =>
@@ -357,7 +356,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
           // Build advisor-specific system prompt
           const systemPrompt = `You are ${advisor.name}, a Shark Tank investor. ${(advisor as CelebrityAdvisor).system_prompt || `You are known for your expertise in ${(advisor as CelebrityAdvisor).expertise?.join(', ') || 'business and investing'}.`}
 
-The user has ${enhancedSettings.pitchDuration < 1 ? `${enhancedSettings.pitchDuration * 60} seconds` : `${enhancedSettings.pitchDuration} minutes`} to pitch their business idea.
+The user has ${formatPitchDuration(enhancedSettings.pitchDuration)} to pitch their business idea.
 
 ${documentContext ? `The user has shared the following documents:\n${documentContext}\n\n` : ''}
 
@@ -563,36 +562,57 @@ Respond in character as ${advisor.name} would on Shark Tank - be direct, ask tou
                 <span className="text-lg">⚙️</span> Pitch Settings
               </h3>
               <div className="space-y-4">
-                {/* Pitch Duration Selector */}
-                <div className="pb-3 border-b border-white/10">
-                  <label className="block text-sm font-medium text-gray-200 mb-2">
+                {/* Pitch Duration Slider */}
+                <div className="pb-4 border-b border-white/10">
+                  <label className="block text-sm font-medium text-gray-200 mb-3">
                     Pitch Duration:{' '}
-                    <span className="text-amber-400 font-bold">
-                      {enhancedSettings.pitchDuration < 1
-                        ? `${enhancedSettings.pitchDuration * 60} seconds`
-                        : `${enhancedSettings.pitchDuration} minute${enhancedSettings.pitchDuration !== 1 ? 's' : ''}`}
+                    <span className="text-amber-400 font-bold text-lg">
+                      {formatPitchDuration(enhancedSettings.pitchDuration)}
                     </span>
                   </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {pitchDurationOptions.map(option => (
-                      <button
-                        key={option.value}
-                        onClick={() =>
-                          setEnhancedSettings(prev => ({
-                            ...prev,
-                            pitchDuration: option.value,
-                          }))
-                        }
-                        className={cn(
-                          'px-2 py-1.5 text-xs rounded-lg transition-colors font-medium',
-                          enhancedSettings.pitchDuration === option.value
-                            ? 'bg-amber-500 text-black'
-                            : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="20"
+                      step="0.5"
+                      value={enhancedSettings.pitchDuration}
+                      onChange={e =>
+                        setEnhancedSettings(prev => ({
+                          ...prev,
+                          pitchDuration: parseFloat(e.target.value),
+                        }))
+                      }
+                      className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500
+                        [&::-webkit-slider-thumb]:appearance-none
+                        [&::-webkit-slider-thumb]:w-5
+                        [&::-webkit-slider-thumb]:h-5
+                        [&::-webkit-slider-thumb]:rounded-full
+                        [&::-webkit-slider-thumb]:bg-gradient-to-r
+                        [&::-webkit-slider-thumb]:from-amber-400
+                        [&::-webkit-slider-thumb]:to-orange-500
+                        [&::-webkit-slider-thumb]:shadow-lg
+                        [&::-webkit-slider-thumb]:shadow-amber-500/30
+                        [&::-webkit-slider-thumb]:cursor-grab
+                        [&::-webkit-slider-thumb]:active:cursor-grabbing
+                        [&::-webkit-slider-thumb]:hover:scale-110
+                        [&::-webkit-slider-thumb]:transition-transform
+                        [&::-moz-range-thumb]:w-5
+                        [&::-moz-range-thumb]:h-5
+                        [&::-moz-range-thumb]:rounded-full
+                        [&::-moz-range-thumb]:bg-gradient-to-r
+                        [&::-moz-range-thumb]:from-amber-400
+                        [&::-moz-range-thumb]:to-orange-500
+                        [&::-moz-range-thumb]:border-0
+                        [&::-moz-range-thumb]:cursor-grab"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>30s</span>
+                      <span>5m</span>
+                      <span>10m</span>
+                      <span>15m</span>
+                      <span>20m</span>
+                    </div>
                   </div>
                 </div>
 
