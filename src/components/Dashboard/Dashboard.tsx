@@ -761,9 +761,30 @@ Respond in character as ${advisor.name} would on Shark Tank - be direct, ask tou
                   <Users className="w-4 h-4" />
                 </button>
               )}
-              <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold text-white">BEAR TRAP</h1>
-                <span className="text-amber-400 text-sm">Shark Tank Advisory</span>
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <span className="text-3xl">🦈</span>
+                  <motion.span
+                    className="absolute -top-1 -right-1 text-xs"
+                    animate={{ rotate: [0, 15, -15, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  >
+                    ✨
+                  </motion.span>
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-red-500 uppercase tracking-widest">
+                      The Unauthorized
+                    </span>
+                  </div>
+                  <h1 className="text-lg font-black tracking-tight">
+                    <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                      AI SHARK TANK
+                    </span>
+                    <span className="text-white ml-1.5">Experience</span>
+                  </h1>
+                </div>
               </div>
             </div>
             <div className="flex items-center space-x-3">
