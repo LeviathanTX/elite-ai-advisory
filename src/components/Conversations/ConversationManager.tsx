@@ -51,6 +51,9 @@ interface ConversationManagerProps {
   onBack: () => void;
 }
 
+// Bear Trap Mode: Skip conversation list and go directly to Shark Tank conversation
+const BEAR_TRAP_MODE = true;
+
 export function ConversationManager({ onBack }: ConversationManagerProps) {
   const { user } = useAuth();
   const {
@@ -60,7 +63,7 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   } = useAdvisor();
   const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
-  const [showNewConversation, setShowNewConversation] = useState(false);
+  const [showNewConversation, setShowNewConversation] = useState(BEAR_TRAP_MODE); // Auto-start in Bear Trap mode
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'starred' | 'recent' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'alphabetical' | 'mode'>('recent');
@@ -73,32 +76,11 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
 
   const conversationModes = [
     {
-      id: 'strategic_planning',
-      name: 'Strategic Planning',
-      icon: <Brain className="w-4 h-4" />,
-      color: 'bg-blue-500',
-      description: 'Long-term strategy and planning',
-    },
-    {
-      id: 'due_diligence',
-      name: 'Due Diligence',
-      icon: <FileText className="w-4 h-4" />,
-      color: 'bg-green-500',
-      description: 'Investment analysis and document review',
-    },
-    {
-      id: 'quick_consultation',
-      name: 'Quick Consultation',
-      icon: <Zap className="w-4 h-4" />,
-      color: 'bg-orange-500',
-      description: 'Fast answers and immediate advice',
-    },
-    {
       id: 'general',
-      name: 'General Discussion',
-      icon: <MessageCircle className="w-4 h-4" />,
-      color: 'bg-purple-500',
-      description: 'Open conversation with advisors',
+      name: 'Swim with the Sharks',
+      icon: <Zap className="w-4 h-4" />,
+      color: 'bg-amber-500',
+      description: 'Pitch your idea to the Sharks',
     },
   ];
 

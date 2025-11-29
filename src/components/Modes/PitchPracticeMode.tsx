@@ -38,7 +38,7 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
   const [recordingTime, setRecordingTime] = useState(0);
   const [pitchDuration, setPitchDuration] = useState(5); // Default 5 minutes
   const [timeRemaining, setTimeRemaining] = useState(0);
-  const [pitchMode, setPitchMode] = useState<'text' | 'voice'>('text');
+  const [pitchMode, setPitchMode] = useState<'text' | 'voice'>('voice'); // Voice only in Bear Trap mode
 
   // Speech analysis states
   const [speechAnalysis, setSpeechAnalysis] = useState<any>(null);
@@ -1956,74 +1956,54 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
             )}
           </div>
 
-          {/* Pitch Mode Selection */}
+          {/* Voice Pitch Mode Info */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-white mb-4">Pitch Mode</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => setPitchMode('text')}
-                className={cn(
-                  'p-4 border-2 rounded-xl text-left transition-all',
-                  pitchMode === 'text'
-                    ? 'border-amber-500 bg-amber-500/20'
-                    : 'border-white/20 bg-white/5 hover:border-amber-400/50'
-                )}
-              >
-                <div className="font-semibold text-white">📝 Text Pitch</div>
-                <div className="text-sm text-gray-400 mt-1">
-                  Write your pitch and get text-based feedback
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🎤</span>
                 </div>
-              </button>
-              <button
-                onClick={() => setPitchMode('voice')}
-                className={cn(
-                  'p-4 border-2 rounded-xl text-left transition-all',
-                  pitchMode === 'voice'
-                    ? 'border-amber-500 bg-amber-500/20'
-                    : 'border-white/20 bg-white/5 hover:border-amber-400/50'
-                )}
-              >
-                <div className="font-semibold text-white">🎤 Voice Pitch</div>
-                <div className="text-sm text-gray-400 mt-1">
-                  Record your pitch and get speech analysis
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Timer Settings for Voice Mode */}
-          {pitchMode === 'voice' && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-white mb-4">Pitch Timer</h2>
-              <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-gray-300">Duration:</label>
-                <select
-                  value={pitchDuration}
-                  onChange={e => setPitchDuration(Number(e.target.value))}
-                  className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white"
-                  disabled={isRecording}
-                >
-                  {Array.from({ length: 20 }, (_, i) => i + 1).map(min => (
-                    <option key={min} value={min} className="bg-gray-900">
-                      {min} minute{min > 1 ? 's' : ''}
-                    </option>
-                  ))}
-                </select>
-                <div className="text-sm text-gray-400">
-                  {isRecording ? (
-                    <span className="flex items-center">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
-                      Recording: {formatTime(recordingTime)} / {formatTime(pitchDuration * 60)}
-                    </span>
-                  ) : timeRemaining > 0 ? (
-                    `Time remaining: ${formatTime(timeRemaining)}`
-                  ) : (
-                    `Set timer for ${pitchDuration} minute${pitchDuration > 1 ? 's' : ''}`
-                  )}
+                <div>
+                  <div className="font-semibold text-white">Voice Pitch Mode</div>
+                  <div className="text-sm text-gray-400">
+                    Record your pitch and get real-time speech analysis and feedback from the Sharks
+                  </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Timer Settings */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-white mb-4">Pitch Timer</h2>
+            <div className="flex items-center space-x-4">
+              <label className="text-sm font-medium text-gray-300">Duration:</label>
+              <select
+                value={pitchDuration}
+                onChange={e => setPitchDuration(Number(e.target.value))}
+                className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white"
+                disabled={isRecording}
+              >
+                {Array.from({ length: 20 }, (_, i) => i + 1).map(min => (
+                  <option key={min} value={min} className="bg-gray-900">
+                    {min} minute{min > 1 ? 's' : ''}
+                  </option>
+                ))}
+              </select>
+              <div className="text-sm text-gray-400">
+                {isRecording ? (
+                  <span className="flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
+                    Recording: {formatTime(recordingTime)} / {formatTime(pitchDuration * 60)}
+                  </span>
+                ) : timeRemaining > 0 ? (
+                  `Time remaining: ${formatTime(timeRemaining)}`
+                ) : (
+                  `Set timer for ${pitchDuration} minute${pitchDuration > 1 ? 's' : ''}`
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Real-time Audio Feedback */}
           <RealTimeAudioFeedback
@@ -2034,179 +2014,159 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
           />
 
           {/* Voice Recording Interface */}
-          {pitchMode === 'voice' && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Record Your Pitch with Live Coaching
-              </h2>
-              <div className="text-center p-8 border-2 border-dashed border-white/30 bg-white/5 rounded-xl">
-                <div className="mb-4">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 border-2 border-amber-500/50 rounded-full mb-4">
-                    <span className="text-2xl">🎤</span>
-                  </div>
-                  <h3 className="text-lg font-medium text-white">
-                    {isRecording
-                      ? 'Recording in Progress'
-                      : recordedAudio
-                        ? 'Recording Complete'
-                        : 'Ready to Record'}
-                  </h3>
-                  <p className="text-gray-400 mt-1">
-                    {isRecording
-                      ? `Speaking time: ${formatTime(recordingTime)}`
-                      : recordedAudio
-                        ? `Recorded ${formatTime(recordingTime)} of pitch audio`
-                        : `Click record to start your ${pitchDuration} minute pitch`}
-                  </p>
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Record Your Pitch with Live Coaching
+            </h2>
+            <div className="text-center p-8 border-2 border-dashed border-white/30 bg-white/5 rounded-xl">
+              <div className="mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 border-2 border-amber-500/50 rounded-full mb-4">
+                  <span className="text-2xl">🎤</span>
                 </div>
+                <h3 className="text-lg font-medium text-white">
+                  {isRecording
+                    ? 'Recording in Progress'
+                    : recordedAudio
+                      ? 'Recording Complete'
+                      : 'Ready to Record'}
+                </h3>
+                <p className="text-gray-400 mt-1">
+                  {isRecording
+                    ? `Speaking time: ${formatTime(recordingTime)}`
+                    : recordedAudio
+                      ? `Recorded ${formatTime(recordingTime)} of pitch audio`
+                      : `Click record to start your ${pitchDuration} minute pitch`}
+                </p>
+              </div>
 
-                <div className="space-y-4">
-                  {!isRecording && !recordedAudio && (
-                    <button
-                      onClick={startRecording}
-                      className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
-                    >
-                      🔴 Start Recording
-                    </button>
-                  )}
-
-                  {isRecording && (
-                    <button
-                      onClick={stopRecording}
-                      className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors"
-                    >
-                      ⏹️ Stop Recording
-                    </button>
-                  )}
-
-                  {recordedAudio && !isRecording && (
-                    <div className="space-y-3">
-                      <audio controls src={audioUrl} className="w-full max-w-md mx-auto">
-                        Your browser does not support the audio element.
-                      </audio>
-                      <div className="flex space-x-3 justify-center">
-                        <button
-                          onClick={() => {
-                            setRecordedAudio(null);
-                            setAudioUrl('');
-                            setSpeechAnalysis(null);
-                            setSpeechTranscript('');
-                            setRecordingTime(0);
-                            setAudioFeatures(null);
-                            setVocalInsights(null);
-                            setLiveMetrics([]);
-                            setIsProcessingAudio(false);
-                          }}
-                          className="bg-white/20 text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors"
-                        >
-                          🗑️ Delete & Re-record
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Audio Processing Status */}
-                {isProcessingAudio && (
-                  <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-3"></div>
-                      <div>
-                        <h4 className="font-medium text-green-900">
-                          🔬 Processing Comprehensive Audio Analysis
-                        </h4>
-                        <p className="text-sm text-green-700 mt-1">
-                          Analyzing voice patterns, pitch, clarity, and professional delivery
-                          metrics...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                {!isRecording && !recordedAudio && (
+                  <button
+                    onClick={startRecording}
+                    className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                  >
+                    🔴 Start Recording
+                  </button>
                 )}
 
-                {/* Audio Analysis Complete */}
-                {audioFeatures && vocalInsights && !isProcessingAudio && (
-                  <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex items-center">
-                      <span className="text-green-600 mr-2">✅</span>
-                      <div>
-                        <h4 className="font-medium text-green-900">
-                          Professional Audio Analysis Complete
-                        </h4>
-                        <p className="text-sm text-green-700 mt-1">
-                          Comprehensive voice coaching data ready - click "Analyze Voice Pitch" for
-                          detailed feedback
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                {isRecording && (
+                  <button
+                    onClick={stopRecording}
+                    className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors"
+                  >
+                    ⏹️ Stop Recording
+                  </button>
                 )}
 
-                {/* Transcript Display */}
-                {speechTranscript && (
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border">
-                    <h4 className="font-medium text-blue-900 mb-2">📝 Speech Transcript</h4>
-                    <div className="text-sm text-blue-800 max-h-32 overflow-y-auto bg-white p-3 rounded border">
-                      {speechTranscript || 'No speech detected yet...'}
+                {recordedAudio && !isRecording && (
+                  <div className="space-y-3">
+                    <audio controls src={audioUrl} className="w-full max-w-md mx-auto">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <div className="flex space-x-3 justify-center">
+                      <button
+                        onClick={() => {
+                          setRecordedAudio(null);
+                          setAudioUrl('');
+                          setSpeechAnalysis(null);
+                          setSpeechTranscript('');
+                          setRecordingTime(0);
+                          setAudioFeatures(null);
+                          setVocalInsights(null);
+                          setLiveMetrics([]);
+                          setIsProcessingAudio(false);
+                        }}
+                        className="bg-white/20 text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors"
+                      >
+                        🗑️ Delete & Re-record
+                      </button>
                     </div>
-                    {isTranscribing && (
-                      <div className="mt-2 text-xs text-blue-600 flex items-center">
-                        <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                        Listening and transcribing...
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Live Coaching Chart */}
-                {(isRecording || liveMetrics.length > 0) && (
-                  <div className="mt-6">
-                    <LiveCoachingChart
-                      data={liveMetrics}
-                      isRecording={isRecording}
-                      duration={recordingTime}
-                    />
                   </div>
                 )}
               </div>
-              {/* Browser Compatibility Notice */}
-              {!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) && (
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <div className="flex items-start">
-                    <div className="text-amber-600 mr-3">⚠️</div>
+
+              {/* Audio Processing Status */}
+              {isProcessingAudio && (
+                <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-3"></div>
                     <div>
-                      <h4 className="font-medium text-amber-900">
-                        Speech Recognition Not Available
+                      <h4 className="font-medium text-green-900">
+                        🔬 Processing Comprehensive Audio Analysis
                       </h4>
-                      <p className="text-sm text-amber-800 mt-1">
-                        Your browser doesn't support speech recognition. You can still record audio,
-                        but transcript and real-time speech analysis won't be available.
-                        <br />
-                        <span className="font-medium">Supported browsers:</span> Chrome, Edge,
-                        Safari (latest versions)
+                      <p className="text-sm text-green-700 mt-1">
+                        Analyzing voice patterns, pitch, clarity, and professional delivery
+                        metrics...
                       </p>
                     </div>
                   </div>
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Text Input (only show if text mode) */}
-          {pitchMode === 'text' && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Pitch</h2>
-              <textarea
-                value={pitchText}
-                onChange={e => setPitchText(e.target.value)}
-                placeholder="Enter your pitch here... Tell us about your company, the problem you're solving, your solution, market opportunity, business model, and what you're looking for."
-                className="w-full h-40 p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <div className="text-sm text-gray-500 mt-2">
-                {pitchText.length} characters • Aim for 200-500 words for best results
-              </div>
+              {/* Audio Analysis Complete */}
+              {audioFeatures && vocalInsights && !isProcessingAudio && (
+                <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center">
+                    <span className="text-green-600 mr-2">✅</span>
+                    <div>
+                      <h4 className="font-medium text-green-900">
+                        Professional Audio Analysis Complete
+                      </h4>
+                      <p className="text-sm text-green-700 mt-1">
+                        Comprehensive voice coaching data ready - click "Analyze Voice Pitch" for
+                        detailed feedback
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Transcript Display */}
+              {speechTranscript && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border">
+                  <h4 className="font-medium text-blue-900 mb-2">📝 Speech Transcript</h4>
+                  <div className="text-sm text-blue-800 max-h-32 overflow-y-auto bg-white p-3 rounded border">
+                    {speechTranscript || 'No speech detected yet...'}
+                  </div>
+                  {isTranscribing && (
+                    <div className="mt-2 text-xs text-blue-600 flex items-center">
+                      <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                      Listening and transcribing...
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Live Coaching Chart */}
+              {(isRecording || liveMetrics.length > 0) && (
+                <div className="mt-6">
+                  <LiveCoachingChart
+                    data={liveMetrics}
+                    isRecording={isRecording}
+                    duration={recordingTime}
+                  />
+                </div>
+              )}
             </div>
-          )}
+            {/* Browser Compatibility Notice */}
+            {!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) && (
+              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start">
+                  <div className="text-amber-600 mr-3">⚠️</div>
+                  <div>
+                    <h4 className="font-medium text-amber-900">Speech Recognition Not Available</h4>
+                    <p className="text-sm text-amber-800 mt-1">
+                      Your browser doesn't support speech recognition. You can still record audio,
+                      but transcript and real-time speech analysis won't be available.
+                      <br />
+                      <span className="font-medium">Supported browsers:</span> Chrome, Edge, Safari
+                      (latest versions)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Action Button */}
           <div className="text-center">
@@ -2214,97 +2174,78 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
               onClick={handleAnalyzePitch}
               disabled={
                 selectedAdvisors.length === 0 ||
-                (pitchMode === 'text' && !pitchText.trim()) ||
-                (pitchMode === 'voice' && !recordedAudio) ||
+                !recordedAudio ||
                 isAnalyzing ||
                 isAnalyzingSpeech ||
                 isProcessingAudio
               }
               className={cn(
-                'px-8 py-4 rounded-xl font-semibold text-white transition-all',
-                selectedAdvisors.length === 0 ||
-                  (pitchMode === 'text' && !pitchText.trim()) ||
-                  (pitchMode === 'voice' && !recordedAudio)
-                  ? 'bg-gray-400 cursor-not-allowed'
+                'px-8 py-4 rounded-xl font-semibold text-black transition-all',
+                selectedAdvisors.length === 0 || !recordedAudio
+                  ? 'bg-gray-600 cursor-not-allowed text-gray-400'
                   : isAnalyzing || isAnalyzingSpeech || isProcessingAudio
-                    ? 'bg-purple-400 cursor-wait'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+                    ? 'bg-amber-400 cursor-wait'
+                    : 'bg-amber-500 hover:bg-amber-400'
               )}
             >
               {isProcessingAudio ? (
-                <span className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <span className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
                   Processing Audio Analysis...
                 </span>
               ) : isAnalyzingSpeech ? (
-                <span className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <span className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
                   Analyzing Speech Patterns...
                 </span>
               ) : isAnalyzing ? (
-                <span className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <span className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
                   Analyzing Your Pitch...
                 </span>
-              ) : pitchMode === 'voice' ? (
-                'Analyze Voice Pitch'
               ) : (
-                'Get AI Feedback'
+                '🦈 Get Shark Feedback'
               )}
             </button>
 
-            {/* Instructions based on mode */}
-            <div className="mt-4 text-sm text-gray-500">
-              {pitchMode === 'text' ? (
-                <p>Select advisors and write your pitch to get personalized feedback</p>
-              ) : (
-                <p>
-                  {!recordedAudio
-                    ? 'Record your pitch using the microphone to get voice analysis + AI feedback'
-                    : 'Get AI feedback plus detailed speech analysis including stress, confidence, and speaking patterns'}
-                </p>
-              )}
+            {/* Instructions */}
+            <div className="mt-4 text-sm text-gray-400">
+              <p>
+                {!recordedAudio
+                  ? 'Record your pitch using the microphone to get voice analysis + Shark feedback'
+                  : 'Get AI feedback plus detailed speech analysis including stress, confidence, and speaking patterns'}
+              </p>
             </div>
           </div>
 
           {/* Tips */}
-          <div className="mt-8 p-6 bg-purple-50 rounded-xl">
-            <h3 className="font-semibold text-purple-900 mb-3">💡 Tips for a Great Pitch</h3>
-            {pitchMode === 'text' ? (
-              <ul className="text-sm text-purple-800 space-y-1">
-                <li>• Start with a compelling problem statement</li>
-                <li>• Clearly explain your unique solution</li>
-                <li>• Show market size and opportunity</li>
-                <li>• Include business model and revenue projections</li>
-                <li>• Mention your team's expertise</li>
-                <li>• End with a clear ask (funding, partnership, etc.)</li>
-              </ul>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium text-purple-900 mb-2">Content Tips:</h4>
-                  <ul className="text-sm text-purple-800 space-y-1">
-                    <li>• Start with a compelling hook</li>
-                    <li>• Use the problem-solution-market framework</li>
-                    <li>• Include concrete examples and metrics</li>
-                    <li>• End with a memorable call to action</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium text-purple-900 mb-2">Voice Tips:</h4>
-                  <ul className="text-sm text-purple-800 space-y-1">
-                    <li>• Speak at 140-160 words per minute (ideal pace)</li>
-                    <li>• Minimize filler words - aim for less than 5 per minute</li>
-                    <li>• Vary your tone and avoid monotone delivery</li>
-                    <li>• Use strategic pauses for emphasis (1-2 seconds)</li>
-                    <li>• Project confidence through clear articulation</li>
-                    <li>• Practice breathing to reduce stress and nervousness</li>
-                    <li>• Watch the live coaching panel for real-time feedback</li>
-                    <li>• Professional audio analysis provides detailed vocal insights</li>
-                  </ul>
-                </div>
+          <div className="mt-8 p-6 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+            <h3 className="font-semibold text-amber-400 mb-3">
+              💡 Tips for a Great Shark Tank Pitch
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-medium text-white mb-2">Content Tips:</h4>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>• Start with a compelling hook</li>
+                  <li>• Use the problem-solution-market framework</li>
+                  <li>• Include concrete examples and metrics</li>
+                  <li>• End with a memorable call to action</li>
+                </ul>
               </div>
-            )}
+              <div>
+                <h4 className="font-medium text-white mb-2">Voice Tips:</h4>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>• Speak at 140-160 words per minute (ideal pace)</li>
+                  <li>• Minimize filler words - aim for less than 5 per minute</li>
+                  <li>• Vary your tone and avoid monotone delivery</li>
+                  <li>• Use strategic pauses for emphasis (1-2 seconds)</li>
+                  <li>• Project confidence through clear articulation</li>
+                  <li>• Practice breathing to reduce stress and nervousness</li>
+                  <li>• Watch the live coaching panel for real-time feedback</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
