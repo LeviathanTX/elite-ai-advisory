@@ -1850,27 +1850,37 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        <button onClick={onBack} className="mb-6 text-purple-600 hover:text-purple-700 font-medium">
+    <div className="min-h-screen bg-black p-6 relative">
+      {/* Hero Background */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/images/hero/shark-tank-hero.png"
+          alt="Shark Tank"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black" />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
+        <button onClick={onBack} className="mb-6 text-amber-400 hover:text-amber-300 font-medium">
           ← Back to Dashboard
         </button>
 
-        <div className="bg-white rounded-2xl p-8 shadow-lg">
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">🎤 Pitch Practice</h1>
-            <p className="text-gray-600">
-              Get AI-powered feedback on your pitch from celebrity investors
+            <h1 className="text-3xl font-bold text-white mb-2">🎤 Practice Your Pitch</h1>
+            <p className="text-gray-400">
+              Perfect your elevator pitch with AI coaching before facing the Sharks
             </p>
           </div>
 
           {/* Advisor Selection */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Choose Your Advisory Board ({selectedAdvisors.length} selected)
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Choose Your Sharks ({selectedAdvisors.length} selected)
             </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Select multiple advisors to get diverse perspectives on your pitch
+            <p className="text-sm text-gray-400 mb-4">
+              Select multiple Sharks to get diverse perspectives on your pitch
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {celebrityAdvisors.map(advisor => {
@@ -1883,27 +1893,26 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                     className={cn(
                       'p-4 border-2 rounded-xl text-left transition-all relative',
                       isHost && !isSelected
-                        ? 'border-amber-400 bg-gradient-to-br from-amber-50 to-yellow-50 shadow-lg ring-2 ring-amber-200'
+                        ? 'border-amber-400 bg-amber-500/10 shadow-lg ring-2 ring-amber-400/30'
                         : isHost && isSelected
-                          ? 'border-amber-500 bg-gradient-to-br from-amber-100 to-yellow-100 shadow-lg ring-2 ring-amber-300'
+                          ? 'border-amber-500 bg-amber-500/20 shadow-lg ring-2 ring-amber-500/50'
                           : isSelected
-                            ? 'border-purple-500 bg-purple-50'
-                            : 'border-gray-200 hover:border-purple-300'
+                            ? 'border-amber-500 bg-amber-500/20'
+                            : 'border-white/20 bg-white/5 hover:border-amber-400/50'
                     )}
                   >
                     {isHost && (
-                      <div className="absolute top-2 left-2 px-2 py-1 bg-amber-500 text-white text-xs font-semibold rounded-full">
+                      <div className="absolute top-2 left-2 px-2 py-1 bg-amber-500 text-black text-xs font-semibold rounded-full">
                         HOST
                       </div>
                     )}
                     {isSelected && (
                       <div
                         className={cn(
-                          'absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center',
-                          isHost ? 'bg-amber-500' : 'bg-purple-500'
+                          'absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center bg-amber-500'
                         )}
                       >
-                        <span className="text-white text-sm">✓</span>
+                        <span className="text-black text-sm font-bold">✓</span>
                       </div>
                     )}
                     <div className="flex items-center mb-3">
@@ -1915,21 +1924,19 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                         size="lg"
                       />
                     </div>
-                    <div
-                      className={cn('font-semibold', isHost ? 'text-amber-900' : 'text-gray-900')}
-                    >
+                    <div className={cn('font-semibold', isHost ? 'text-amber-400' : 'text-white')}>
                       {advisor.name}
                     </div>
-                    <div className={cn('text-sm', isHost ? 'text-amber-700' : 'text-gray-600')}>
+                    <div className={cn('text-sm', isHost ? 'text-amber-300' : 'text-gray-400')}>
                       {advisor.title}
                     </div>
                     <div
-                      className={cn('text-sm mt-1', isHost ? 'text-amber-600' : 'text-gray-500')}
+                      className={cn('text-sm mt-1', isHost ? 'text-amber-400/70' : 'text-gray-500')}
                     >
                       {advisor.company}
                     </div>
                     {isHost && (
-                      <div className="text-xs text-amber-700 mt-2 font-medium">
+                      <div className="text-xs text-amber-300 mt-2 font-medium">
                         🎯 Meeting Facilitation • Behavioral Economics
                       </div>
                     )}
@@ -1938,9 +1945,9 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
               })}
             </div>
             {selectedAdvisors.length > 0 && (
-              <div className="mt-4 p-3 bg-purple-50 rounded-lg">
-                <p className="text-sm text-purple-700">
-                  Selected advisors:{' '}
+              <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <p className="text-sm text-amber-400">
+                  Selected Sharks:{' '}
                   {selectedAdvisors
                     .map(id => celebrityAdvisors.find(a => a.id === id)?.name)
                     .join(', ')}
@@ -1951,19 +1958,19 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
 
           {/* Pitch Mode Selection */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Pitch Mode</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">Pitch Mode</h2>
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setPitchMode('text')}
                 className={cn(
                   'p-4 border-2 rounded-xl text-left transition-all',
                   pitchMode === 'text'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-purple-300'
+                    ? 'border-amber-500 bg-amber-500/20'
+                    : 'border-white/20 bg-white/5 hover:border-amber-400/50'
                 )}
               >
-                <div className="font-semibold text-gray-900">📝 Text Pitch</div>
-                <div className="text-sm text-gray-600 mt-1">
+                <div className="font-semibold text-white">📝 Text Pitch</div>
+                <div className="text-sm text-gray-400 mt-1">
                   Write your pitch and get text-based feedback
                 </div>
               </button>
@@ -1972,12 +1979,12 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                 className={cn(
                   'p-4 border-2 rounded-xl text-left transition-all',
                   pitchMode === 'voice'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-purple-300'
+                    ? 'border-amber-500 bg-amber-500/20'
+                    : 'border-white/20 bg-white/5 hover:border-amber-400/50'
                 )}
               >
-                <div className="font-semibold text-gray-900">🎤 Voice Pitch</div>
-                <div className="text-sm text-gray-600 mt-1">
+                <div className="font-semibold text-white">🎤 Voice Pitch</div>
+                <div className="text-sm text-gray-400 mt-1">
                   Record your pitch and get speech analysis
                 </div>
               </button>
@@ -1987,22 +1994,22 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
           {/* Timer Settings for Voice Mode */}
           {pitchMode === 'voice' && (
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Pitch Timer</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Pitch Timer</h2>
               <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-gray-700">Duration:</label>
+                <label className="text-sm font-medium text-gray-300">Duration:</label>
                 <select
                   value={pitchDuration}
                   onChange={e => setPitchDuration(Number(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white"
                   disabled={isRecording}
                 >
                   {Array.from({ length: 20 }, (_, i) => i + 1).map(min => (
-                    <option key={min} value={min}>
+                    <option key={min} value={min} className="bg-gray-900">
                       {min} minute{min > 1 ? 's' : ''}
                     </option>
                   ))}
                 </select>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-400">
                   {isRecording ? (
                     <span className="flex items-center">
                       <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
@@ -2029,22 +2036,22 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
           {/* Voice Recording Interface */}
           {pitchMode === 'voice' && (
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4">
                 Record Your Pitch with Live Coaching
               </h2>
-              <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-xl">
+              <div className="text-center p-8 border-2 border-dashed border-white/30 bg-white/5 rounded-xl">
                 <div className="mb-4">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 border-2 border-amber-500/50 rounded-full mb-4">
                     <span className="text-2xl">🎤</span>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-white">
                     {isRecording
                       ? 'Recording in Progress'
                       : recordedAudio
                         ? 'Recording Complete'
                         : 'Ready to Record'}
                   </h3>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-gray-400 mt-1">
                     {isRecording
                       ? `Speaking time: ${formatTime(recordingTime)}`
                       : recordedAudio
@@ -2066,7 +2073,7 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                   {isRecording && (
                     <button
                       onClick={stopRecording}
-                      className="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+                      className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors"
                     >
                       ⏹️ Stop Recording
                     </button>
@@ -2090,7 +2097,7 @@ export const PitchPracticeMode: React.FC<PitchPracticeModeProps> = ({ onBack }) 
                             setLiveMetrics([]);
                             setIsProcessingAudio(false);
                           }}
-                          className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                          className="bg-white/20 text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors"
                         >
                           🗑️ Delete & Re-record
                         </button>

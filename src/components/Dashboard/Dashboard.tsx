@@ -114,17 +114,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   }[] = [
     {
       id: 'pitch_practice',
-      title: 'Pitch Practice',
-      description: 'AI-powered pitch analysis with real-time feedback and voice recording',
+      title: 'Practice Your Pitch',
+      description: 'Perfect your elevator pitch with AI coaching before facing the Sharks',
       icon: '🎤',
       color: 'from-purple-500 to-pink-500',
     },
     {
       id: 'advisory_conversation',
-      title: 'Advisory Board',
-      description: 'Strategic planning, due diligence, consultations & document analysis',
-      icon: '💼',
-      color: 'from-blue-500 to-cyan-500',
+      title: 'Swim with the Sharks',
+      description:
+        'Enter the tank and pitch your business idea to get real feedback from the Sharks',
+      icon: '🦈',
+      color: 'from-amber-500 to-orange-500',
     },
   ];
 
@@ -251,22 +252,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
             <div className="mt-6 bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">💡</span>
+                  <span className="text-lg">🦈</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-400 mb-2">Getting Started</h4>
+                  <h4 className="font-semibold text-amber-400 mb-2">Ready to Face the Sharks?</h4>
                   <ul className="text-sm text-gray-300 space-y-1">
                     <li>
-                      <strong className="text-white">New to fundraising?</strong> Try Pitch Practice
-                      to refine your pitch
+                      <strong className="text-white">First time?</strong> Practice your pitch before
+                      entering the tank
                     </li>
                     <li>
-                      <strong className="text-white">Need strategic advice?</strong> Start an
-                      Advisory Board conversation
+                      <strong className="text-white">Got a business idea?</strong> Swim with the
+                      Sharks and get brutally honest feedback
                     </li>
                     <li>
-                      <strong className="text-white">Have documents?</strong> Upload them in any
-                      mode for contextual analysis
+                      <strong className="text-white">Have a pitch deck?</strong> Upload it to show
+                      the Sharks your numbers
                     </li>
                   </ul>
                 </div>
