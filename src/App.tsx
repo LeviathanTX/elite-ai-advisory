@@ -141,7 +141,7 @@ function LandingPage({
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3 text-center">
-                  Pre-loaded with sample pitches
+                  Instant access • No setup required
                 </p>
               </div>
 

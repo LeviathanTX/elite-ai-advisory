@@ -205,14 +205,20 @@ This enables automated PR creation, merging, and status checks throughout the se
 
 ---
 
-## Current State (Updated: 2025-11-27)
+## Current State (Updated: 2025-11-29)
 
 ### Recent Achievements
-- **Avatar Display Consistency**: All advisor avatars now display uniformly across all pages
-  - Re-cropped all 32 avatar images to 512x512 showing complete heads
-  - Added Avatar component to all advisor mode selection pages
-  - Fixed Recent Conversations avatar display on Dashboard
-  - Updated production URL alias (ai-bod.vercel.app)
+- **Bear Trap Single-Page Experience**: Complete overhaul of Dashboard with integrated Shark Tank conversation interface
+  - Removed separate page navigation, everything on one page
+  - Added timed pitch mode with full-screen countdown overlay
+  - Pitch duration slider (0.5-20 minutes, default 3 min)
+  - Voice chat integration with Gemini Live API
+  - Dark Shark Tank theme with amber/orange accents
+
+- **UI/UX Improvements**:
+  - New header: "The Unauthorized AI Shark Tank Experience" with animated shark emoji
+  - Dark themed Advisor Management screen with glass-morphism effects
+  - Removed false "sample pitches" claim from landing page
 
 ### Active Features
 - Celebrity advisor selection and customization with visual avatars
@@ -221,17 +227,82 @@ This enables automated PR creation, merging, and status checks throughout the se
 - Supabase authentication and data persistence
 - Vercel auto-deployment on push to main
 - Consistent avatar display across all modes and components
+- **Bear Trap branch**: Timed pitch mode, voice conversations, Shark Tank theming
 
 ### Known Issues
-- None currently blocking
+- Voice chat WebSocket connection may need further testing for reliability
 
 ### Next Steps
-- Monitor avatar display in production
-- Continue feature development as requested
+- Test voice chat functionality end-to-end
+- Continue Bear Trap feature development as requested
 
 ---
 
 ## Session Log
+
+### 2025-11-29: Bear Trap Single-Page Experience & Dark Theme
+**Branch**: `bear-trap` (separate from main)
+**Deployed**: ✅ Bear Trap Preview (https://bear-trap-ten.vercel.app)
+
+**Work Completed**:
+
+1. **Single-Page Dashboard Overhaul**:
+   - Removed "Ready to face the sharks?", "Recent Conversations", and "The Sharks" blocks
+   - Integrated full conversation interface directly into Dashboard
+   - Moved Voice Chat button to bottom of chat interface (input area)
+   - Created seamless single-page experience
+
+2. **Timed Pitch Mode Implementation**:
+   - Full-screen pitch overlay with large countdown timer (MM:SS format)
+   - Timer color changes: normal → amber (30s remaining) → red with pulse (10s remaining)
+   - Live transcript display during recording
+   - Stop/Cancel buttons for pitch control
+   - Auto-submission when timer expires
+   - "Start Timed Pitch" button in welcome area and input area
+
+3. **Pitch Duration Slider**:
+   - Replaced 8-button duration selector with smooth slider
+   - Range: 0.5 to 20 minutes
+   - Default: 3 minutes
+   - Custom styled thumb with amber-orange gradient
+
+4. **Header Rebrand**:
+   - Changed "Bear Trap - Shark Tank Advisory" to "The Unauthorized AI Shark Tank Experience"
+   - Animated shark emoji with sparkle effect
+   - "The Unauthorized" in red uppercase with letter spacing
+   - "AI SHARK TANK" in amber→orange→red gradient
+   - "Experience" in white
+
+5. **Advisor Management Dark Theme**:
+   - Dark background with hero image at 15% opacity
+   - Gradient header: "Shark Management"
+   - Animated stat cards with different colors (amber, green, blue, purple)
+   - Glass-morphism search/filter bar
+   - Dark themed advisor cards with hover effects
+   - Motion animations for staggered card entrance
+   - "Shark" terminology throughout
+
+6. **Bug Fixes**:
+   - Removed false "Pre-loaded with sample pitches" claim (replaced with "Instant access • No setup required")
+
+**Files Modified**:
+- `src/components/Dashboard/Dashboard.tsx` - Major rewrite for single-page experience
+- `src/components/Advisory/AdvisorManagement.tsx` - Complete dark theme rewrite
+- `src/App.tsx` - Removed false sample pitches claim
+
+**Technical Details**:
+- useGeminiVoice hook integrated for voice-to-text during pitch recording
+- Pitch timer uses useEffect with 1-second interval
+- AI service configuration uses `settings.aiServices?.claude` pattern
+- Framer Motion animations throughout for smooth UX
+- Glass-morphism: `bg-white/10 backdrop-blur-sm`
+- Gradient text: `bg-clip-text text-transparent`
+
+**TypeScript Errors Fixed**:
+- TS2554/TS2339: Fixed createAdvisorAI usage with correct aiService config pattern
+- Formatting: Applied Prettier via `npm run format`
+
+---
 
 ### 2025-11-27: Avatar Display Consistency Across All Pages
 **Commits**: `03a86d5`, `c36d9d7`
