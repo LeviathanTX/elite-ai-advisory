@@ -151,11 +151,12 @@ export class GeminiVoiceService {
         this.updateState({ isConnected: true, error: null });
 
         // Send setup message per Gemini Live API spec
+        // Request both TEXT and AUDIO so we get transcripts and voice responses
         const setupMessage = {
           setup: {
             model: `models/${this.config.model}`,
             generation_config: {
-              response_modalities: ['AUDIO'],
+              response_modalities: ['TEXT', 'AUDIO'],
               speech_config: {
                 voice_config: {
                   prebuilt_voice_config: {
@@ -208,27 +209,34 @@ export class GeminiVoiceService {
     try {
       if (typeof data === 'string') {
         const message = JSON.parse(data);
+        console.log('[GeminiVoice] 📨 Received message:', Object.keys(message));
 
         // Handle setup complete
         if (message.setupComplete) {
-          console.log('[GeminiVoice] Setup complete');
+          console.log('[GeminiVoice] ✅ Setup complete');
           return;
         }
 
         // Handle server content (responses)
         if (message.serverContent) {
           const content = message.serverContent;
+          console.log('[GeminiVoice] 📦 Server content:', Object.keys(content));
 
           // Handle model turn (text/audio response)
           if (content.modelTurn) {
             const parts = content.modelTurn.parts || [];
+            console.log('[GeminiVoice] 🎭 Model turn with', parts.length, 'parts');
+
             for (const part of parts) {
               if (part.text) {
+                console.log('[GeminiVoice] 📝 Text response:', part.text.substring(0, 100) + '...');
                 this.callbacks.onResponse?.(part.text);
               }
               if (part.inlineData?.mimeType?.startsWith('audio/')) {
+                console.log('[GeminiVoice] 🔊 Audio response received, mimeType:', part.inlineData.mimeType);
                 // Decode base64 audio and play
                 const audioData = this.base64ToArrayBuffer(part.inlineData.data);
+                console.log('[GeminiVoice] 🔊 Audio data size:', audioData.byteLength, 'bytes');
                 this.callbacks.onAudioResponse?.(audioData);
                 this.playAudio(audioData);
               }
@@ -237,23 +245,24 @@ export class GeminiVoiceService {
 
           // Handle turn complete
           if (content.turnComplete) {
+            console.log('[GeminiVoice] ✅ Turn complete');
             this.updateState({ isSpeaking: false });
           }
 
           // Handle interruption
           if (content.interrupted) {
-            console.log('[GeminiVoice] Response interrupted');
+            console.log('[GeminiVoice] ⚠️ Response interrupted');
             this.updateState({ isSpeaking: false });
           }
         }
 
         // Handle tool calls (if configured)
         if (message.toolCall) {
-          console.log('[GeminiVoice] Tool call:', message.toolCall);
+          console.log('[GeminiVoice] 🔧 Tool call:', message.toolCall);
         }
       }
     } catch (error) {
-      console.error('[GeminiVoice] Error handling message:', error);
+      console.error('[GeminiVoice] ❌ Error handling message:', error);
     }
   }
 
@@ -286,6 +295,7 @@ export class GeminiVoiceService {
       // (AudioWorklet would be better for production)
       const processor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
+      let chunkCount = 0;
       processor.onaudioprocess = event => {
         if (!this.state.isListening || !this.ws) return;
 
@@ -310,6 +320,10 @@ export class GeminiVoiceService {
         };
 
         this.ws.send(JSON.stringify(audioMessage));
+        chunkCount++;
+        if (chunkCount % 50 === 0) {
+          console.log('[GeminiVoice] 🎤 Sent', chunkCount, 'audio chunks to Gemini');
+        }
       };
 
       source.connect(processor);
@@ -399,9 +413,20 @@ export class GeminiVoiceService {
    */
   private async playAudio(audioData: ArrayBuffer): Promise<void> {
     try {
-      const audioContext = new AudioContext({ sampleRate: 24000 });
+      console.log('[GeminiVoice] 🎵 Starting audio playback...');
+      console.log('[GeminiVoice] 🎵 Audio buffer size:', audioData.byteLength);
 
-      // Decode audio data (assuming PCM 24kHz)
+      // Create audio context - use default sample rate for better compatibility
+      const audioContext = new AudioContext();
+      console.log('[GeminiVoice] 🎵 AudioContext state:', audioContext.state);
+
+      // Resume if suspended (required by some browsers)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+        console.log('[GeminiVoice] 🎵 AudioContext resumed');
+      }
+
+      // Decode audio data (assuming PCM 24kHz from Gemini)
       // For PCM, we need to create the buffer manually
       const int16Array = new Int16Array(audioData);
       const float32Array = new Float32Array(int16Array.length);
@@ -410,22 +435,28 @@ export class GeminiVoiceService {
         float32Array[i] = int16Array[i] / 32768;
       }
 
+      console.log('[GeminiVoice] 🎵 Converted to float32, length:', float32Array.length);
+
+      // Create audio buffer at 24kHz (Gemini's output rate)
       const audioBuffer = audioContext.createBuffer(1, float32Array.length, 24000);
       audioBuffer.getChannelData(0).set(float32Array);
 
       const source = audioContext.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(audioContext.destination);
+
+      console.log('[GeminiVoice] 🎵 Playing audio, duration:', audioBuffer.duration, 'seconds');
       source.start();
 
       this.updateState({ isSpeaking: true });
 
       source.onended = () => {
+        console.log('[GeminiVoice] 🎵 Audio playback ended');
         this.updateState({ isSpeaking: false });
         audioContext.close();
       };
     } catch (error) {
-      console.error('[GeminiVoice] Error playing audio:', error);
+      console.error('[GeminiVoice] ❌ Error playing audio:', error);
     }
   }
 
