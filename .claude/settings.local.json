@@ -34,7 +34,8 @@
       "Bash(vercel domains ls:*)",
       "Bash(vercel inspect:*)",
       "Bash(vercel env:*)",
-      "Bash(yes:*)"
+      "Bash(yes:*)",
+      "Bash(vercel:*)"
     ],
     "deny": [],
     "ask": []
