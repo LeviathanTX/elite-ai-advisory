@@ -2097,17 +2097,25 @@ export const AdvisorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Merge database and hardcoded celebrity advisors
   // Database advisors take priority over hardcoded ones with the same ID
+  // In Bear Trap mode, always order by SHARK_TANK_ADVISOR_IDS with Mark Cuban first
   const mergedCelebrityAdvisors = React.useMemo(() => {
-    const hardcodedIds = new Set(CELEBRITY_ADVISORS.map(a => a.id));
     const dbIds = new Set(databaseCelebrityAdvisors.map(a => a.id));
 
-    // Start with database advisors (they're already sorted by display_order)
+    // Start with database advisors
     const merged = [...databaseCelebrityAdvisors];
 
     // Add hardcoded advisors that aren't in the database
     const hardcodedOnly = CELEBRITY_ADVISORS.filter(a => !dbIds.has(a.id));
+    const allAdvisors = [...merged, ...hardcodedOnly];
 
-    return [...merged, ...hardcodedOnly];
+    // In Bear Trap mode, reorder to match SHARK_TANK_ADVISOR_IDS (Mark Cuban first)
+    if (BEAR_TRAP_MODE) {
+      return SHARK_TANK_ADVISOR_IDS.map(id => allAdvisors.find(a => a.id === id)).filter(
+        (a): a is CelebrityAdvisor => a !== undefined
+      );
+    }
+
+    return allAdvisors;
   }, [databaseCelebrityAdvisors]);
 
   const getCelebrityAdvisor = (id: string): CelebrityAdvisor | undefined => {

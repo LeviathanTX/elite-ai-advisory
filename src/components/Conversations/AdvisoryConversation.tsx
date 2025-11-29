@@ -124,34 +124,14 @@ export function AdvisoryConversation({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Bear Trap Mode: Single Shark Tank pitch mode
   const conversationModes: ConversationMode[] = [
     {
-      id: 'strategic_planning',
-      name: 'Strategic Planning',
-      icon: <Brain className="w-4 h-4" />,
-      description: 'Long-term strategy and planning discussions',
-      color: 'bg-blue-500',
-    },
-    {
-      id: 'due_diligence',
-      name: 'Due Diligence',
-      icon: <FileText className="w-4 h-4" />,
-      description: 'Investment analysis and document review',
-      color: 'bg-green-500',
-    },
-    {
-      id: 'quick_consultation',
-      name: 'Quick Consultation',
-      icon: <Zap className="w-4 h-4" />,
-      description: 'Fast answers and immediate advice',
-      color: 'bg-orange-500',
-    },
-    {
       id: 'general',
-      name: 'General Discussion',
-      icon: <MessageCircle className="w-4 h-4" />,
-      description: 'Open conversation with your advisors',
-      color: 'bg-purple-500',
+      name: 'Swim with the Sharks',
+      icon: <Zap className="w-4 h-4" />,
+      description: 'Pitch your idea to the Sharks and get real feedback',
+      color: 'bg-amber-500',
     },
   ];
 
@@ -1152,91 +1132,81 @@ The committee unanimously recommends proceeding with measured optimism while sys
   };
 
   return (
-    <div className={cn('h-screen flex bg-gray-50', !isConfigured && 'pt-10')}>
+    <div className={cn('h-screen flex bg-black', !isConfigured && 'pt-10')}>
+      {/* Background Image */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src="/images/hero/shark-tank-hero.png"
+          alt="Shark Tank"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-black/80" />
+      </div>
+
       {/* Development Mode Banner */}
       {!isConfigured && (
-        <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium z-50">
-          🔧 DEVELOPMENT MODE - Using simulated AI responses.{' '}
+        <div className="fixed top-0 left-0 right-0 bg-amber-500 text-black text-center py-2 px-4 text-sm font-medium z-50">
+          🦈 Demo Mode - AI responses are simulated.{' '}
           <button
             onClick={() => setShowSettings(true)}
-            className="underline hover:text-orange-100 font-semibold"
+            className="underline hover:text-amber-100 font-semibold"
           >
-            Configure API keys in Settings
+            Configure API keys
           </button>{' '}
-          for real AI integration.
+          for real responses.
         </div>
       )}
 
-      {/* Sidebar - Advisor Selection */}
+      {/* Sidebar - Shark Selection */}
       {showAdvisorPanel && (
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="relative z-10 w-80 bg-black/80 backdrop-blur-sm border-r border-white/10 flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-white/10">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-purple-600" />
-                <h2 className="font-semibold text-gray-900">Advisory Board</h2>
+                <span className="text-2xl">🦈</span>
+                <h2 className="font-bold text-white">THE SHARKS</h2>
               </div>
               <button
                 onClick={() => setShowAdvisorPanel(false)}
-                className="p-1 rounded hover:bg-gray-100"
+                className="p-1 rounded hover:bg-white/10 text-gray-400"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Mode Selection */}
+            {/* Shark Tank Mode */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Conversation Type</label>
-              <div className="grid grid-cols-2 gap-2">
-                {conversationModes.map(mode => (
-                  <button
-                    key={mode.id}
-                    onClick={() => setSelectedMode(mode.id)}
-                    className={cn(
-                      'p-2 rounded-lg text-xs font-medium transition-all flex items-center space-x-1',
-                      selectedMode === mode.id
-                        ? `${mode.color} text-white`
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    )}
-                  >
-                    {mode.icon}
-                    <span>{mode.name}</span>
-                  </button>
-                ))}
+              <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3">
+                <div className="flex items-center space-x-2 text-amber-400 font-semibold">
+                  <Zap className="w-4 h-4" />
+                  <span>Swim with the Sharks</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  Pitch your idea and get real feedback from the Sharks
+                </p>
               </div>
 
-              {/* Configuration Actions */}
-              <div className="flex gap-2 pt-1">
-                <button
-                  onClick={handleCreateNewAdvisor}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-                  title="Create a new custom advisor"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>New Advisor</span>
-                </button>
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className={cn(
-                    'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors',
-                    showSettings
-                      ? 'text-blue-700 bg-blue-100'
-                      : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
-                  )}
-                  title="Configure enhanced meeting settings"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Settings</span>
-                </button>
-              </div>
+              {/* Settings Toggle */}
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className={cn(
+                  'w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors',
+                  showSettings
+                    ? 'text-amber-400 bg-amber-500/20 border border-amber-500/30'
+                    : 'text-gray-400 bg-white/5 hover:bg-white/10 border border-white/10'
+                )}
+              >
+                <Settings className="w-4 h-4" />
+                <span>Pitch Settings</span>
+              </button>
             </div>
           </div>
 
           {/* Enhanced Settings */}
           {showSettings && (
-            <div className="mx-4 mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-              <h3 className="font-medium text-gray-900 mb-3">Enhanced Meeting Settings</h3>
+            <div className="mx-4 mt-4 p-4 border border-white/10 rounded-lg bg-white/5">
+              <h3 className="font-medium text-white mb-3">Pitch Settings</h3>
               <div className="space-y-3">
                 <label className="flex items-center text-sm">
                   <input
@@ -1307,72 +1277,52 @@ The committee unanimously recommends proceeding with measured optimism while sys
             </div>
           )}
 
-          {/* Advisor List */}
+          {/* Shark List */}
           <div className="flex-1 overflow-y-auto p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
-                  Select Advisors ({selectedAdvisors.length})
+                <span className="text-sm font-medium text-gray-400">
+                  Choose Your Sharks ({selectedAdvisors.length})
                 </span>
               </div>
 
               {allAdvisors.map(advisor => {
                 const isSelected = selectedAdvisors.includes(advisor.id);
-                const isCelebrity = celebrityAdvisors.some(ca => ca.id === advisor.id);
 
                 return (
                   <div
                     key={advisor.id}
                     className={cn(
-                      'p-3 rounded-lg border transition-all group',
+                      'p-3 rounded-lg border transition-all group cursor-pointer',
                       isSelected
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-amber-500 bg-amber-500/20'
+                        : 'border-white/10 hover:border-amber-500/50 bg-white/5'
                     )}
+                    onClick={() => toggleAdvisor(advisor.id)}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="cursor-pointer" onClick={() => toggleAdvisor(advisor.id)}>
-                        <Avatar
-                          avatar_emoji={advisor.avatar_emoji}
-                          avatar_image={advisor.avatar_image}
-                          avatar_url={advisor.avatar_url}
-                          name={advisor.name}
-                          size="md"
-                        />
-                      </div>
-                      <div
-                        className="flex-1 min-w-0 cursor-pointer"
-                        onClick={() => toggleAdvisor(advisor.id)}
-                      >
+                      <Avatar
+                        avatar_emoji={advisor.avatar_emoji}
+                        avatar_image={advisor.avatar_image}
+                        avatar_url={advisor.avatar_url}
+                        name={advisor.name}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium text-gray-900 text-sm">{advisor.name}</span>
-                          {isCelebrity && (
-                            <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
-                          )}
+                          <span className="font-medium text-white text-sm">{advisor.name}</span>
+                          <span className="text-amber-400 text-xs">🦈</span>
                         </div>
-                        <div className="text-xs text-gray-600 truncate">
+                        <div className="text-xs text-gray-400 truncate">
                           {advisor.role || advisor.title}
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            handleEditAdvisor(advisor);
-                          }}
-                          className="p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title={isCelebrity ? 'Customize AI settings' : 'Edit advisor'}
-                        >
-                          <Edit2 className="w-3 h-3 text-gray-600" />
-                        </button>
-
-                        {isSelected && (
-                          <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">✓</span>
-                          </div>
-                        )}
-                      </div>
+                      {isSelected && (
+                        <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                          <span className="text-black text-xs font-bold">✓</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -1383,31 +1333,31 @@ The committee unanimously recommends proceeding with measured optimism while sys
       )}
 
       {/* Main Conversation Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="relative z-10 flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 p-4">
+        <div className="bg-black/80 backdrop-blur-sm border-b border-white/10 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {!showAdvisorPanel && (
                 <button
                   onClick={() => setShowAdvisorPanel(true)}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
                 >
                   <Users className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
+              <button onClick={onBack} className="text-gray-400 hover:text-white font-medium">
                 ← Back to Dashboard
               </button>
-              <div className="h-6 border-l border-gray-300"></div>
+              <div className="h-6 border-l border-white/20"></div>
               <div className="flex items-center space-x-2">
-                <div className={cn('w-3 h-3 rounded-full', currentMode?.color)} />
-                <h1 className="text-xl font-bold text-gray-900">{currentMode?.name}</h1>
+                <span className="text-2xl">🦈</span>
+                <h1 className="text-xl font-bold text-white">Swim with the Sharks</h1>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">
-                {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''} selected
+              <span className="text-sm text-gray-400">
+                {selectedAdvisors.length} shark{selectedAdvisors.length !== 1 ? 's' : ''} selected
               </span>
 
               {/* Voice Conversation Button */}
@@ -1439,7 +1389,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
                 onClick={() => {
                   // Share functionality
                   const conversationData = {
-                    title: `Advisory Session - ${currentMode?.name}`,
+                    title: `Shark Tank Session - ${currentMode?.name}`,
                     advisors: selectedAdvisors
                       .map(id => celebrityAdvisors.find(a => a.id === id)?.name)
                       .filter(Boolean)
@@ -1452,12 +1402,12 @@ The committee unanimously recommends proceeding with measured optimism while sys
                     navigator
                       .share({
                         title: conversationData.title,
-                        text: `Conversation with ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).join('\n\n')}`,
+                        text: `Conversation with ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join('\n\n')}`,
                       })
                       .catch(console.error);
                   } else {
                     // Fallback: copy to clipboard
-                    const shareText = `${conversationData.title}\nAdvisors: ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).join('\n\n')}`;
+                    const shareText = `${conversationData.title}\nSharks: ${conversationData.advisors}\n\n${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join('\n\n')}`;
                     navigator.clipboard
                       .writeText(shareText)
                       .then(() => {
@@ -1468,7 +1418,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
                       });
                   }
                 }}
-                className="p-2 rounded-lg hover:bg-gray-100"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white transition-colors"
                 title="Share conversation"
               >
                 <Share2 className="w-4 h-4" />
@@ -1477,7 +1427,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
                 onClick={() => {
                   // Download functionality
                   const conversationData = {
-                    title: `Advisory Session - ${currentMode?.name}`,
+                    title: `Shark Tank Session - ${currentMode?.name}`,
                     advisors: selectedAdvisors
                       .map(id => celebrityAdvisors.find(a => a.id === id)?.name)
                       .filter(Boolean)
@@ -1490,23 +1440,23 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   const chatText = `${conversationData.title}
 Generated: ${new Date(conversationData.timestamp).toLocaleString()}
 Mode: ${conversationData.mode}
-Advisors: ${conversationData.advisors}
+Sharks: ${conversationData.advisors}
 
 ${'='.repeat(50)}
 
-${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).join('\n\n')}`;
+${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join('\n\n')}`;
 
                   const blob = new Blob([chatText], { type: 'text/plain' });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
                   a.href = url;
-                  a.download = `advisory-session-${new Date().toISOString().split('T')[0]}.txt`;
+                  a.download = `shark-tank-session-${new Date().toISOString().split('T')[0]}.txt`;
                   document.body.appendChild(a);
                   a.click();
                   document.body.removeChild(a);
                   URL.revokeObjectURL(url);
                 }}
-                className="p-2 rounded-lg hover:bg-gray-100"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white transition-colors"
                 title="Download conversation"
               >
                 <Download className="w-4 h-4" />
@@ -1532,20 +1482,20 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
             <div className="text-center py-12">
               <div
                 className={cn(
-                  'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center',
-                  currentMode?.color
+                  'w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-amber-500/20 border-2 border-amber-500/50'
                 )}
               >
-                <div className="text-white text-2xl">{currentMode?.icon}</div>
+                <span className="text-4xl">🦈</span>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Start Your Advisory Session
-              </h3>
-              <p className="text-gray-600 mb-4">{currentMode?.description}</p>
-              <p className="text-sm text-gray-500">
+              <h3 className="text-2xl font-bold text-white mb-2">Enter the Tank</h3>
+              <p className="text-gray-400 mb-4 max-w-md mx-auto">
+                You have 60 seconds to pitch your business idea. The Sharks are ready to hear what
+                you've got. Make it count!
+              </p>
+              <p className="text-sm text-amber-400">
                 {selectedAdvisors.length > 0
-                  ? `${selectedAdvisors.length} advisor${selectedAdvisors.length !== 1 ? 's' : ''} ready to help`
-                  : 'Select advisors from the sidebar to begin'}
+                  ? `${selectedAdvisors.length} Shark${selectedAdvisors.length !== 1 ? 's' : ''} ready to hear your pitch`
+                  : 'Select your Sharks from the sidebar to begin'}
               </p>
             </div>
           )}
@@ -1557,14 +1507,14 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
             >
               <div
                 className={cn(
-                  'max-w-xs lg:max-w-md px-4 py-3 rounded-lg',
+                  'max-w-xs lg:max-w-md xl:max-w-lg px-4 py-3 rounded-lg',
                   message.type === 'user'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-amber-500 text-black'
                     : message.type === 'system'
-                      ? 'bg-gray-100 text-gray-800 border-l-4 border-gray-400'
+                      ? 'bg-white/10 text-gray-300 border-l-4 border-amber-500/50'
                       : message.type === 'analysis'
-                        ? 'bg-green-50 text-green-800 border-l-4 border-green-400 max-w-2xl'
-                        : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                        ? 'bg-green-900/30 text-green-300 border-l-4 border-green-500 max-w-2xl'
+                        : 'bg-white/10 backdrop-blur-sm border border-white/20 text-white shadow-lg'
                 )}
               >
                 {message.advisor && (
@@ -1577,33 +1527,33 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                         name={message.advisor.name}
                         size="sm"
                       />
-                      <span className="font-semibold text-purple-700 text-sm">
+                      <span className="font-semibold text-amber-400 text-sm">
                         {message.advisor.name}
                       </span>
                       {celebrityAdvisors.some(ca => ca.id === message.advisor.id) && (
-                        <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
+                        <span className="text-amber-500 text-xs">🦈</span>
                       )}
                       {message.metadata?.round && (
-                        <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded-full">
                           Round {message.metadata.round}
                         </span>
                       )}
                     </div>
                     <button
                       onClick={() => handleEditAdvisor(message.advisor)}
-                      className="p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="p-1 rounded hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
                       title={
                         celebrityAdvisors.some(ca => ca.id === message.advisor.id)
                           ? 'Customize AI settings'
                           : 'Edit advisor'
                       }
                     >
-                      <Edit2 className="w-3 h-3 text-gray-500" />
+                      <Edit2 className="w-3 h-3 text-gray-400" />
                     </button>
                   </div>
                 )}
                 <div className="text-sm whitespace-pre-wrap">{message.content}</div>
-                <div className="text-xs text-gray-400 mt-2">
+                <div className="text-xs text-gray-500 mt-2">
                   {new Date(message.timestamp).toLocaleTimeString()}
                 </div>
               </div>
@@ -1612,14 +1562,14 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
 
           {isTyping && (
             <div className="flex justify-start">
-              <div className="bg-white border border-gray-200 rounded-lg px-4 py-3 shadow-sm">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-3 shadow-lg">
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce delay-100"></div>
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce delay-200"></div>
                   </div>
-                  <span className="text-sm text-gray-600">Advisors are discussing...</span>
+                  <span className="text-sm text-gray-400">The Sharks are deliberating...</span>
                 </div>
               </div>
             </div>
@@ -1629,19 +1579,19 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         </div>
 
         {/* Input Area */}
-        <div className="bg-white border-t border-gray-200 p-4">
+        <div className="bg-black/80 backdrop-blur-sm border-t border-white/10 p-4">
           {uploadedFiles.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
               {uploadedFiles.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-2"
+                  className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-2"
                 >
-                  <Paperclip className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">{file.name}</span>
+                  <Paperclip className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm text-gray-300">{file.name}</span>
                   <button
                     onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-white"
                   >
                     ×
                   </button>
@@ -1652,14 +1602,14 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
 
           {/* Selected Documents Display */}
           {selectedDocuments.length > 0 && (
-            <div className="mb-3 p-3 bg-blue-50 rounded-lg">
+            <div className="mb-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-blue-900">
-                  📚 Knowledge Base ({selectedDocuments.length} documents)
+                <span className="text-sm font-medium text-amber-400">
+                  📚 Pitch Deck ({selectedDocuments.length} documents)
                 </span>
                 <button
                   onClick={() => setShowDocumentSelector(true)}
-                  className="text-xs text-blue-600 hover:text-blue-800"
+                  className="text-xs text-amber-400 hover:text-amber-300"
                 >
                   Manage
                 </button>
@@ -1668,14 +1618,14 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                 {selectedDocuments.slice(0, 3).map(doc => (
                   <div
                     key={doc.id}
-                    className="flex items-center space-x-1 bg-white rounded px-2 py-1"
+                    className="flex items-center space-x-1 bg-white/10 rounded px-2 py-1"
                   >
-                    <FileText className="w-3 h-3 text-blue-600" />
-                    <span className="text-xs text-gray-700">{doc.name}</span>
+                    <FileText className="w-3 h-3 text-amber-400" />
+                    <span className="text-xs text-gray-300">{doc.name}</span>
                   </div>
                 ))}
                 {selectedDocuments.length > 3 && (
-                  <div className="text-xs text-blue-600">+{selectedDocuments.length - 3} more</div>
+                  <div className="text-xs text-amber-400">+{selectedDocuments.length - 3} more</div>
                 )}
               </div>
             </div>
@@ -1693,18 +1643,18 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-                title="Upload documents"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                title="Upload pitch deck"
               >
-                <Paperclip className="w-5 h-5 text-gray-600" />
+                <Paperclip className="w-5 h-5 text-gray-400" />
               </button>
               <button
                 onClick={() => setShowDocumentSelector(true)}
                 className={cn(
                   'p-2 rounded-lg transition-colors',
                   selectedDocuments.length > 0
-                    ? 'bg-blue-100 hover:bg-blue-200 text-blue-600'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-400'
+                    : 'bg-white/10 hover:bg-white/20 text-gray-400'
                 )}
                 title="Browse and select documents"
               >
@@ -1715,8 +1665,8 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                 className={cn(
                   'p-2 rounded-lg transition-colors',
                   isRecording
-                    ? 'bg-red-100 hover:bg-red-200 text-red-600'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400'
+                    : 'bg-white/10 hover:bg-white/20 text-gray-400'
                 )}
               >
                 {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
@@ -1732,8 +1682,8 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                     sendMessage();
                   }
                 }}
-                placeholder="Ask your advisory board anything..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                placeholder="Make your pitch to the Sharks..."
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none text-white placeholder-gray-500"
                 rows={1}
                 style={{ minHeight: '44px', maxHeight: '120px' }}
               />
@@ -1741,7 +1691,7 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
             <button
               onClick={sendMessage}
               disabled={!inputMessage.trim() || selectedAdvisors.length === 0}
-              className="p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-3 bg-amber-500 text-black font-semibold rounded-lg hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Send className="w-5 h-5" />
             </button>
