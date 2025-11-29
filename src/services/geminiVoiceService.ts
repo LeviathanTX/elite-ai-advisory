@@ -151,12 +151,12 @@ export class GeminiVoiceService {
         this.updateState({ isConnected: true, error: null });
 
         // Send setup message per Gemini Live API spec
-        // Request both TEXT and AUDIO so we get transcripts and voice responses
+        // Note: Gemini Live only supports AUDIO for response_modalities (not TEXT+AUDIO together)
         const setupMessage = {
           setup: {
             model: `models/${this.config.model}`,
             generation_config: {
-              response_modalities: ['TEXT', 'AUDIO'],
+              response_modalities: ['AUDIO'],
               speech_config: {
                 voice_config: {
                   prebuilt_voice_config: {
