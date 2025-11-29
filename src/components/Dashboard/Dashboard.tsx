@@ -37,6 +37,7 @@ import { QuickStartGuide } from '../Help/QuickStartGuide';
 import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
 import { Avatar } from '../Common/Avatar';
 import { AdvisorPresenceBar } from '../Conversations/components/AdvisorPresenceBar';
+import { VoiceConversationButton } from '../Voice/VoiceConversationButton';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
 import { AdvisorEditModal } from '../Modals/AdvisorEditModal';
@@ -1357,14 +1358,38 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join
 
             {/* Timed Pitch Button */}
             {selectedAdvisors.length > 0 && (
-              <button
-                onClick={handleStartPitch}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-lg hover:from-amber-400 hover:to-orange-400 transition-all"
-                title={`Start ${enhancedSettings.pitchDuration < 1 ? `${enhancedSettings.pitchDuration * 60}s` : `${enhancedSettings.pitchDuration}m`} timed pitch`}
-              >
-                <Mic className="w-4 h-4" />
-                <span className="hidden sm:inline">Pitch</span>
-              </button>
+              <>
+                <button
+                  onClick={handleStartPitch}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-lg hover:from-amber-400 hover:to-orange-400 transition-all"
+                  title={`Start ${enhancedSettings.pitchDuration < 1 ? `${enhancedSettings.pitchDuration * 60}s` : `${enhancedSettings.pitchDuration}m`} timed pitch`}
+                >
+                  <Mic className="w-4 h-4" />
+                  <span className="hidden sm:inline">Pitch</span>
+                </button>
+
+                {/* Voice Conversation Button - Talk with Sharks */}
+                <VoiceConversationButton
+                  advisorId={selectedAdvisors[0]}
+                  advisorName={allAdvisors.find(a => a.id === selectedAdvisors[0])?.name || 'Shark'}
+                  systemPrompt={
+                    (allAdvisors.find(a => a.id === selectedAdvisors[0]) as CelebrityAdvisor)
+                      ?.system_prompt ||
+                    'You are a Shark Tank investor. Engage in conversation about business pitches and provide investment feedback.'
+                  }
+                  onTranscript={text => {
+                    // Add voice transcript to input
+                    if (text.trim()) {
+                      setInputMessage(text);
+                    }
+                  }}
+                  onResponse={text => {
+                    // Voice responses are played as audio by VoiceConversationButton
+                    console.log('Voice response from Shark:', text);
+                  }}
+                  variant="default"
+                />
+              </>
             )}
 
             <button
