@@ -8,6 +8,8 @@ export default async function handler(req, res) {
     'https://ai-bod-ochre.vercel.app',
     'https://bearable-ai-advisors.vercel.app',
     'https://elite-ai-advisory.vercel.app',
+    'https://bear-trap-ten.vercel.app',
+    'https://bear-trap-jeff-levines-projects.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001'
   ];
