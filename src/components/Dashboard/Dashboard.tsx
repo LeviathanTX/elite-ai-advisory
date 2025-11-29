@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, LogOut, Settings, Users } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import { useAdvisor } from '../../contexts/AdvisorContext';
@@ -10,10 +10,9 @@ import { HelpModal } from '../Help/HelpModal';
 import { DemoTour } from '../Help/DemoTour';
 import { OnboardingFlow } from '../Help/OnboardingFlow';
 import { QuickStartGuide } from '../Help/QuickStartGuide';
-import { TrialBanner } from '../Subscription/TrialBanner';
 import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
 import { Avatar } from '../Common/Avatar';
-import { cn, formatCurrency, calculatePercentage } from '../../utils';
+import { cn } from '../../utils';
 import { ApplicationMode } from '../../types';
 import { analytics } from '../../services/analytics';
 
@@ -23,7 +22,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   const { user, signOut } = useAuth();
-  const { currentTier, limits, usage, pricing } = useSubscription();
+  const { currentTier } = useSubscription();
   const { celebrityAdvisors, customAdvisors, conversations, setActiveConversation } = useAdvisor();
   const {
     showHelpModal,
@@ -129,180 +128,72 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     },
   ];
 
-  const getUsagePercentage = (used: number, limit: number): number => {
-    if (limit === -1) return 0; // unlimited
-    return calculatePercentage(used, limit);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dashboard-main">
-      {isDemoMode && (
-        <div className="bg-yellow-500 text-black text-center py-2 px-4 text-sm font-medium">
-          🚀 DEMO MODE - All features are simulated for demonstration
-        </div>
-      )}
+    <div className="min-h-screen bg-black dashboard-main">
+      {/* Hero Background */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/images/hero/shark-tank-hero.png"
+          alt="Shark Tank Advisors"
+          className="w-full h-full object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black" />
+      </div>
+
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="relative z-10 bg-black/50 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">Bearable Advisors</h1>
+              <h1 className="text-xl font-bold text-white">BEAR TRAP</h1>
+              <span className="ml-3 text-amber-400 text-sm">Shark Tank Advisory</span>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-600">Welcome, {user?.full_name || user?.email}</div>
-              <span
-                className={cn(
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  currentTier === 'founder' && 'bg-blue-100 text-blue-800',
-                  currentTier === 'scale-up' && 'bg-purple-100 text-purple-800',
-                  currentTier === 'enterprise' && 'bg-green-100 text-green-800'
-                )}
-              >
-                {currentTier.charAt(0).toUpperCase() + currentTier.slice(1)} Plan
-              </span>
+              <div className="text-sm text-gray-300">Welcome, {user?.full_name || user?.email}</div>
               <button
                 onClick={() => onModeSelect('advisor_management')}
-                className="text-purple-600 hover:text-purple-700 font-medium"
+                className="text-amber-400 hover:text-amber-300 font-medium flex items-center"
                 data-tour="advisor-management"
               >
-                Manage Advisors
-              </button>
-              <button
-                onClick={() => setShowQuickStart(true)}
-                className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-                title="Quick Start Guide"
-              >
-                <HelpCircle className="w-4 h-4 mr-1" />
-                Quick Start
-              </button>
-              <button
-                onClick={() => setShowHelpModal(true)}
-                className="text-gray-500 hover:text-gray-700 font-medium"
-                title="Help & Support"
-              >
-                Help
+                <Users className="w-4 h-4 mr-1" />
+                Advisors
               </button>
               <button
                 onClick={() => setShowSettings(true)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-400 hover:text-white"
                 data-tour="settings"
               >
-                Settings
+                <Settings className="w-4 h-4" />
               </button>
               <button
                 onClick={async () => {
-                  console.log('🔴 Sign out button clicked');
                   try {
-                    console.log('🔴 Calling signOut...');
                     await signOut();
-                    console.log('🔴 signOut completed, reloading page...');
-                    // Force page reload to clear all state and show landing page
                     window.location.reload();
                   } catch (error) {
-                    console.error('🔴 Sign out error:', error);
-                    // Still reload on error to ensure clean state
-                    console.log('🔴 Reloading page after error...');
                     window.location.reload();
                   }
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-400 hover:text-white"
               >
-                Sign Out
+                <LogOut className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Email Verification Banner */}
         <EmailVerificationBanner />
-
-        {/* Trial Banner */}
-        <TrialBanner className="mb-6" onUpgradeClick={() => setShowSettings(true)} />
-
-        {/* Usage Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 usage-stats">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">AI Advisor Hours</h3>
-            <div className="text-2xl font-bold text-gray-900 mb-2">
-              {usage.ai_advisor_hours_used}
-              {limits.ai_advisor_hours !== -1 && ` / ${limits.ai_advisor_hours}`}
-            </div>
-            {limits.ai_advisor_hours !== -1 && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{
-                    width: `${getUsagePercentage(usage.ai_advisor_hours_used, limits.ai_advisor_hours)}%`,
-                  }}
-                ></div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Document Analyses</h3>
-            <div className="text-2xl font-bold text-gray-900 mb-2">
-              {usage.document_analyses_used}
-              {limits.document_analyses !== -1 && ` / ${limits.document_analyses}`}
-            </div>
-            {limits.document_analyses !== -1 && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-green-600 h-2 rounded-full"
-                  style={{
-                    width: `${getUsagePercentage(usage.document_analyses_used, limits.document_analyses)}%`,
-                  }}
-                ></div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Pitch Sessions</h3>
-            <div className="text-2xl font-bold text-gray-900 mb-2">
-              {usage.pitch_practice_sessions_used}
-              {limits.pitch_practice_sessions !== -1 && ` / ${limits.pitch_practice_sessions}`}
-            </div>
-            {limits.pitch_practice_sessions !== -1 && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-purple-600 h-2 rounded-full"
-                  style={{
-                    width: `${getUsagePercentage(usage.pitch_practice_sessions_used, limits.pitch_practice_sessions)}%`,
-                  }}
-                ></div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Custom Advisors</h3>
-            <div className="text-2xl font-bold text-gray-900 mb-2">
-              {customAdvisors.length}
-              {limits.custom_advisors !== -1 && ` / ${limits.custom_advisors}`}
-            </div>
-            {limits.custom_advisors !== -1 && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-orange-600 h-2 rounded-full"
-                  style={{
-                    width: `${getUsagePercentage(customAdvisors.length, limits.custom_advisors)}%`,
-                  }}
-                ></div>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Application Modes */}
         <div className="mb-8 advisory-modes">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Choose Your Advisory Mode</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Select how you want to work with your AI advisors today
+              <h2 className="text-2xl font-bold text-white">Choose Your Advisory Mode</h2>
+              <p className="text-sm text-gray-400 mt-1">
+                Select how you want to work with your Shark Tank advisors today
               </p>
             </div>
           </div>
@@ -315,12 +206,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                   if (mode.id === 'test_document') {
                     setShowTestDocument(true);
                   } else {
-                    // Track mode selection
                     analytics.trackNavigation.modeSelected(mode.id);
                     onModeSelect(mode.id);
                   }
                 }}
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all text-left group border border-gray-200 hover:border-blue-300"
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 hover:scale-[1.02] transition-all text-left group border border-white/20 hover:border-amber-400/50"
               >
                 <div className="flex items-start space-x-4">
                   <div
@@ -333,13 +223,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                     <span className="text-2xl">{mode.icon}</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-semibold text-white mb-1 group-hover:text-amber-400 transition-colors">
                       {mode.title}
                     </h3>
-                    <p className="text-sm text-gray-600">{mode.description}</p>
+                    <p className="text-sm text-gray-300">{mode.description}</p>
                   </div>
                   <svg
-                    className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0"
+                    className="w-5 h-5 text-gray-500 group-hover:text-amber-400 transition-colors flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -358,23 +248,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
 
           {/* Quick Start Tips */}
           {(isDemoMode ? localConversations : conversations).length === 0 && (
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div className="mt-6 bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-lg">💡</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-blue-900 mb-2">Getting Started</h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
+                  <h4 className="font-semibold text-amber-400 mb-2">Getting Started</h4>
+                  <ul className="text-sm text-gray-300 space-y-1">
                     <li>
-                      <strong>New to fundraising?</strong> Try Pitch Practice to refine your pitch
+                      <strong className="text-white">New to fundraising?</strong> Try Pitch Practice
+                      to refine your pitch
                     </li>
                     <li>
-                      <strong>Need strategic advice?</strong> Start an Advisory Board conversation
+                      <strong className="text-white">Need strategic advice?</strong> Start an
+                      Advisory Board conversation
                     </li>
                     <li>
-                      <strong>Have documents?</strong> Upload them in any mode for contextual
-                      analysis
+                      <strong className="text-white">Have documents?</strong> Upload them in any
+                      mode for contextual analysis
                     </li>
                   </ul>
                 </div>
@@ -386,13 +278,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Conversations */}
-          <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Conversations</h3>
+              <h3 className="text-lg font-semibold text-white">Recent Conversations</h3>
               {(isDemoMode ? localConversations : conversations).length > 0 && (
                 <button
                   onClick={() => onModeSelect('advisory_conversation')}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-sm text-amber-400 hover:text-amber-300 font-medium"
                 >
                   View All
                 </button>
@@ -410,11 +302,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                     <button
                       key={conversation.id}
                       onClick={() => {
-                        // Set the active conversation before navigating
                         setActiveConversation(conversation);
                         onModeSelect('advisory_conversation');
                       }}
-                      className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+                      className="w-full flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/20"
                     >
                       <Avatar
                         avatar_emoji={advisor?.avatar_emoji}
@@ -424,16 +315,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                         size="md"
                       />
                       <div className="flex-1 min-w-0 text-left">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-white truncate">
                           {advisor?.name || 'Unknown Advisor'}
                         </p>
-                        <p className="text-xs text-gray-500 capitalize">
+                        <p className="text-xs text-gray-400 capitalize">
                           {conversation.mode.replace('_', ' ')} • {conversation.messages.length}{' '}
                           message{conversation.messages.length !== 1 ? 's' : ''}
                         </p>
                       </div>
                       <svg
-                        className="w-4 h-4 text-gray-400 flex-shrink-0"
+                        className="w-4 h-4 text-gray-500 flex-shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -451,9 +342,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <svg
-                    className="w-8 h-8 text-gray-400"
+                    className="w-8 h-8 text-gray-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -466,7 +357,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                     />
                   </svg>
                 </div>
-                <p className="text-gray-600 font-medium mb-1">No conversations yet</p>
+                <p className="text-gray-300 font-medium mb-1">No conversations yet</p>
                 <p className="text-sm text-gray-500">
                   Select a mode above to start your first advisory session
                 </p>
@@ -474,23 +365,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
             )}
           </div>
 
-          {/* Available Advisors */}
-          <div className="bg-white rounded-xl p-6 shadow-sm available-advisors">
+          {/* Available Advisors - Shark Tank Cast */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 available-advisors">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Available Advisors</h3>
+              <h3 className="text-lg font-semibold text-white">The Sharks</h3>
               <button
                 onClick={() => onModeSelect('advisor_management')}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="text-sm text-amber-400 hover:text-amber-300 font-medium"
               >
-                Manage
+                View All
               </button>
             </div>
             <div className="space-y-2">
-              {celebrityAdvisors.slice(0, 6).map(advisor => (
+              {celebrityAdvisors.slice(0, 8).map(advisor => (
                 <button
                   key={advisor.id}
                   onClick={() => onModeSelect('advisory_conversation')}
-                  className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+                  className="w-full flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-amber-400/30"
                   title={`Start conversation with ${advisor.name}`}
                 >
                   <Avatar
@@ -501,49 +392,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                     size="md"
                   />
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm font-medium text-gray-900">{advisor.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{advisor.title}</p>
+                    <p className="text-sm font-medium text-white">{advisor.name}</p>
+                    <p className="text-xs text-gray-400 truncate">{advisor.title}</p>
                   </div>
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 flex-shrink-0">
-                    AI Advisor
-                  </span>
-                </button>
-              ))}
-              {customAdvisors.slice(0, 3).map(advisor => (
-                <button
-                  key={advisor.id}
-                  onClick={() => onModeSelect('advisory_conversation')}
-                  className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200"
-                  title={`Start conversation with ${advisor.name}`}
-                >
-                  <Avatar
-                    avatar_emoji={advisor.avatar_emoji}
-                    avatar_image={advisor.avatar_image}
-                    avatar_url={advisor.avatar_url}
-                    name={advisor.name}
-                    size="md"
-                  />
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm font-medium text-gray-900">{advisor.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{advisor.title}</p>
-                  </div>
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 flex-shrink-0">
-                    Custom
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-400 flex-shrink-0">
+                    Shark
                   </span>
                 </button>
               ))}
             </div>
-            {celebrityAdvisors.length + customAdvisors.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500 text-sm">No advisors available yet</p>
-                <button
-                  onClick={() => onModeSelect('advisor_management')}
-                  className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
-                >
-                  Create Your First Advisor →
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
