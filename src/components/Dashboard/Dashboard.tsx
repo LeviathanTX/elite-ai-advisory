@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   HelpCircle,
   LogOut,
@@ -15,7 +15,12 @@ import {
   Edit2,
   Folder,
   ArrowLeft,
+  Play,
+  Square,
+  Clock,
+  Timer,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import { useAdvisor } from '../../contexts/AdvisorContext';
@@ -32,7 +37,7 @@ import { QuickStartGuide } from '../Help/QuickStartGuide';
 import { EmailVerificationBanner } from '../Auth/EmailVerificationBanner';
 import { Avatar } from '../Common/Avatar';
 import { AdvisorPresenceBar } from '../Conversations/components/AdvisorPresenceBar';
-import { VoiceConversationButton } from '../Voice/VoiceConversationButton';
+import { useGeminiVoice } from '../../hooks/useGeminiVoice';
 import { DocumentSelector } from '../Documents/DocumentSelector';
 import { DocumentReference } from '../../services/DocumentContext';
 import { AdvisorEditModal } from '../Modals/AdvisorEditModal';
@@ -130,11 +135,50 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   const [showCelebrityCustomizationModal, setShowCelebrityCustomizationModal] = useState(false);
   const [editingAdvisor, setEditingAdvisor] = useState<any>(null);
 
+  // Pitch Timer States
+  const [isPitchMode, setIsPitchMode] = useState(false);
+  const [pitchTimeRemaining, setPitchTimeRemaining] = useState(0);
+  const [pitchTranscript, setPitchTranscript] = useState('');
+  const [isPitchRecording, setIsPitchRecording] = useState(false);
+  const pitchTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isDemoMode = !process.env.REACT_APP_SUPABASE_URL;
   const allAdvisors = [...celebrityAdvisors, ...customAdvisors];
+
+  // Get the first selected advisor for voice
+  const primaryAdvisor =
+    selectedAdvisors.length > 0 ? allAdvisors.find(a => a.id === selectedAdvisors[0]) : null;
+
+  // Gemini Voice Hook for pitch recording
+  const {
+    isConnected: voiceConnected,
+    isListening: voiceListening,
+    isSpeaking: voiceSpeaking,
+    error: voiceError,
+    transcript: liveTranscript,
+    connect: voiceConnect,
+    disconnect: voiceDisconnect,
+    startListening: voiceStartListening,
+    stopListening: voiceStopListening,
+    hasMicrophonePermission,
+    requestMicrophonePermission,
+  } = useGeminiVoice({
+    advisorId: primaryAdvisor?.id,
+    systemPrompt:
+      (primaryAdvisor as CelebrityAdvisor)?.system_prompt ||
+      'You are a Shark Tank investor. Listen to the pitch and provide feedback.',
+    onTranscript: (text, isFinal) => {
+      if (isPitchMode && isPitchRecording) {
+        setPitchTranscript(prev => prev + ' ' + text);
+      }
+    },
+    onResponse: text => {
+      console.log('Voice response:', text);
+    },
+  });
 
   // Track dashboard view
   useEffect(() => {
@@ -144,6 +188,109 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Pitch timer countdown
+  useEffect(() => {
+    if (isPitchMode && isPitchRecording && pitchTimeRemaining > 0) {
+      pitchTimerRef.current = setInterval(() => {
+        setPitchTimeRemaining(prev => {
+          if (prev <= 1) {
+            // Time's up! Stop recording
+            handleStopPitch();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (pitchTimerRef.current) {
+        clearInterval(pitchTimerRef.current);
+      }
+    };
+  }, [isPitchMode, isPitchRecording, pitchTimeRemaining]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Start timed pitch
+  const handleStartPitch = async () => {
+    if (selectedAdvisors.length === 0) {
+      alert('Please select at least one Shark first!');
+      return;
+    }
+
+    // Set up pitch mode
+    setIsPitchMode(true);
+    setPitchTimeRemaining(Math.round(enhancedSettings.pitchDuration * 60));
+    setPitchTranscript('');
+
+    // Connect to voice if not connected
+    if (!voiceConnected) {
+      await voiceConnect();
+    }
+
+    // Small delay then start listening
+    setTimeout(async () => {
+      setIsPitchRecording(true);
+      await voiceStartListening();
+    }, 500);
+  };
+
+  // Stop pitch and submit
+  const handleStopPitch = async () => {
+    setIsPitchRecording(false);
+    voiceStopListening();
+
+    // Clear the timer
+    if (pitchTimerRef.current) {
+      clearInterval(pitchTimerRef.current);
+    }
+
+    // Get the final transcript
+    const finalTranscript = pitchTranscript.trim() || liveTranscript;
+
+    if (finalTranscript) {
+      // Add user's pitch as a message
+      const userMessage: ConversationMessage = {
+        id: `user-${Date.now()}`,
+        type: 'user',
+        content: `[Timed Pitch - ${formatTime(Math.round(enhancedSettings.pitchDuration * 60) - pitchTimeRemaining)} delivered]\n\n${finalTranscript}`,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, userMessage]);
+
+      // Set input message to trigger response
+      setInputMessage(finalTranscript);
+
+      // Auto-send to get Shark feedback
+      setTimeout(() => {
+        setInputMessage('');
+        sendMessageWithContent(finalTranscript);
+      }, 100);
+    }
+
+    setIsPitchMode(false);
+    setPitchTimeRemaining(0);
+  };
+
+  // Cancel pitch without submitting
+  const handleCancelPitch = () => {
+    setIsPitchRecording(false);
+    setIsPitchMode(false);
+    setPitchTimeRemaining(0);
+    setPitchTranscript('');
+    voiceStopListening();
+
+    if (pitchTimerRef.current) {
+      clearInterval(pitchTimerRef.current);
+    }
+  };
 
   // Pitch duration options (in minutes)
   const pitchDurationOptions = [
@@ -170,18 +317,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
     }
   };
 
-  const sendMessage = async () => {
-    if (!inputMessage.trim() || selectedAdvisors.length === 0) return;
+  // Send message with specific content (for pitch submissions)
+  const sendMessageWithContent = async (content: string) => {
+    if (!content.trim() || selectedAdvisors.length === 0) return;
+    await sendMessageInternal(content);
+  };
 
-    const userMessage: ConversationMessage = {
-      id: `user-${Date.now()}`,
-      type: 'user',
-      content: inputMessage,
-      timestamp: new Date(),
-    };
+  // Internal send message logic
+  const sendMessageInternal = async (messageContent: string) => {
+    if (!messageContent.trim() || selectedAdvisors.length === 0) return;
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
     setIsTyping(true);
 
     try {
@@ -228,7 +373,7 @@ Respond in character as ${advisor.name} would on Shark Tank - be direct, ask tou
 
           const response = await advisorAI.generateResponseWithCustomPrompt(
             systemPrompt,
-            inputMessage,
+            messageContent,
             {
               maxTokens: 1500,
               conversationHistory,
@@ -248,7 +393,7 @@ Respond in character as ${advisor.name} would on Shark Tank - be direct, ask tou
           console.error(`Error getting response from ${advisor.name}:`, error);
 
           // Demo mode fallback
-          const demoResponse = generateDemoResponse(advisor, inputMessage);
+          const demoResponse = generateDemoResponse(advisor, messageContent);
           const advisorMessage: ConversationMessage = {
             id: `advisor-${Date.now()}-${advisorId}`,
             type: 'advisor',
@@ -267,6 +412,23 @@ Respond in character as ${advisor.name} would on Shark Tank - be direct, ask tou
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const sendMessage = async () => {
+    if (!inputMessage.trim() || selectedAdvisors.length === 0) return;
+
+    const userMessage: ConversationMessage = {
+      id: `user-${Date.now()}`,
+      type: 'user',
+      content: inputMessage,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputMessage;
+    setInputMessage('');
+
+    await sendMessageInternal(messageToSend);
   };
 
   const generateDemoResponse = (advisor: any, userMessage: string): string => {
@@ -704,9 +866,82 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join
           />
         )}
 
+        {/* Pitch Mode Overlay */}
+        <AnimatePresence>
+          {isPitchMode && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-30 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center"
+            >
+              {/* Timer Display */}
+              <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-center">
+                <div
+                  className={cn(
+                    'text-8xl font-bold mb-4 font-mono',
+                    pitchTimeRemaining <= 10
+                      ? 'text-red-500 animate-pulse'
+                      : pitchTimeRemaining <= 30
+                        ? 'text-amber-500'
+                        : 'text-white'
+                  )}
+                >
+                  {formatTime(pitchTimeRemaining)}
+                </div>
+
+                {/* Recording indicator */}
+                {isPitchRecording && (
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <span className="w-4 h-4 bg-red-500 rounded-full animate-pulse" />
+                    <span className="text-red-400 text-xl font-medium">
+                      Recording your pitch...
+                    </span>
+                  </div>
+                )}
+
+                {/* Live transcript preview */}
+                {(pitchTranscript || liveTranscript) && (
+                  <div className="max-w-2xl mx-auto mb-8 p-4 bg-white/10 rounded-lg border border-white/20">
+                    <p className="text-sm text-gray-400 mb-2">What we're hearing:</p>
+                    <p className="text-white text-lg leading-relaxed">
+                      {pitchTranscript || liveTranscript || 'Speak into your microphone...'}
+                    </p>
+                  </div>
+                )}
+
+                {/* Control buttons */}
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    onClick={handleStopPitch}
+                    className="flex items-center gap-2 px-6 py-3 bg-amber-500 text-black font-bold rounded-lg hover:bg-amber-400 transition-colors"
+                  >
+                    <Square className="w-5 h-5" />
+                    Stop & Submit Pitch
+                  </button>
+                  <button
+                    onClick={handleCancelPitch}
+                    className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {/* Tips */}
+                <div className="mt-8 text-gray-500 text-sm max-w-md mx-auto">
+                  <p>
+                    Tip: Speak clearly and at a natural pace. Cover your problem, solution, market,
+                    and ask.
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.length === 0 && (
+          {messages.length === 0 && !isPitchMode && (
             <div className="text-center py-12">
               <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-amber-500/20 border-2 border-amber-500/50">
                 <span className="text-4xl">🦈</span>
@@ -720,6 +955,32 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join
                 to pitch your business idea. The Sharks are ready to hear what you've got. Make it
                 count!
               </p>
+
+              {/* Start Timed Pitch Button */}
+              <div className="mb-6">
+                <button
+                  onClick={handleStartPitch}
+                  disabled={selectedAdvisors.length === 0}
+                  className={cn(
+                    'flex items-center gap-3 mx-auto px-8 py-4 rounded-xl font-bold text-lg transition-all',
+                    selectedAdvisors.length > 0
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black hover:from-amber-400 hover:to-orange-400 shadow-lg hover:shadow-amber-500/25'
+                      : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  )}
+                >
+                  <Timer className="w-6 h-6" />
+                  Start Timed Pitch (
+                  {enhancedSettings.pitchDuration < 1
+                    ? `${enhancedSettings.pitchDuration * 60}s`
+                    : `${enhancedSettings.pitchDuration}m`}
+                  )
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-500 mb-4">
+                or type your pitch below to chat with the Sharks
+              </p>
+
               <p className="text-sm text-amber-400">
                 {selectedAdvisors.length > 0
                   ? `${selectedAdvisors.length} Shark${selectedAdvisors.length !== 1 ? 's' : ''} ready to hear your pitch`
@@ -897,27 +1158,16 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Shark'}: ${m.content}`).join
               />
             </div>
 
-            {/* Voice Chat Button - Now at the bottom */}
+            {/* Timed Pitch Button */}
             {selectedAdvisors.length > 0 && (
-              <VoiceConversationButton
-                advisorId={selectedAdvisors[0]}
-                advisorName={
-                  celebrityAdvisors.find(a => a.id === selectedAdvisors[0])?.name || 'Advisor'
-                }
-                systemPrompt={
-                  celebrityAdvisors.find(a => a.id === selectedAdvisors[0])?.system_prompt ||
-                  'You are a helpful Shark Tank investor providing business advice.'
-                }
-                onTranscript={text => {
-                  if (text.trim()) {
-                    setInputMessage(text);
-                  }
-                }}
-                onResponse={text => {
-                  console.log('Voice response:', text);
-                }}
-                variant="default"
-              />
+              <button
+                onClick={handleStartPitch}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-lg hover:from-amber-400 hover:to-orange-400 transition-all"
+                title={`Start ${enhancedSettings.pitchDuration < 1 ? `${enhancedSettings.pitchDuration * 60}s` : `${enhancedSettings.pitchDuration}m`} timed pitch`}
+              >
+                <Mic className="w-4 h-4" />
+                <span className="hidden sm:inline">Pitch</span>
+              </button>
             )}
 
             <button
