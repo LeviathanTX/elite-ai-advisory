@@ -1,5 +1,16 @@
 # AI-BoD (AI Board of Directors) - Project Instructions
 
+## Related Project: Bear Trap
+
+**Bear Trap** is a separate, independent project in its own repository:
+- **Repository:** https://github.com/LeviathanTX/bear-trap
+- **Local Path:** `/Users/jeffl/vibe-workspace/bear-trap/`
+- **URL:** https://bear-trap-ten.vercel.app/
+
+These are separate products - do NOT merge or confuse them.
+
+---
+
 ## Multi-Interface Development Model
 
 This project uses our enhanced vibe coding architecture:
@@ -54,7 +65,7 @@ Fix in this order to avoid cascade failures:
 - **Domain**: bearableai.com (email sending via Resend)
 
 ### File System
-- Working directory: `/Users/jeffl/projects/ai-bod/`
+- Working directory: `/Users/jeffl/vibe-workspace/ai-bod/`
 - Never use `git add -A` from home directory
 - Avoid operations requiring sudo
 - Ask before workarounds if blocked
