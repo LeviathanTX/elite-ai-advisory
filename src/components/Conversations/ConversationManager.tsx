@@ -49,9 +49,10 @@ interface SavedConversation {
 
 interface ConversationManagerProps {
   onBack: () => void;
+  onPitchPractice?: () => void;
 }
 
-export function ConversationManager({ onBack }: ConversationManagerProps) {
+export function ConversationManager({ onBack, onPitchPractice }: ConversationManagerProps) {
   const { user } = useAuth();
   const {
     conversations: supabaseConversations,
@@ -60,7 +61,8 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
   } = useAdvisor();
   const [localConversations, setLocalConversations] = useState<SavedConversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
-  const [showNewConversation, setShowNewConversation] = useState(false);
+  // Default to true so users see the mode selection landing page
+  const [showNewConversation, setShowNewConversation] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'starred' | 'recent' | 'archived'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'alphabetical' | 'mode'>('recent');
@@ -289,9 +291,10 @@ export function ConversationManager({ onBack }: ConversationManagerProps) {
     return (
       <AdvisoryConversation
         onBack={() => {
-          // "Back to Dashboard" should always go to dashboard
+          // Back to home (Advisory Board landing)
           onBack();
         }}
+        onPitchPractice={onPitchPractice}
         conversationId={conversationToLoad || undefined}
       />
     );

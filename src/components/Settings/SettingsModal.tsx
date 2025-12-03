@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useAdvisor } from '../../contexts/AdvisorContext';
 import { AIService, AIServiceConfig } from '../../types';
-import { cn } from '../../utils';
-import { CheckCircle, XCircle, AlertCircle, Loader } from 'lucide-react';
+import { cn, calculatePercentage } from '../../utils';
+import { CheckCircle, XCircle, AlertCircle, Loader, User, CreditCard, Settings as SettingsIcon } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -49,10 +52,20 @@ const AI_SERVICE_OPTIONS = [
 
 type ServiceStatus = 'checking' | 'connected' | 'error' | 'unchecked';
 
+type PitchAnimationStyle = 'sound-waves' | 'pulsing-mic' | 'gradient-shift' | 'none';
+
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { settings, addAIService, removeAIService, updateSettings } = useSettings();
+  const { currentTier, limits, usage, isTrialActive, trialDaysRemaining } = useSubscription();
+  const { user } = useAuth();
+  const { customAdvisors } = useAdvisor();
+
+  const [activeTab, setActiveTab] = useState<'services' | 'account'>('services');
   const [editingService, setEditingService] = useState<AIService | null>(null);
   const [serviceStatuses, setServiceStatuses] = useState<Record<string, ServiceStatus>>({});
+  const [pitchAnimation, setPitchAnimation] = useState<PitchAnimationStyle>(() => {
+    return (localStorage.getItem('pitch-card-animation') as PitchAnimationStyle) || 'sound-waves';
+  });
   const [newService, setNewService] = useState({
     id: 'claude' as AIService,
     name: '',
@@ -60,6 +73,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     baseUrl: '',
     model: '',
   });
+
+  // Save pitch animation preference
+  const handlePitchAnimationChange = (style: PitchAnimationStyle) => {
+    setPitchAnimation(style);
+    localStorage.setItem('pitch-card-animation', style);
+  };
+
+  // Helper for usage percentage
+  const getUsagePercentage = (used: number, limit: number): number => {
+    if (limit === -1) return 0;
+    return calculatePercentage(used, limit);
+  };
 
   // Initialize service statuses when modal opens
   useEffect(() => {
@@ -255,15 +280,227 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
               ×
             </button>
           </div>
+
+          {/* Tabs */}
+          <div className="flex space-x-8 border-b border-gray-200 -mb-px">
+            <button
+              onClick={() => setActiveTab('services')}
+              className={cn(
+                'flex items-center space-x-2 px-1 py-3 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'services'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              )}
+            >
+              <SettingsIcon className="w-4 h-4" />
+              <span>AI Services</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('account')}
+              className={cn(
+                'flex items-center space-x-2 px-1 py-3 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'account'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              )}
+            >
+              <User className="w-4 h-4" />
+              <span>Account</span>
+            </button>
+          </div>
         </div>
 
         <div className="p-6">
+          {/* Account Tab Content */}
+          {activeTab === 'account' && (
+            <div className="space-y-8">
+              {/* Profile Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile</h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Email</span>
+                    <span className="font-medium text-gray-900">{user?.email || 'Not logged in'}</span>
+                  </div>
+                  {user?.full_name && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Name</span>
+                      <span className="font-medium text-gray-900">{user.full_name}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Member Since</span>
+                    <span className="font-medium text-gray-900">
+                      {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subscription Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Subscription</h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Current Plan</span>
+                    <span
+                      className={cn(
+                        'px-3 py-1 rounded-full text-sm font-medium',
+                        currentTier === 'founder' && 'bg-blue-100 text-blue-800',
+                        currentTier === 'scale-up' && 'bg-purple-100 text-purple-800',
+                        currentTier === 'enterprise' && 'bg-green-100 text-green-800'
+                      )}
+                    >
+                      {currentTier.charAt(0).toUpperCase() + currentTier.slice(1)}
+                    </span>
+                  </div>
+                  {isTrialActive && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Trial Status</span>
+                      <span className="font-medium text-orange-600">
+                        {trialDaysRemaining} days remaining
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Usage Statistics */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Usage Statistics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* AI Advisor Hours */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">AI Advisor Hours</h4>
+                    <div className="text-xl font-bold text-gray-900 mb-2">
+                      {usage.ai_advisor_hours_used}
+                      {limits.ai_advisor_hours !== -1 && ` / ${limits.ai_advisor_hours}`}
+                      {limits.ai_advisor_hours === -1 && ' (unlimited)'}
+                    </div>
+                    {limits.ai_advisor_hours !== -1 && (
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all"
+                          style={{
+                            width: `${Math.min(100, getUsagePercentage(usage.ai_advisor_hours_used, limits.ai_advisor_hours))}%`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Document Analyses */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">Document Analyses</h4>
+                    <div className="text-xl font-bold text-gray-900 mb-2">
+                      {usage.document_analyses_used}
+                      {limits.document_analyses !== -1 && ` / ${limits.document_analyses}`}
+                      {limits.document_analyses === -1 && ' (unlimited)'}
+                    </div>
+                    {limits.document_analyses !== -1 && (
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-600 h-2 rounded-full transition-all"
+                          style={{
+                            width: `${Math.min(100, getUsagePercentage(usage.document_analyses_used, limits.document_analyses))}%`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Pitch Sessions */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">Pitch Sessions</h4>
+                    <div className="text-xl font-bold text-gray-900 mb-2">
+                      {usage.pitch_practice_sessions_used}
+                      {limits.pitch_practice_sessions !== -1 && ` / ${limits.pitch_practice_sessions}`}
+                      {limits.pitch_practice_sessions === -1 && ' (unlimited)'}
+                    </div>
+                    {limits.pitch_practice_sessions !== -1 && (
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-purple-600 h-2 rounded-full transition-all"
+                          style={{
+                            width: `${Math.min(100, getUsagePercentage(usage.pitch_practice_sessions_used, limits.pitch_practice_sessions))}%`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Custom Advisors */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">Custom Advisors</h4>
+                    <div className="text-xl font-bold text-gray-900 mb-2">
+                      {customAdvisors.length}
+                      {limits.custom_advisors !== -1 && ` / ${limits.custom_advisors}`}
+                      {limits.custom_advisors === -1 && ' (unlimited)'}
+                    </div>
+                    {limits.custom_advisors !== -1 && (
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-orange-600 h-2 rounded-full transition-all"
+                          style={{
+                            width: `${Math.min(100, getUsagePercentage(customAdvisors.length, limits.custom_advisors))}%`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Preferences Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Preferences</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="font-medium text-gray-900">Pitch Practice Animation</label>
+                      <p className="text-sm text-gray-500">Choose the visual style for the Pitch Practice card</p>
+                    </div>
+                    <select
+                      value={pitchAnimation}
+                      onChange={(e) => handlePitchAnimationChange(e.target.value as PitchAnimationStyle)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="sound-waves">Sound Waves</option>
+                      <option value="pulsing-mic">Pulsing Microphone</option>
+                      <option value="gradient-shift">Gradient Shift</option>
+                      <option value="none">None (Static)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Billing Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing</h3>
+                <div className="bg-gray-50 rounded-lg p-6 text-center">
+                  <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600 mb-4">
+                    Manage your subscription and payment methods
+                  </p>
+                  <button
+                    disabled
+                    className="px-6 py-2 bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed"
+                  >
+                    Upgrade Plan (Coming Soon)
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AI Services Tab Content */}
+          {activeTab === 'services' && (
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">AI Service Configuration</h3>
             <p className="text-gray-600 mb-6">
@@ -401,17 +638,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 <li>• API keys are stored locally in your browser and never sent to our servers</li>
               </ul>
             </div>
-          </div>
 
-          {/* Demo Mode Notice */}
-          {!process.env.REACT_APP_SUPABASE_URL && (
-            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <h4 className="text-sm font-medium text-yellow-900 mb-2">🚀 Demo Mode</h4>
-              <p className="text-sm text-yellow-800">
-                You're in demo mode. A default Claude API key has been pre-configured for testing.
-                In production, you would need to provide your own API keys.
-              </p>
-            </div>
+            {/* Demo Mode Notice */}
+            {!process.env.REACT_APP_SUPABASE_URL && (
+              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <h4 className="text-sm font-medium text-yellow-900 mb-2">🚀 Demo Mode</h4>
+                <p className="text-sm text-yellow-800">
+                  You're in demo mode. A default Claude API key has been pre-configured for testing.
+                  In production, you would need to provide your own API keys.
+                </p>
+              </div>
+            )}
+          </div>
           )}
         </div>
 

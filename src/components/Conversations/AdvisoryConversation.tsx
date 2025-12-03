@@ -17,10 +17,15 @@ import {
   Edit2,
   Plus,
   Folder,
+  HelpCircle,
+  LogOut,
 } from 'lucide-react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
+import { SettingsModal } from '../Settings/SettingsModal';
+import { HelpModal } from '../Help/HelpModal';
 import { useDocumentContext } from '../../hooks/useDocumentContext';
 import { createAdvisorAI } from '../../services/advisorAI';
 import {
@@ -68,17 +73,79 @@ interface ConversationMessage {
 
 interface AdvisoryConversationProps {
   onBack: () => void;
+  onPitchPractice?: () => void;
   initialMode?: ConversationMode['id'];
   conversationId?: string;
 }
 
+// Pitch Practice Animation Component
+const PitchPracticeAnimation: React.FC<{ style: string }> = ({ style }) => {
+  if (style === 'none') return null;
+
+  if (style === 'sound-waves') {
+    return (
+      <div className="flex items-end justify-center space-x-1 h-8 mt-2">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div
+            key={i}
+            className="w-1.5 bg-white/80 rounded-full animate-pulse"
+            style={{
+              height: `${Math.random() * 50 + 30}%`,
+              animationDelay: `${i * 0.15}s`,
+              animationDuration: '0.8s',
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (style === 'pulsing-mic') {
+    return (
+      <div className="mt-2 flex justify-center">
+        <div className="relative">
+          <Mic className="w-6 h-6 text-white/90 animate-pulse" />
+          <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
+        </div>
+      </div>
+    );
+  }
+
+  if (style === 'gradient-shift') {
+    return (
+      <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 animate-gradient-shift"
+          style={{
+            background: 'linear-gradient(45deg, rgba(168,85,247,0.3), rgba(236,72,153,0.3), rgba(249,115,22,0.3))',
+            backgroundSize: '200% 200%',
+            animation: 'gradientShift 3s ease infinite',
+          }}
+        />
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export function AdvisoryConversation({
   onBack,
+  onPitchPractice,
   initialMode = 'general',
   conversationId,
 }: AdvisoryConversationProps) {
-  const { celebrityAdvisors, customAdvisors, activeConversation } = useAdvisor();
-  const { user } = useAuth();
+  // Get pitch animation preference from localStorage
+  const [pitchAnimationStyle, setPitchAnimationStyle] = React.useState(() => {
+    return localStorage.getItem('pitch-card-animation') || 'sound-waves';
+  });
+  const { celebrityAdvisors, customAdvisors, activeConversation, conversations, setActiveConversation } = useAdvisor();
+  const { user, signOut } = useAuth();
+  const { currentTier } = useSubscription();
+
+  // Header modal states
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const { settings, isConfigured } = useSettings();
   const {
     getDocumentContext,
@@ -1370,6 +1437,67 @@ The committee unanimously recommends proceeding with measured optimism while sys
               })}
             </div>
           </div>
+
+          {/* Recent Conversations Section */}
+          {conversations.length > 0 && (
+            <div className="border-t border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">Recent Conversations</span>
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {conversations.slice(0, 5).map((conv) => {
+                  const advisor = conv.advisor_type === 'celebrity'
+                    ? celebrityAdvisors.find(a => a.id === conv.advisor_id)
+                    : customAdvisors.find(a => a.id === conv.advisor_id);
+                  return (
+                    <button
+                      key={conv.id}
+                      onClick={() => {
+                        setActiveConversation(conv);
+                        if (conv.messages) {
+                          setMessages(conv.messages as any);
+                        }
+                        if (conv.mode) {
+                          setSelectedMode(conv.mode as any);
+                        }
+                        if (conv.advisor_id) {
+                          setSelectedAdvisors([conv.advisor_id]);
+                        }
+                      }}
+                      className="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                    >
+                      <Avatar
+                        avatar_emoji={advisor?.avatar_emoji}
+                        avatar_image={advisor?.avatar_image}
+                        avatar_url={(advisor as any)?.avatar_url}
+                        name={advisor?.name || 'Unknown'}
+                        size="sm"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {advisor?.name || 'Unknown'}
+                        </p>
+                        <p className="text-xs text-gray-500 capitalize truncate">
+                          {(conv.mode || 'general').replace('_', ' ')} • {conv.messages?.length || 0} msgs
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {conversations.length > 5 && (
+                <button
+                  className="w-full mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium py-1"
+                  onClick={() => {
+                    // TODO: Open full conversation history modal
+                    console.log('View all conversations');
+                  }}
+                >
+                  View All ({conversations.length})
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -1383,22 +1511,37 @@ The committee unanimously recommends proceeding with measured optimism while sys
                 <button
                   onClick={() => setShowAdvisorPanel(true)}
                   className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                  title="Show advisors panel"
                 >
                   <Users className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
-                ← Back to Dashboard
-              </button>
+              <h1 className="text-xl font-bold text-gray-900">Bearable Advisors</h1>
               <div className="h-6 border-l border-gray-300"></div>
               <div className="flex items-center space-x-2">
                 <div className={cn('w-3 h-3 rounded-full', currentMode?.color)} />
-                <h1 className="text-xl font-bold text-gray-900">{currentMode?.name}</h1>
+                <span className="text-sm font-medium text-gray-700">{currentMode?.name}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              {/* User info & tier */}
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+                <span>{user?.email?.split('@')[0]}</span>
+                <span
+                  className={cn(
+                    'px-2 py-0.5 rounded-full text-xs font-medium',
+                    currentTier === 'founder' && 'bg-blue-100 text-blue-800',
+                    currentTier === 'scale-up' && 'bg-purple-100 text-purple-800',
+                    currentTier === 'enterprise' && 'bg-green-100 text-green-800'
+                  )}
+                >
+                  {currentTier}
+                </span>
+              </div>
+              <div className="h-6 border-l border-gray-300 hidden md:block"></div>
+              {/* Advisor count */}
               <span className="text-sm text-gray-600">
-                {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''} selected
+                {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''}
               </span>
               <button
                 onClick={() => {
@@ -1476,6 +1619,39 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
               >
                 <Download className="w-4 h-4" />
               </button>
+              <div className="h-6 border-l border-gray-300"></div>
+              {/* Help button */}
+              <button
+                onClick={() => setShowHelpModal(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                title="Help"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+              {/* Settings button */}
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                title="Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              {/* Sign Out button */}
+              <button
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Sign out error:', error);
+                    window.location.reload();
+                  }
+                }}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-600"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -1483,24 +1659,131 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
-            <div className="text-center py-12">
-              <div
-                className={cn(
-                  'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center',
-                  currentMode?.color
-                )}
-              >
-                <div className="text-white text-2xl">{currentMode?.icon}</div>
+            <div className="py-8 px-4 max-w-4xl mx-auto">
+              {/* Header */}
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Start Your Session</h2>
+                <p className="text-gray-600">
+                  {selectedAdvisors.length > 0
+                    ? `${selectedAdvisors.length} advisor${selectedAdvisors.length !== 1 ? 's' : ''} selected. Choose a mode to begin.`
+                    : 'Select advisors from the sidebar, then choose your conversation mode.'}
+                </p>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Start Your Advisory Session
-              </h3>
-              <p className="text-gray-600 mb-4">{currentMode?.description}</p>
-              <p className="text-sm text-gray-500">
-                {selectedAdvisors.length > 0
-                  ? `${selectedAdvisors.length} advisor${selectedAdvisors.length !== 1 ? 's' : ''} ready to help`
-                  : 'Select advisors from the sidebar to begin'}
-              </p>
+
+              {/* Mode Selection Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                {/* Pitch Practice - Special Card */}
+                {onPitchPractice && (
+                  <button
+                    onClick={onPitchPractice}
+                    className="relative col-span-1 md:col-span-2 p-6 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-left hover:scale-[1.02] hover:shadow-xl transition-all group overflow-hidden"
+                  >
+                    <PitchPracticeAnimation style={pitchAnimationStyle} />
+                    <div className="relative z-10">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <Mic className="w-8 h-8" />
+                        <h3 className="text-xl font-bold">Pitch Practice</h3>
+                      </div>
+                      <p className="text-white/90 text-sm">
+                        Practice and refine your pitch with real-time AI feedback, voice recording, and professional analysis
+                      </p>
+                    </div>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                )}
+
+                {/* Other Mode Cards */}
+                {conversationModes.map((mode) => (
+                  <button
+                    key={mode.id}
+                    onClick={() => setSelectedMode(mode.id)}
+                    className={cn(
+                      'p-5 rounded-xl text-left transition-all hover:scale-[1.02] hover:shadow-lg border-2',
+                      selectedMode === mode.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    )}
+                  >
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center text-white', mode.color)}>
+                        {mode.icon}
+                      </div>
+                      <h3 className="font-semibold text-gray-900">{mode.name}</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">{mode.description}</p>
+                    {selectedMode === mode.id && (
+                      <div className="mt-3 flex items-center text-blue-600 text-sm font-medium">
+                        <span>Selected</span>
+                        <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Continue where you left off */}
+              {conversations.length > 0 && (
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Continue where you left off</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {conversations.slice(0, 3).map((conv) => {
+                      const advisor = conv.advisor_type === 'celebrity'
+                        ? celebrityAdvisors.find(a => a.id === conv.advisor_id)
+                        : customAdvisors.find(a => a.id === conv.advisor_id);
+                      return (
+                        <button
+                          key={conv.id}
+                          onClick={() => {
+                            setActiveConversation(conv);
+                            // Load the conversation
+                            if (conv.messages) {
+                              setMessages(conv.messages as any);
+                            }
+                            if (conv.mode) {
+                              setSelectedMode(conv.mode as any);
+                            }
+                            if (conv.advisor_id) {
+                              setSelectedAdvisors([conv.advisor_id]);
+                            }
+                          }}
+                          className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+                        >
+                          <Avatar
+                            avatar_emoji={advisor?.avatar_emoji}
+                            avatar_image={advisor?.avatar_image}
+                            avatar_url={(advisor as any)?.avatar_url}
+                            name={advisor?.name || 'Unknown'}
+                            size="sm"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {advisor?.name || 'Unknown Advisor'}
+                            </p>
+                            <p className="text-xs text-gray-500 capitalize">
+                              {(conv.mode || 'general').replace('_', ' ')} • {conv.messages?.length || 0} messages
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Ready to start message */}
+              {selectedAdvisors.length > 0 && selectedMode && (
+                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+                  <p className="text-green-800 font-medium">
+                    Ready to start! Type your message below to begin the conversation.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -1731,6 +2014,18 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         selectedDocuments={selectedDocuments}
         isOpen={showDocumentSelector}
         onClose={() => setShowDocumentSelector(false)}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
       />
     </div>
   );
