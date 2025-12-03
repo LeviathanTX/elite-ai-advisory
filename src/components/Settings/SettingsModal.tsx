@@ -9,6 +9,7 @@ import { CheckCircle, XCircle, AlertCircle, Loader, User, CreditCard, Settings a
 import { Avatar } from '../Common/Avatar';
 import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
 import { AdvisorEditModal } from '../Modals/AdvisorEditModal';
+import { CelebrityAdvisorCustomizationModal } from '../Modals/CelebrityAdvisorCustomizationModal';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -66,7 +67,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [activeTab, setActiveTab] = useState<'services' | 'account' | 'advisors'>('services');
   const [showCreateAdvisorModal, setShowCreateAdvisorModal] = useState(false);
   const [showEditAdvisorModal, setShowEditAdvisorModal] = useState(false);
+  const [showCelebrityEditModal, setShowCelebrityEditModal] = useState(false);
   const [editingAdvisor, setEditingAdvisor] = useState<any>(null);
+  const [editingCelebrityAdvisor, setEditingCelebrityAdvisor] = useState<any>(null);
   const [editingService, setEditingService] = useState<AIService | null>(null);
   const [serviceStatuses, setServiceStatuses] = useState<Record<string, ServiceStatus>>({});
   const [pitchAnimation, setPitchAnimation] = useState<PitchAnimationStyle>(() => {
@@ -768,36 +771,47 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 )}
               </div>
 
-              {/* Celebrity Advisors Reference */}
+              {/* Celebrity Advisors - Editable */}
               <div>
                 <h4 className="text-lg font-medium text-gray-900 mb-3">
                   Celebrity Advisors ({celebrityAdvisors.length} available)
                 </h4>
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    Celebrity advisors are pre-configured AI versions of leading investors and business leaders.
-                    Select them from the advisory panel when starting a conversation.
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {celebrityAdvisors.slice(0, 6).map(advisor => (
-                      <div key={advisor.id} className="flex items-center space-x-1 bg-white px-2 py-1 rounded-full">
-                        <Avatar
-                          avatar_emoji={advisor.avatar_emoji}
-                          avatar_image={advisor.avatar_image}
-                          avatar_url={(advisor as any).avatar_url}
-                          name={advisor.name}
-                          size="sm"
-                        />
-                        <span className="text-xs text-gray-700">{advisor.name}</span>
-                        <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
+                <p className="text-sm text-gray-600 mb-3">
+                  Customize AI service and system prompts for celebrity advisors.
+                </p>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {celebrityAdvisors.map(advisor => (
+                    <div key={advisor.id} className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Avatar
+                            avatar_emoji={advisor.avatar_emoji}
+                            avatar_image={advisor.avatar_image}
+                            avatar_url={(advisor as any).avatar_url}
+                            name={advisor.name}
+                            size="sm"
+                          />
+                          <div>
+                            <div className="flex items-center space-x-1">
+                              <h5 className="font-medium text-gray-900 text-sm">{advisor.name}</h5>
+                              <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
+                            </div>
+                            <p className="text-xs text-gray-500">{advisor.role || advisor.title}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setEditingCelebrityAdvisor(advisor);
+                            setShowCelebrityEditModal(true);
+                          }}
+                          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Customize advisor"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
                       </div>
-                    ))}
-                    {celebrityAdvisors.length > 6 && (
-                      <span className="px-2 py-1 text-xs text-blue-600">
-                        +{celebrityAdvisors.length - 6} more
-                      </span>
-                    )}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -854,6 +868,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         onSave={() => {
           setShowEditAdvisorModal(false);
           setEditingAdvisor(null);
+        }}
+      />
+
+      {/* Celebrity Advisor Customization Modal */}
+      <CelebrityAdvisorCustomizationModal
+        advisor={editingCelebrityAdvisor}
+        isOpen={showCelebrityEditModal}
+        onClose={() => {
+          setShowCelebrityEditModal(false);
+          setEditingCelebrityAdvisor(null);
+        }}
+        onSave={() => {
+          setShowCelebrityEditModal(false);
+          setEditingCelebrityAdvisor(null);
         }}
       />
     </div>
