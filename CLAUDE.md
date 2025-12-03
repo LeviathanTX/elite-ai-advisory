@@ -1,5 +1,37 @@
 # AI-BoD (AI Board of Directors) - Project Instructions
 
+## 🚨 ORIENTATION PROTOCOL (Read This First)
+
+**When a user says "ORIENT: ai-bod" or starts a session mentioning this project, Claude MUST:**
+
+1. **Confirm correct repository:**
+   ```bash
+   cd /Users/jeffl/vibe-workspace/ai-bod
+   git remote -v
+   # Must show: github.com/LeviathanTX/ai-bod
+   ```
+
+2. **Check current branch:**
+   ```bash
+   git branch --show-current
+   git status -s
+   ```
+
+3. **Read current state:** Review the "Current State" section at the bottom of this file
+
+4. **Read recent session:** Check the top entry in SESSION_LOG.md
+
+5. **Report to user before proceeding:**
+   - Repository: ai-bod ✓ or ✗
+   - Branch: [branch name]
+   - Working directory: clean / has changes
+   - Last session: [date and summary]
+   - Current state: [brief summary]
+
+**NEVER start coding until orientation is complete and confirmed.**
+
+---
+
 ## Related Project: Bear Trap
 
 **Bear Trap** is a separate, independent project in its own repository:
