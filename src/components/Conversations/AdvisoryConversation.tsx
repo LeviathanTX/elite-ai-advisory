@@ -17,10 +17,15 @@ import {
   Edit2,
   Plus,
   Folder,
+  HelpCircle,
+  LogOut,
 } from 'lucide-react';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
+import { SettingsModal } from '../Settings/SettingsModal';
+import { HelpModal } from '../Help/HelpModal';
 import { useDocumentContext } from '../../hooks/useDocumentContext';
 import { createAdvisorAI } from '../../services/advisorAI';
 import {
@@ -37,10 +42,11 @@ import {
   loadConversation as loadConversationFromService,
 } from '../../services/conversationService';
 import { Avatar } from '../Common/Avatar';
+import { VoicePitchRecorder, PitchRecordingResult } from '../PitchPractice';
 import { cn } from '../../utils';
 
 interface ConversationMode {
-  id: 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general';
+  id: 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general' | 'pitch_practice';
   name: string;
   icon: React.ReactNode;
   description: string;
@@ -72,13 +78,73 @@ interface AdvisoryConversationProps {
   conversationId?: string;
 }
 
+// Pitch Practice Animation Component
+const PitchPracticeAnimation: React.FC<{ style: string }> = ({ style }) => {
+  if (style === 'none') return null;
+
+  if (style === 'sound-waves') {
+    return (
+      <div className="flex items-end justify-center space-x-1 h-8 mt-2">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div
+            key={i}
+            className="w-1.5 bg-white/80 rounded-full animate-pulse"
+            style={{
+              height: `${Math.random() * 50 + 30}%`,
+              animationDelay: `${i * 0.15}s`,
+              animationDuration: '0.8s',
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (style === 'pulsing-mic') {
+    return (
+      <div className="mt-2 flex justify-center">
+        <div className="relative">
+          <Mic className="w-6 h-6 text-white/90 animate-pulse" />
+          <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
+        </div>
+      </div>
+    );
+  }
+
+  if (style === 'gradient-shift') {
+    return (
+      <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 animate-gradient-shift"
+          style={{
+            background: 'linear-gradient(45deg, rgba(168,85,247,0.3), rgba(236,72,153,0.3), rgba(249,115,22,0.3))',
+            backgroundSize: '200% 200%',
+            animation: 'gradientShift 3s ease infinite',
+          }}
+        />
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export function AdvisoryConversation({
   onBack,
   initialMode = 'general',
   conversationId,
 }: AdvisoryConversationProps) {
-  const { celebrityAdvisors, customAdvisors, activeConversation } = useAdvisor();
-  const { user } = useAuth();
+  // Get pitch animation preference from localStorage
+  const [pitchAnimationStyle, setPitchAnimationStyle] = React.useState(() => {
+    return localStorage.getItem('pitch-card-animation') || 'sound-waves';
+  });
+  const { celebrityAdvisors, customAdvisors, activeConversation, conversations, setActiveConversation } = useAdvisor();
+  const { user, signOut } = useAuth();
+  const { currentTier } = useSubscription();
+
+  // Header modal states
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const { settings, isConfigured } = useSettings();
   const {
     getDocumentContext,
@@ -122,7 +188,18 @@ export function AdvisoryConversation({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Pitch practice state
+  const [showPitchRecorder, setShowPitchRecorder] = useState(false);
+  const [isAnalyzingPitch, setIsAnalyzingPitch] = useState(false);
+
   const conversationModes: ConversationMode[] = [
+    {
+      id: 'pitch_practice',
+      name: 'Pitch Practice',
+      icon: <Mic className="w-4 h-4" />,
+      description: 'Record your pitch and get AI feedback',
+      color: 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400',
+    },
     {
       id: 'strategic_planning',
       name: 'Strategic Planning',
@@ -529,6 +606,154 @@ export function AdvisoryConversation({
     setSelectedAdvisors(prev =>
       prev.includes(advisorId) ? prev.filter(id => id !== advisorId) : [...prev, advisorId]
     );
+  };
+
+  // Handle pitch recording completion - generate AI feedback and add to conversation
+  const handlePitchRecordingComplete = async (result: PitchRecordingResult) => {
+    setIsAnalyzingPitch(true);
+    setShowPitchRecorder(false);
+
+    try {
+      // Add user message with pitch info
+      const pitchMessage: ConversationMessage = {
+        id: `pitch-${Date.now()}`,
+        type: 'user',
+        content: `🎤 **Pitch Recording** (${Math.floor(result.duration / 60)}:${(result.duration % 60).toString().padStart(2, '0')})\n\n${result.transcript || '[Voice pitch recorded - analyzing...]'}`,
+        timestamp: new Date(),
+        metadata: {
+          isPitch: true,
+          duration: result.duration,
+          hasAudioFeatures: !!result.audioFeatures,
+        },
+      };
+      setMessages(prev => [...prev, pitchMessage]);
+
+      // Generate feedback from each selected advisor
+      const selectedAdvisorObjects = selectedAdvisors
+        .map(id => allAdvisors.find(a => a.id === id))
+        .filter(Boolean);
+
+      // Build context for AI feedback
+      const pitchContext = `
+The user has just recorded a pitch. Here are the details:
+
+**Transcript:**
+${result.transcript || 'No transcript available'}
+
+**Duration:** ${Math.floor(result.duration / 60)} minutes ${result.duration % 60} seconds
+
+${result.audioFeatures ? `
+**Voice Analysis:**
+- Speaking pace: ${result.audioFeatures.rhythm?.speaking_rate || 'N/A'} words per minute
+- Voice quality score: ${result.audioFeatures.coaching_metrics?.professional_tone || 'N/A'}%
+- Confidence indicators: ${result.audioFeatures.emotional_markers?.confidence_level || 'N/A'}%
+- Energy level: ${result.audioFeatures.emotional_markers?.energy_level || 'N/A'}%
+` : ''}
+
+${result.vocalInsights ? `
+**Vocal Delivery Insights:**
+- Strengths: ${result.vocalInsights.strengths?.join(', ') || 'N/A'}
+- Areas for improvement: ${result.vocalInsights.improvement_areas?.join(', ') || 'N/A'}
+` : ''}
+
+Please provide specific, actionable feedback on this pitch from your perspective as an advisor.
+`;
+
+      // Get feedback from each advisor
+      for (const advisor of selectedAdvisorObjects) {
+        if (!advisor) continue;
+
+        setIsTyping(true);
+
+        try {
+          // Use the existing AI service to generate feedback
+          const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              service: 'claude',
+              model: 'claude-sonnet-4-20250514',
+              messages: [
+                {
+                  role: 'system',
+                  content: `You are ${advisor.name}, ${advisor.role || advisor.title}. ${(advisor as any).personality || ''} ${(advisor as any).background || ''}
+
+Your communication style: ${advisor.communication_style || 'Direct and insightful'}
+
+You are reviewing a pitch recording. Provide specific, actionable feedback that reflects your unique perspective and expertise. Be encouraging but honest. Focus on:
+1. What works well
+2. What could be improved
+3. Specific recommendations
+
+Keep your response concise but valuable (2-3 paragraphs).`,
+                },
+                {
+                  role: 'user',
+                  content: pitchContext,
+                },
+              ],
+              options: { maxTokens: 1000, temperature: 0.7 },
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const feedbackContent = data.content || data.text || 'Unable to generate feedback.';
+
+            const advisorMessage: ConversationMessage = {
+              id: `advisor-pitch-${Date.now()}-${advisor.id}`,
+              type: 'advisor',
+              content: feedbackContent,
+              timestamp: new Date(),
+              advisor: advisor,
+              metadata: {
+                isPitchFeedback: true,
+              },
+            };
+            setMessages(prev => [...prev, advisorMessage]);
+          } else {
+            throw new Error('API request failed');
+          }
+        } catch (error) {
+          console.error(`Error getting feedback from ${advisor.name}:`, error);
+          // Add fallback message
+          const fallbackMessage: ConversationMessage = {
+            id: `advisor-pitch-${Date.now()}-${advisor.id}`,
+            type: 'advisor',
+            content: `Thank you for sharing your pitch! I've listened carefully. While I couldn't provide detailed AI analysis at the moment, here are some general tips:\n\n1. **Structure**: Make sure you have a clear problem-solution-ask flow\n2. **Timing**: Your ${Math.floor(result.duration / 60)}+ minute pitch should be concise and impactful\n3. **Practice**: Keep refining based on feedback\n\nFeel free to ask me specific questions about your pitch!`,
+            timestamp: new Date(),
+            advisor: advisor,
+            metadata: {
+              isPitchFeedback: true,
+              isFallback: true,
+            },
+          };
+          setMessages(prev => [...prev, fallbackMessage]);
+        }
+      }
+
+      // Add a follow-up prompt
+      const followUpMessage: ConversationMessage = {
+        id: `system-followup-${Date.now()}`,
+        type: 'system',
+        content: '💡 You can now ask follow-up questions about your pitch or request specific advice from your advisors.',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, followUpMessage]);
+
+    } catch (error) {
+      console.error('Error processing pitch:', error);
+      const errorMessage: ConversationMessage = {
+        id: `error-${Date.now()}`,
+        type: 'system',
+        content: '❌ There was an error processing your pitch. Please try again.',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsAnalyzingPitch(false);
+      setIsTyping(false);
+    }
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1179,11 +1404,38 @@ The committee unanimously recommends proceeding with measured optimism while sys
             {/* Mode Selection */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Conversation Type</label>
+
+              {/* Pitch Practice - Special Button (first in list) */}
+              <button
+                onClick={() => {
+                  setSelectedMode('pitch_practice');
+                  if (selectedAdvisors.length > 0) {
+                    setShowPitchRecorder(true);
+                  }
+                }}
+                className={cn(
+                  'w-full p-3 rounded-lg text-white text-left hover:scale-[1.02] hover:shadow-lg transition-all flex items-center space-x-2',
+                  selectedMode === 'pitch_practice'
+                    ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 ring-2 ring-purple-300'
+                    : 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400'
+                )}
+              >
+                <Mic className="w-5 h-5" />
+                <div>
+                  <span className="font-medium text-sm">Pitch Practice</span>
+                  <p className="text-xs text-white/80">Voice recording & AI feedback</p>
+                </div>
+              </button>
+
+              {/* Other Mode Buttons */}
               <div className="grid grid-cols-2 gap-2">
-                {conversationModes.map(mode => (
+                {conversationModes.filter(mode => mode.id !== 'pitch_practice').map(mode => (
                   <button
                     key={mode.id}
-                    onClick={() => setSelectedMode(mode.id)}
+                    onClick={() => {
+                      setSelectedMode(mode.id);
+                      setShowPitchRecorder(false);
+                    }}
                     className={cn(
                       'p-2 rounded-lg text-xs font-medium transition-all flex items-center space-x-1',
                       selectedMode === mode.id
@@ -1200,14 +1452,6 @@ The committee unanimously recommends proceeding with measured optimism while sys
               {/* Configuration Actions */}
               <div className="flex gap-2 pt-1">
                 <button
-                  onClick={handleCreateNewAdvisor}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-                  title="Create a new custom advisor"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>New Advisor</span>
-                </button>
-                <button
                   onClick={() => setShowSettings(!showSettings)}
                   className={cn(
                     'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors',
@@ -1218,7 +1462,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   title="Configure enhanced meeting settings"
                 >
                   <Settings className="w-4 h-4" />
-                  <span>Settings</span>
+                  <span>Meeting Settings</span>
                 </button>
               </div>
             </div>
@@ -1370,6 +1614,67 @@ The committee unanimously recommends proceeding with measured optimism while sys
               })}
             </div>
           </div>
+
+          {/* Recent Conversations Section */}
+          {conversations.length > 0 && (
+            <div className="border-t border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">Recent Conversations</span>
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {conversations.slice(0, 5).map((conv) => {
+                  const advisor = conv.advisor_type === 'celebrity'
+                    ? celebrityAdvisors.find(a => a.id === conv.advisor_id)
+                    : customAdvisors.find(a => a.id === conv.advisor_id);
+                  return (
+                    <button
+                      key={conv.id}
+                      onClick={() => {
+                        setActiveConversation(conv);
+                        if (conv.messages) {
+                          setMessages(conv.messages as any);
+                        }
+                        if (conv.mode) {
+                          setSelectedMode(conv.mode as any);
+                        }
+                        if (conv.advisor_id) {
+                          setSelectedAdvisors([conv.advisor_id]);
+                        }
+                      }}
+                      className="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                    >
+                      <Avatar
+                        avatar_emoji={advisor?.avatar_emoji}
+                        avatar_image={advisor?.avatar_image}
+                        avatar_url={(advisor as any)?.avatar_url}
+                        name={advisor?.name || 'Unknown'}
+                        size="sm"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {advisor?.name || 'Unknown'}
+                        </p>
+                        <p className="text-xs text-gray-500 capitalize truncate">
+                          {(conv.mode || 'general').replace('_', ' ')} • {conv.messages?.length || 0} msgs
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {conversations.length > 5 && (
+                <button
+                  className="w-full mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium py-1"
+                  onClick={() => {
+                    // TODO: Open full conversation history modal
+                    console.log('View all conversations');
+                  }}
+                >
+                  View All ({conversations.length})
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -1383,22 +1688,37 @@ The committee unanimously recommends proceeding with measured optimism while sys
                 <button
                   onClick={() => setShowAdvisorPanel(true)}
                   className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                  title="Show advisors panel"
                 >
                   <Users className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={onBack} className="text-gray-500 hover:text-gray-700 font-medium">
-                ← Back to Dashboard
-              </button>
+              <h1 className="text-xl font-bold text-gray-900">Bearable Advisors</h1>
               <div className="h-6 border-l border-gray-300"></div>
               <div className="flex items-center space-x-2">
                 <div className={cn('w-3 h-3 rounded-full', currentMode?.color)} />
-                <h1 className="text-xl font-bold text-gray-900">{currentMode?.name}</h1>
+                <span className="text-sm font-medium text-gray-700">{currentMode?.name}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              {/* User info & tier */}
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+                <span>{user?.email?.split('@')[0]}</span>
+                <span
+                  className={cn(
+                    'px-2 py-0.5 rounded-full text-xs font-medium',
+                    currentTier === 'founder' && 'bg-blue-100 text-blue-800',
+                    currentTier === 'scale-up' && 'bg-purple-100 text-purple-800',
+                    currentTier === 'enterprise' && 'bg-green-100 text-green-800'
+                  )}
+                >
+                  {currentTier}
+                </span>
+              </div>
+              <div className="h-6 border-l border-gray-300 hidden md:block"></div>
+              {/* Advisor count */}
               <span className="text-sm text-gray-600">
-                {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''} selected
+                {selectedAdvisors.length} advisor{selectedAdvisors.length !== 1 ? 's' : ''}
               </span>
               <button
                 onClick={() => {
@@ -1476,6 +1796,39 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
               >
                 <Download className="w-4 h-4" />
               </button>
+              <div className="h-6 border-l border-gray-300"></div>
+              {/* Help button */}
+              <button
+                onClick={() => setShowHelpModal(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                title="Help"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+              {/* Settings button */}
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                title="Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              {/* Sign Out button */}
+              <button
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Sign out error:', error);
+                    window.location.reload();
+                  }
+                }}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-600"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -1483,24 +1836,170 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
-            <div className="text-center py-12">
-              <div
-                className={cn(
-                  'w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center',
-                  currentMode?.color
-                )}
-              >
-                <div className="text-white text-2xl">{currentMode?.icon}</div>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Start Your Advisory Session
-              </h3>
-              <p className="text-gray-600 mb-4">{currentMode?.description}</p>
-              <p className="text-sm text-gray-500">
-                {selectedAdvisors.length > 0
-                  ? `${selectedAdvisors.length} advisor${selectedAdvisors.length !== 1 ? 's' : ''} ready to help`
-                  : 'Select advisors from the sidebar to begin'}
-              </p>
+            <div className="py-8 px-4 max-w-4xl mx-auto">
+              {/* Pitch Practice Mode - Voice Recorder */}
+              {selectedMode === 'pitch_practice' && selectedAdvisors.length > 0 ? (
+                <div>
+                  {/* Selected Advisors for Pitch Feedback */}
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Pitch Practice</h2>
+                    <p className="text-gray-600 mb-4">
+                      Record your pitch and get feedback from your selected advisors
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 mb-4">
+                      {selectedAdvisors.map(advisorId => {
+                        const advisor = allAdvisors.find(a => a.id === advisorId);
+                        if (!advisor) return null;
+                        return (
+                          <div key={advisorId} className="flex items-center space-x-2 bg-purple-50 px-3 py-1.5 rounded-full">
+                            <Avatar
+                              avatar_emoji={advisor.avatar_emoji}
+                              avatar_image={advisor.avatar_image}
+                              avatar_url={(advisor as any).avatar_url}
+                              name={advisor.name}
+                              size="sm"
+                            />
+                            <span className="text-sm font-medium text-purple-800">{advisor.name}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Voice Pitch Recorder */}
+                  <VoicePitchRecorder
+                    onRecordingComplete={handlePitchRecordingComplete}
+                    onCancel={() => {
+                      setSelectedMode('general');
+                      setShowPitchRecorder(false);
+                    }}
+                    disabled={isAnalyzingPitch}
+                  />
+
+                  {/* Analyzing indicator */}
+                  {isAnalyzingPitch && (
+                    <div className="mt-6 text-center">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600 mx-auto mb-3" />
+                      <p className="text-gray-600">Generating advisor feedback on your pitch...</p>
+                    </div>
+                  )}
+                </div>
+              ) : selectedAdvisors.length > 0 ? (
+                /* Standard Mode - Show Advisory Panel */
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Advisory Panel</h2>
+                  <p className="text-gray-600 mb-6">
+                    Ready to advise on: <span className="font-medium">{currentMode?.name || 'General Discussion'}</span>
+                  </p>
+
+                  {/* Advisor Cards Grid */}
+                  <div className="flex flex-wrap justify-center gap-4 mb-8">
+                    {selectedAdvisors.map(advisorId => {
+                      const advisor = allAdvisors.find(a => a.id === advisorId);
+                      if (!advisor) return null;
+                      const isCelebrity = celebrityAdvisors.some(ca => ca.id === advisorId);
+
+                      return (
+                        <div
+                          key={advisorId}
+                          className="bg-white border border-gray-200 rounded-xl p-4 w-48 shadow-sm hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex flex-col items-center text-center">
+                            <Avatar
+                              avatar_emoji={advisor.avatar_emoji}
+                              avatar_image={advisor.avatar_image}
+                              avatar_url={(advisor as any).avatar_url}
+                              name={advisor.name}
+                              size="lg"
+                            />
+                            <div className="mt-3">
+                              <div className="flex items-center justify-center space-x-1">
+                                <h3 className="font-semibold text-gray-900 text-sm">{advisor.name}</h3>
+                                {isCelebrity && (
+                                  <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1">{advisor.role || advisor.title}</p>
+                            </div>
+                            {advisor.communication_style && (
+                              <p className="text-xs text-gray-500 italic mt-2 line-clamp-2">
+                                "{advisor.communication_style}"
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Ready to start message */}
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-green-800 font-medium">
+                      Type your message below to begin the conversation.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* No advisors selected - Show guidance */
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-10 h-10 text-purple-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Your Advisors</h2>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    Choose one or more advisors from the panel on the left to start your advisory session.
+                  </p>
+                </div>
+              )}
+
+              {/* Continue where you left off */}
+              {conversations.length > 0 && (
+                <div className="border-t border-gray-200 pt-6 mt-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Continue where you left off</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {conversations.slice(0, 3).map((conv) => {
+                      const advisor = conv.advisor_type === 'celebrity'
+                        ? celebrityAdvisors.find(a => a.id === conv.advisor_id)
+                        : customAdvisors.find(a => a.id === conv.advisor_id);
+                      return (
+                        <button
+                          key={conv.id}
+                          onClick={() => {
+                            setActiveConversation(conv);
+                            // Load the conversation
+                            if (conv.messages) {
+                              setMessages(conv.messages as any);
+                            }
+                            if (conv.mode) {
+                              setSelectedMode(conv.mode as any);
+                            }
+                            if (conv.advisor_id) {
+                              setSelectedAdvisors([conv.advisor_id]);
+                            }
+                          }}
+                          className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+                        >
+                          <Avatar
+                            avatar_emoji={advisor?.avatar_emoji}
+                            avatar_image={advisor?.avatar_image}
+                            avatar_url={(advisor as any)?.avatar_url}
+                            name={advisor?.name || 'Unknown'}
+                            size="sm"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {advisor?.name || 'Unknown Advisor'}
+                            </p>
+                            <p className="text-xs text-gray-500 capitalize">
+                              {(conv.mode || 'general').replace('_', ' ')} • {conv.messages?.length || 0} messages
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1731,6 +2230,18 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         selectedDocuments={selectedDocuments}
         isOpen={showDocumentSelector}
         onClose={() => setShowDocumentSelector(false)}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
       />
     </div>
   );

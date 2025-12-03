@@ -9,7 +9,6 @@ import { AuthModal } from './components/Auth/AuthModal';
 import { PasswordResetModal } from './components/Auth/PasswordResetModal';
 import { PasswordResetConfirmation } from './components/Auth/PasswordResetConfirmation';
 import { Dashboard } from './components/Dashboard/Dashboard';
-import { PitchPracticeMode } from './components/Modes/PitchPracticeMode';
 import { ConversationManager } from './components/Conversations/ConversationManager';
 import { AdvisorManagement } from './components/Advisory/AdvisorManagement';
 import TermsOfService from './components/Legal/TermsOfService';
@@ -211,7 +210,8 @@ function LandingPage({
 
 function AuthenticatedApp() {
   const { user, loading } = useAuth();
-  const [selectedMode, setSelectedMode] = useState<ApplicationMode | null>(null);
+  // Default to advisory_conversation - this is now the main landing page
+  const [selectedMode, setSelectedMode] = useState<ApplicationMode | null>('advisory_conversation');
 
   // Mock user for development mode
   const mockUser = {
@@ -247,15 +247,18 @@ function AuthenticatedApp() {
           <AdvisorProvider>
             {selectedMode ? (
               (() => {
-                const handleBackToDashboard = () => setSelectedMode(null);
+                // Back now goes to Advisory Board (the new home), not Dashboard
+                const handleBackToHome = () => setSelectedMode('advisory_conversation');
 
                 switch (selectedMode) {
-                  case 'pitch_practice':
-                    return <PitchPracticeMode onBack={handleBackToDashboard} />;
                   case 'advisory_conversation':
-                    return <ConversationManager onBack={handleBackToDashboard} />;
+                    return (
+                      <ConversationManager
+                        onBack={handleBackToHome}
+                      />
+                    );
                   case 'advisor_management':
-                    return <AdvisorManagement onBack={handleBackToDashboard} />;
+                    return <AdvisorManagement onBack={handleBackToHome} />;
                   default:
                     return (
                       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -270,10 +273,10 @@ function AuthenticatedApp() {
                             This mode is under development. Full implementation coming soon!
                           </p>
                           <button
-                            onClick={() => setSelectedMode(null)}
+                            onClick={() => setSelectedMode('advisory_conversation')}
                             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                           >
-                            Back to Dashboard
+                            Back to Home
                           </button>
                         </div>
                       </div>
@@ -281,6 +284,8 @@ function AuthenticatedApp() {
                 }
               })()
             ) : (
+              // Fallback to Dashboard - rarely used since default is now 'advisory_conversation'
+              // Kept for backwards compatibility and edge cases
               <Dashboard onModeSelect={setSelectedMode} />
             )}
           </AdvisorProvider>

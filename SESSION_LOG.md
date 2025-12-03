@@ -43,6 +43,53 @@
 
 <!-- New sessions go here, most recent first -->
 
+## 2025-12-02 - UX Redesign: Advisory Board as Landing Page - CLI
+
+**Branch:** `main` (PR #12)
+**Duration:** ~2 hours
+
+### Accomplished
+- [x] Moved Pitch Practice to sidebar with gradient styling
+- [x] Removed duplicate mode selection buttons from main area
+- [x] Added "Manage Advisors" tab to Settings modal
+- [x] Integrated Pitch Practice as conversation mode (not separate page)
+- [x] Made Pitch Practice voice-only (no text entry for pitch)
+- [x] Allowed text follow-up questions after pitch feedback
+- [x] Enabled editing of celebrity advisors in Manage Advisors tab
+- [x] Created VoicePitchRecorder component for reusable voice recording
+
+### Files Modified
+- `src/components/Settings/SettingsModal.tsx` - Added Manage Advisors tab, celebrity editing
+- `src/components/Conversations/AdvisoryConversation.tsx` - Pitch practice integration, mode changes
+- `src/components/Conversations/ConversationManager.tsx` - Removed onPitchPractice prop
+- `src/App.tsx` - Removed PitchPracticeMode navigation
+- `src/components/PitchPractice/VoicePitchRecorder.tsx` - NEW: Voice recording component
+- `src/components/PitchPractice/index.ts` - NEW: Exports file
+
+### Tests/Verification
+- [x] TypeScript compilation passed (multiple rounds of fixes)
+- [x] PR preview deployment available
+- [ ] Awaiting user review and merge
+
+### Issues Encountered
+- `removeCustomAdvisor` doesn't exist → Changed to `deleteCustomAdvisor`
+- Avatar size "xs" not available → Changed to "sm"
+- AudioFeatures property names (camelCase vs snake_case) → Fixed all mappings
+- `setIsLoading` doesn't exist → Changed to `setIsTyping`
+- RealTimeAudioFeedback/LiveCoachingChart missing props → Added required props
+
+### Next Session Should
+1. Merge PR #12 after user approval
+2. Test pitch practice flow end-to-end in production
+3. Continue feature development as requested
+
+### Notes
+- Pitch Practice is now fully integrated into the conversation flow
+- Same advisors are used for both chat and pitch practice
+- Pitch recordings are saved as conversations with AI feedback
+- Users can ask text follow-up questions after receiving pitch feedback
+- Celebrity advisors can now be edited from Settings → Manage Advisors
+
 ## 2025-11-25 - Initial Workspace Setup - Browser
 
 **Branch:** `main` (assumed)
