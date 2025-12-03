@@ -1246,6 +1246,22 @@ The committee unanimously recommends proceeding with measured optimism while sys
             {/* Mode Selection */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Conversation Type</label>
+
+              {/* Pitch Practice - Special Button */}
+              {onPitchPractice && (
+                <button
+                  onClick={onPitchPractice}
+                  className="w-full p-3 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-left hover:scale-[1.02] hover:shadow-lg transition-all flex items-center space-x-2"
+                >
+                  <Mic className="w-5 h-5" />
+                  <div>
+                    <span className="font-medium text-sm">Pitch Practice</span>
+                    <p className="text-xs text-white/80">Voice recording & AI feedback</p>
+                  </div>
+                </button>
+              )}
+
+              {/* Other Mode Buttons */}
               <div className="grid grid-cols-2 gap-2">
                 {conversationModes.map(mode => (
                   <button
@@ -1267,14 +1283,6 @@ The committee unanimously recommends proceeding with measured optimism while sys
               {/* Configuration Actions */}
               <div className="flex gap-2 pt-1">
                 <button
-                  onClick={handleCreateNewAdvisor}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-                  title="Create a new custom advisor"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>New Advisor</span>
-                </button>
-                <button
                   onClick={() => setShowSettings(!showSettings)}
                   className={cn(
                     'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors',
@@ -1285,7 +1293,7 @@ The committee unanimously recommends proceeding with measured optimism while sys
                   title="Configure enhanced meeting settings"
                 >
                   <Settings className="w-4 h-4" />
-                  <span>Settings</span>
+                  <span>Meeting Settings</span>
                 </button>
               </div>
             </div>
@@ -1660,76 +1668,77 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className="py-8 px-4 max-w-4xl mx-auto">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Start Your Session</h2>
-                <p className="text-gray-600">
-                  {selectedAdvisors.length > 0
-                    ? `${selectedAdvisors.length} advisor${selectedAdvisors.length !== 1 ? 's' : ''} selected. Choose a mode to begin.`
-                    : 'Select advisors from the sidebar, then choose your conversation mode.'}
-                </p>
-              </div>
+              {/* Your Advisory Panel - Selected Advisors Display */}
+              {selectedAdvisors.length > 0 ? (
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Advisory Panel</h2>
+                  <p className="text-gray-600 mb-6">
+                    Ready to advise on: <span className="font-medium">{currentMode?.name || 'General Discussion'}</span>
+                  </p>
 
-              {/* Mode Selection Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                {/* Pitch Practice - Special Card */}
-                {onPitchPractice && (
-                  <button
-                    onClick={onPitchPractice}
-                    className="relative col-span-1 md:col-span-2 p-6 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-left hover:scale-[1.02] hover:shadow-xl transition-all group overflow-hidden"
-                  >
-                    <PitchPracticeAnimation style={pitchAnimationStyle} />
-                    <div className="relative z-10">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <Mic className="w-8 h-8" />
-                        <h3 className="text-xl font-bold">Pitch Practice</h3>
-                      </div>
-                      <p className="text-white/90 text-sm">
-                        Practice and refine your pitch with real-time AI feedback, voice recording, and professional analysis
-                      </p>
-                    </div>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </button>
-                )}
+                  {/* Advisor Cards Grid */}
+                  <div className="flex flex-wrap justify-center gap-4 mb-8">
+                    {selectedAdvisors.map(advisorId => {
+                      const advisor = allAdvisors.find(a => a.id === advisorId);
+                      if (!advisor) return null;
+                      const isCelebrity = celebrityAdvisors.some(ca => ca.id === advisorId);
 
-                {/* Other Mode Cards */}
-                {conversationModes.map((mode) => (
-                  <button
-                    key={mode.id}
-                    onClick={() => setSelectedMode(mode.id)}
-                    className={cn(
-                      'p-5 rounded-xl text-left transition-all hover:scale-[1.02] hover:shadow-lg border-2',
-                      selectedMode === mode.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
-                    )}
-                  >
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center text-white', mode.color)}>
-                        {mode.icon}
-                      </div>
-                      <h3 className="font-semibold text-gray-900">{mode.name}</h3>
-                    </div>
-                    <p className="text-sm text-gray-600">{mode.description}</p>
-                    {selectedMode === mode.id && (
-                      <div className="mt-3 flex items-center text-blue-600 text-sm font-medium">
-                        <span>Selected</span>
-                        <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
+                      return (
+                        <div
+                          key={advisorId}
+                          className="bg-white border border-gray-200 rounded-xl p-4 w-48 shadow-sm hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex flex-col items-center text-center">
+                            <Avatar
+                              avatar_emoji={advisor.avatar_emoji}
+                              avatar_image={advisor.avatar_image}
+                              avatar_url={(advisor as any).avatar_url}
+                              name={advisor.name}
+                              size="lg"
+                            />
+                            <div className="mt-3">
+                              <div className="flex items-center justify-center space-x-1">
+                                <h3 className="font-semibold text-gray-900 text-sm">{advisor.name}</h3>
+                                {isCelebrity && (
+                                  <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1">{advisor.role || advisor.title}</p>
+                            </div>
+                            {advisor.communication_style && (
+                              <p className="text-xs text-gray-500 italic mt-2 line-clamp-2">
+                                "{advisor.communication_style}"
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Ready to start message */}
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-green-800 font-medium">
+                      Type your message below to begin the conversation.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* No advisors selected - Show guidance */
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-10 h-10 text-purple-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Your Advisors</h2>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    Choose one or more advisors from the panel on the left to start your advisory session.
+                  </p>
+                </div>
+              )}
 
               {/* Continue where you left off */}
               {conversations.length > 0 && (
-                <div className="border-t border-gray-200 pt-6">
+                <div className="border-t border-gray-200 pt-6 mt-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Continue where you left off</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {conversations.slice(0, 3).map((conv) => {
@@ -1773,15 +1782,6 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                       );
                     })}
                   </div>
-                </div>
-              )}
-
-              {/* Ready to start message */}
-              {selectedAdvisors.length > 0 && selectedMode && (
-                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                  <p className="text-green-800 font-medium">
-                    Ready to start! Type your message below to begin the conversation.
-                  </p>
                 </div>
               )}
             </div>

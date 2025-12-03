@@ -5,7 +5,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useAdvisor } from '../../contexts/AdvisorContext';
 import { AIService, AIServiceConfig } from '../../types';
 import { cn, calculatePercentage } from '../../utils';
-import { CheckCircle, XCircle, AlertCircle, Loader, User, CreditCard, Settings as SettingsIcon } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Loader, User, CreditCard, Settings as SettingsIcon, Users, Plus, Edit2, Trash2, Star } from 'lucide-react';
+import { Avatar } from '../Common/Avatar';
+import { QuickCreateAdvisorModal } from '../Modals/QuickCreateAdvisorModal';
+import { AdvisorEditModal } from '../Modals/AdvisorEditModal';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -58,9 +61,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const { settings, addAIService, removeAIService, updateSettings } = useSettings();
   const { currentTier, limits, usage, isTrialActive, trialDaysRemaining } = useSubscription();
   const { user } = useAuth();
-  const { customAdvisors } = useAdvisor();
+  const { customAdvisors, celebrityAdvisors, deleteCustomAdvisor } = useAdvisor();
 
-  const [activeTab, setActiveTab] = useState<'services' | 'account'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'account' | 'advisors'>('services');
+  const [showCreateAdvisorModal, setShowCreateAdvisorModal] = useState(false);
+  const [showEditAdvisorModal, setShowEditAdvisorModal] = useState(false);
+  const [editingAdvisor, setEditingAdvisor] = useState<any>(null);
   const [editingService, setEditingService] = useState<AIService | null>(null);
   const [serviceStatuses, setServiceStatuses] = useState<Record<string, ServiceStatus>>({});
   const [pitchAnimation, setPitchAnimation] = useState<PitchAnimationStyle>(() => {
@@ -300,6 +306,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             >
               <SettingsIcon className="w-4 h-4" />
               <span>AI Services</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('advisors')}
+              className={cn(
+                'flex items-center space-x-2 px-1 py-3 border-b-2 font-medium text-sm transition-colors',
+                activeTab === 'advisors'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              )}
+            >
+              <Users className="w-4 h-4" />
+              <span>Manage Advisors</span>
             </button>
             <button
               onClick={() => setActiveTab('account')}
@@ -651,6 +669,159 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             )}
           </div>
           )}
+
+          {/* Manage Advisors Tab Content */}
+          {activeTab === 'advisors' && (
+            <div className="space-y-6">
+              {/* Header with Create Button */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Manage Advisors</h3>
+                  <p className="text-gray-600 mt-1">
+                    Create and manage your custom AI advisors
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCreateAdvisorModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create New Advisor</span>
+                </button>
+              </div>
+
+              {/* Custom Advisors List */}
+              <div>
+                <h4 className="text-lg font-medium text-gray-900 mb-3">
+                  Your Custom Advisors ({customAdvisors.length})
+                </h4>
+                {customAdvisors.length === 0 ? (
+                  <div className="p-8 bg-gray-50 rounded-lg text-center">
+                    <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-500 mb-4">You haven't created any custom advisors yet</p>
+                    <button
+                      onClick={() => setShowCreateAdvisorModal(true)}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    >
+                      Create Your First Advisor
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {customAdvisors.map(advisor => (
+                      <div key={advisor.id} className="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Avatar
+                              avatar_emoji={advisor.avatar_emoji}
+                              avatar_image={advisor.avatar_image}
+                              avatar_url={(advisor as any).avatar_url}
+                              name={advisor.name}
+                              size="md"
+                            />
+                            <div>
+                              <h5 className="font-medium text-gray-900">{advisor.name}</h5>
+                              <p className="text-sm text-gray-500">{advisor.role || advisor.title}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => {
+                                setEditingAdvisor(advisor);
+                                setShowEditAdvisorModal(true);
+                              }}
+                              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                              title="Edit advisor"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete ${advisor.name}?`)) {
+                                  deleteCustomAdvisor(advisor.id);
+                                }
+                              }}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete advisor"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {advisor.expertise && advisor.expertise.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {advisor.expertise.slice(0, 4).map((exp, i) => (
+                              <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+                                {exp}
+                              </span>
+                            ))}
+                            {advisor.expertise.length > 4 && (
+                              <span className="px-2 py-1 text-gray-500 text-xs">
+                                +{advisor.expertise.length - 4} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Celebrity Advisors Reference */}
+              <div>
+                <h4 className="text-lg font-medium text-gray-900 mb-3">
+                  Celebrity Advisors ({celebrityAdvisors.length} available)
+                </h4>
+                <div className="p-4 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    Celebrity advisors are pre-configured AI versions of leading investors and business leaders.
+                    Select them from the advisory panel when starting a conversation.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {celebrityAdvisors.slice(0, 6).map(advisor => (
+                      <div key={advisor.id} className="flex items-center space-x-1 bg-white px-2 py-1 rounded-full">
+                        <Avatar
+                          avatar_emoji={advisor.avatar_emoji}
+                          avatar_image={advisor.avatar_image}
+                          avatar_url={(advisor as any).avatar_url}
+                          name={advisor.name}
+                          size="sm"
+                        />
+                        <span className="text-xs text-gray-700">{advisor.name}</span>
+                        <Star className="w-3 h-3 text-yellow-500" fill="currentColor" />
+                      </div>
+                    ))}
+                    {celebrityAdvisors.length > 6 && (
+                      <span className="px-2 py-1 text-xs text-blue-600">
+                        +{celebrityAdvisors.length - 6} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Limit Info */}
+              {limits.custom_advisors !== -1 && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">Custom Advisor Limit</span>
+                    <span className="text-sm text-gray-600">
+                      {customAdvisors.length} / {limits.custom_advisors}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-purple-600 h-2 rounded-full transition-all"
+                      style={{
+                        width: `${Math.min(100, getUsagePercentage(customAdvisors.length, limits.custom_advisors))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="p-6 border-t border-gray-200 flex justify-end">
@@ -662,6 +833,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           </button>
         </div>
       </div>
+
+      {/* Create New Advisor Modal */}
+      <QuickCreateAdvisorModal
+        isOpen={showCreateAdvisorModal}
+        onClose={() => setShowCreateAdvisorModal(false)}
+        onAdvisorCreated={() => {
+          setShowCreateAdvisorModal(false);
+        }}
+      />
+
+      {/* Edit Advisor Modal */}
+      <AdvisorEditModal
+        advisor={editingAdvisor}
+        isOpen={showEditAdvisorModal}
+        onClose={() => {
+          setShowEditAdvisorModal(false);
+          setEditingAdvisor(null);
+        }}
+        onSave={() => {
+          setShowEditAdvisorModal(false);
+          setEditingAdvisor(null);
+        }}
+      />
     </div>
   );
 };
