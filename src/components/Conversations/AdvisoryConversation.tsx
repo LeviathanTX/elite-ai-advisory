@@ -42,10 +42,11 @@ import {
   loadConversation as loadConversationFromService,
 } from '../../services/conversationService';
 import { Avatar } from '../Common/Avatar';
+import { VoicePitchRecorder, PitchRecordingResult } from '../PitchPractice';
 import { cn } from '../../utils';
 
 interface ConversationMode {
-  id: 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general';
+  id: 'strategic_planning' | 'due_diligence' | 'quick_consultation' | 'general' | 'pitch_practice';
   name: string;
   icon: React.ReactNode;
   description: string;
@@ -73,7 +74,6 @@ interface ConversationMessage {
 
 interface AdvisoryConversationProps {
   onBack: () => void;
-  onPitchPractice?: () => void;
   initialMode?: ConversationMode['id'];
   conversationId?: string;
 }
@@ -131,7 +131,6 @@ const PitchPracticeAnimation: React.FC<{ style: string }> = ({ style }) => {
 
 export function AdvisoryConversation({
   onBack,
-  onPitchPractice,
   initialMode = 'general',
   conversationId,
 }: AdvisoryConversationProps) {
@@ -189,7 +188,18 @@ export function AdvisoryConversation({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Pitch practice state
+  const [showPitchRecorder, setShowPitchRecorder] = useState(false);
+  const [isAnalyzingPitch, setIsAnalyzingPitch] = useState(false);
+
   const conversationModes: ConversationMode[] = [
+    {
+      id: 'pitch_practice',
+      name: 'Pitch Practice',
+      icon: <Mic className="w-4 h-4" />,
+      description: 'Record your pitch and get AI feedback',
+      color: 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400',
+    },
     {
       id: 'strategic_planning',
       name: 'Strategic Planning',
@@ -596,6 +606,154 @@ export function AdvisoryConversation({
     setSelectedAdvisors(prev =>
       prev.includes(advisorId) ? prev.filter(id => id !== advisorId) : [...prev, advisorId]
     );
+  };
+
+  // Handle pitch recording completion - generate AI feedback and add to conversation
+  const handlePitchRecordingComplete = async (result: PitchRecordingResult) => {
+    setIsAnalyzingPitch(true);
+    setShowPitchRecorder(false);
+
+    try {
+      // Add user message with pitch info
+      const pitchMessage: ConversationMessage = {
+        id: `pitch-${Date.now()}`,
+        type: 'user',
+        content: `🎤 **Pitch Recording** (${Math.floor(result.duration / 60)}:${(result.duration % 60).toString().padStart(2, '0')})\n\n${result.transcript || '[Voice pitch recorded - analyzing...]'}`,
+        timestamp: new Date(),
+        metadata: {
+          isPitch: true,
+          duration: result.duration,
+          hasAudioFeatures: !!result.audioFeatures,
+        },
+      };
+      setMessages(prev => [...prev, pitchMessage]);
+
+      // Generate feedback from each selected advisor
+      const selectedAdvisorObjects = selectedAdvisors
+        .map(id => allAdvisors.find(a => a.id === id))
+        .filter(Boolean);
+
+      // Build context for AI feedback
+      const pitchContext = `
+The user has just recorded a pitch. Here are the details:
+
+**Transcript:**
+${result.transcript || 'No transcript available'}
+
+**Duration:** ${Math.floor(result.duration / 60)} minutes ${result.duration % 60} seconds
+
+${result.audioFeatures ? `
+**Voice Analysis:**
+- Speaking pace: ${result.audioFeatures.rhythm?.speaking_rate || 'N/A'} words per minute
+- Voice quality score: ${result.audioFeatures.coaching_metrics?.professional_tone || 'N/A'}%
+- Confidence indicators: ${result.audioFeatures.emotional_markers?.confidence_level || 'N/A'}%
+- Energy level: ${result.audioFeatures.emotional_markers?.energy_level || 'N/A'}%
+` : ''}
+
+${result.vocalInsights ? `
+**Vocal Delivery Insights:**
+- Strengths: ${result.vocalInsights.strengths?.join(', ') || 'N/A'}
+- Areas for improvement: ${result.vocalInsights.improvement_areas?.join(', ') || 'N/A'}
+` : ''}
+
+Please provide specific, actionable feedback on this pitch from your perspective as an advisor.
+`;
+
+      // Get feedback from each advisor
+      for (const advisor of selectedAdvisorObjects) {
+        if (!advisor) continue;
+
+        setIsTyping(true);
+
+        try {
+          // Use the existing AI service to generate feedback
+          const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              service: 'claude',
+              model: 'claude-sonnet-4-20250514',
+              messages: [
+                {
+                  role: 'system',
+                  content: `You are ${advisor.name}, ${advisor.role || advisor.title}. ${(advisor as any).personality || ''} ${(advisor as any).background || ''}
+
+Your communication style: ${advisor.communication_style || 'Direct and insightful'}
+
+You are reviewing a pitch recording. Provide specific, actionable feedback that reflects your unique perspective and expertise. Be encouraging but honest. Focus on:
+1. What works well
+2. What could be improved
+3. Specific recommendations
+
+Keep your response concise but valuable (2-3 paragraphs).`,
+                },
+                {
+                  role: 'user',
+                  content: pitchContext,
+                },
+              ],
+              options: { maxTokens: 1000, temperature: 0.7 },
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const feedbackContent = data.content || data.text || 'Unable to generate feedback.';
+
+            const advisorMessage: ConversationMessage = {
+              id: `advisor-pitch-${Date.now()}-${advisor.id}`,
+              type: 'advisor',
+              content: feedbackContent,
+              timestamp: new Date(),
+              advisor: advisor,
+              metadata: {
+                isPitchFeedback: true,
+              },
+            };
+            setMessages(prev => [...prev, advisorMessage]);
+          } else {
+            throw new Error('API request failed');
+          }
+        } catch (error) {
+          console.error(`Error getting feedback from ${advisor.name}:`, error);
+          // Add fallback message
+          const fallbackMessage: ConversationMessage = {
+            id: `advisor-pitch-${Date.now()}-${advisor.id}`,
+            type: 'advisor',
+            content: `Thank you for sharing your pitch! I've listened carefully. While I couldn't provide detailed AI analysis at the moment, here are some general tips:\n\n1. **Structure**: Make sure you have a clear problem-solution-ask flow\n2. **Timing**: Your ${Math.floor(result.duration / 60)}+ minute pitch should be concise and impactful\n3. **Practice**: Keep refining based on feedback\n\nFeel free to ask me specific questions about your pitch!`,
+            timestamp: new Date(),
+            advisor: advisor,
+            metadata: {
+              isPitchFeedback: true,
+              isFallback: true,
+            },
+          };
+          setMessages(prev => [...prev, fallbackMessage]);
+        }
+      }
+
+      // Add a follow-up prompt
+      const followUpMessage: ConversationMessage = {
+        id: `system-followup-${Date.now()}`,
+        type: 'system',
+        content: '💡 You can now ask follow-up questions about your pitch or request specific advice from your advisors.',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, followUpMessage]);
+
+    } catch (error) {
+      console.error('Error processing pitch:', error);
+      const errorMessage: ConversationMessage = {
+        id: `error-${Date.now()}`,
+        type: 'system',
+        content: '❌ There was an error processing your pitch. Please try again.',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsAnalyzingPitch(false);
+      setIsTyping(false);
+    }
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1247,26 +1405,37 @@ The committee unanimously recommends proceeding with measured optimism while sys
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Conversation Type</label>
 
-              {/* Pitch Practice - Special Button */}
-              {onPitchPractice && (
-                <button
-                  onClick={onPitchPractice}
-                  className="w-full p-3 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-left hover:scale-[1.02] hover:shadow-lg transition-all flex items-center space-x-2"
-                >
-                  <Mic className="w-5 h-5" />
-                  <div>
-                    <span className="font-medium text-sm">Pitch Practice</span>
-                    <p className="text-xs text-white/80">Voice recording & AI feedback</p>
-                  </div>
-                </button>
-              )}
+              {/* Pitch Practice - Special Button (first in list) */}
+              <button
+                onClick={() => {
+                  setSelectedMode('pitch_practice');
+                  if (selectedAdvisors.length > 0) {
+                    setShowPitchRecorder(true);
+                  }
+                }}
+                className={cn(
+                  'w-full p-3 rounded-lg text-white text-left hover:scale-[1.02] hover:shadow-lg transition-all flex items-center space-x-2',
+                  selectedMode === 'pitch_practice'
+                    ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 ring-2 ring-purple-300'
+                    : 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400'
+                )}
+              >
+                <Mic className="w-5 h-5" />
+                <div>
+                  <span className="font-medium text-sm">Pitch Practice</span>
+                  <p className="text-xs text-white/80">Voice recording & AI feedback</p>
+                </div>
+              </button>
 
               {/* Other Mode Buttons */}
               <div className="grid grid-cols-2 gap-2">
-                {conversationModes.map(mode => (
+                {conversationModes.filter(mode => mode.id !== 'pitch_practice').map(mode => (
                   <button
                     key={mode.id}
-                    onClick={() => setSelectedMode(mode.id)}
+                    onClick={() => {
+                      setSelectedMode(mode.id);
+                      setShowPitchRecorder(false);
+                    }}
                     className={cn(
                       'p-2 rounded-lg text-xs font-medium transition-all flex items-center space-x-1',
                       selectedMode === mode.id
@@ -1668,8 +1837,55 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className="py-8 px-4 max-w-4xl mx-auto">
-              {/* Your Advisory Panel - Selected Advisors Display */}
-              {selectedAdvisors.length > 0 ? (
+              {/* Pitch Practice Mode - Voice Recorder */}
+              {selectedMode === 'pitch_practice' && selectedAdvisors.length > 0 ? (
+                <div>
+                  {/* Selected Advisors for Pitch Feedback */}
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Pitch Practice</h2>
+                    <p className="text-gray-600 mb-4">
+                      Record your pitch and get feedback from your selected advisors
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 mb-4">
+                      {selectedAdvisors.map(advisorId => {
+                        const advisor = allAdvisors.find(a => a.id === advisorId);
+                        if (!advisor) return null;
+                        return (
+                          <div key={advisorId} className="flex items-center space-x-2 bg-purple-50 px-3 py-1.5 rounded-full">
+                            <Avatar
+                              avatar_emoji={advisor.avatar_emoji}
+                              avatar_image={advisor.avatar_image}
+                              avatar_url={(advisor as any).avatar_url}
+                              name={advisor.name}
+                              size="sm"
+                            />
+                            <span className="text-sm font-medium text-purple-800">{advisor.name}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Voice Pitch Recorder */}
+                  <VoicePitchRecorder
+                    onRecordingComplete={handlePitchRecordingComplete}
+                    onCancel={() => {
+                      setSelectedMode('general');
+                      setShowPitchRecorder(false);
+                    }}
+                    disabled={isAnalyzingPitch}
+                  />
+
+                  {/* Analyzing indicator */}
+                  {isAnalyzingPitch && (
+                    <div className="mt-6 text-center">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600 mx-auto mb-3" />
+                      <p className="text-gray-600">Generating advisor feedback on your pitch...</p>
+                    </div>
+                  )}
+                </div>
+              ) : selectedAdvisors.length > 0 ? (
+                /* Standard Mode - Show Advisory Panel */
                 <div className="text-center">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Advisory Panel</h2>
                   <p className="text-gray-600 mb-6">

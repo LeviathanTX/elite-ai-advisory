@@ -49,10 +49,9 @@ interface SavedConversation {
 
 interface ConversationManagerProps {
   onBack: () => void;
-  onPitchPractice?: () => void;
 }
 
-export function ConversationManager({ onBack, onPitchPractice }: ConversationManagerProps) {
+export function ConversationManager({ onBack }: ConversationManagerProps) {
   const { user } = useAuth();
   const {
     conversations: supabaseConversations,
@@ -294,7 +293,6 @@ export function ConversationManager({ onBack, onPitchPractice }: ConversationMan
           // Back to home (Advisory Board landing)
           onBack();
         }}
-        onPitchPractice={onPitchPractice}
         conversationId={conversationToLoad || undefined}
       />
     );

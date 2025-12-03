@@ -9,7 +9,6 @@ import { AuthModal } from './components/Auth/AuthModal';
 import { PasswordResetModal } from './components/Auth/PasswordResetModal';
 import { PasswordResetConfirmation } from './components/Auth/PasswordResetConfirmation';
 import { Dashboard } from './components/Dashboard/Dashboard';
-import { PitchPracticeMode } from './components/Modes/PitchPracticeMode';
 import { ConversationManager } from './components/Conversations/ConversationManager';
 import { AdvisorManagement } from './components/Advisory/AdvisorManagement';
 import TermsOfService from './components/Legal/TermsOfService';
@@ -250,16 +249,12 @@ function AuthenticatedApp() {
               (() => {
                 // Back now goes to Advisory Board (the new home), not Dashboard
                 const handleBackToHome = () => setSelectedMode('advisory_conversation');
-                const handlePitchPractice = () => setSelectedMode('pitch_practice');
 
                 switch (selectedMode) {
-                  case 'pitch_practice':
-                    return <PitchPracticeMode onBack={handleBackToHome} />;
                   case 'advisory_conversation':
                     return (
                       <ConversationManager
                         onBack={handleBackToHome}
-                        onPitchPractice={handlePitchPractice}
                       />
                     );
                   case 'advisor_management':
