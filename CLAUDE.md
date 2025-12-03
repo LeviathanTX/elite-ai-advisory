@@ -214,19 +214,21 @@ This enables automated PR creation, merging, and status checks throughout the se
 
 ---
 
-## Current State (Updated: 2025-11-27)
+## Current State (Updated: 2025-12-02)
 
 ### Recent Achievements
-- **Avatar Display Consistency**: All advisor avatars now display uniformly across all pages
-  - Re-cropped all 32 avatar images to 512x512 showing complete heads
-  - Added Avatar component to all advisor mode selection pages
-  - Fixed Recent Conversations avatar display on Dashboard
-  - Updated production URL alias (ai-bod.vercel.app)
+- **UX Redesign - Advisory Board as Landing Page**: Major UX improvements (PR #12)
+  - Advisory Board is now the default post-login landing page
+  - Pitch Practice integrated as conversation mode (voice-only, same advisors as chat)
+  - Added "Manage Advisors" tab to Settings modal with celebrity advisor editing
+  - Removed duplicate mode buttons, streamlined navigation
+  - VoicePitchRecorder component for embedded voice recording
 
 ### Active Features
 - Celebrity advisor selection and customization with visual avatars
 - Document upload and analysis (PDF, Word, Excel)
-- Multiple consultation modes (Pitch Practice, Strategic Planning, Due Diligence, Quick Consultation)
+- Integrated Pitch Practice mode (voice recording → AI feedback → text follow-up)
+- Manage Advisors in Settings (create custom, edit celebrity advisors)
 - Supabase authentication and data persistence
 - Vercel auto-deployment on push to main
 - Consistent avatar display across all modes and components
@@ -235,7 +237,7 @@ This enables automated PR creation, merging, and status checks throughout the se
 - None currently blocking
 
 ### Next Steps
-- Monitor avatar display in production
+- Merge PR #12 after review
 - Continue feature development as requested
 
 ---
