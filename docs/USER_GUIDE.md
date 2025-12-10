@@ -1,23 +1,21 @@
-# 📘 Elite AI Advisory - User Guide
+# Bearable AI Advisors - User Guide
 
-Welcome to Elite AI Advisory! Your personal board of world-class advisors, powered by AI.
+Welcome to Bearable AI Advisors! Your personal board of AI bear advisors inspired by legendary business minds.
 
-## 🚀 Getting Started
+## Getting Started
 
-### What is Elite AI Advisory?
+### What is Bearable AI Advisors?
 
-Elite AI Advisory is an AI-powered platform that gives you access to a virtual board of advisors including:
-- **Mark Cuban** - Entrepreneur & Investor
-- **Barbara Corcoran** - Real Estate Mogul
-- **Reid Hoffman** - LinkedIn Co-founder
-- **Jason Calacanis** - Angel Investor
-- **Gordon Daugherty** - VC & Startup Advisor
+Bearable AI Advisors is an AI-powered platform that gives you access to a virtual board of bear advisors inspired by legendary business minds:
+- **Reed Pawffman** (The Network Bear) - Inspired by networking and platform expertise
+- **Jason Clawcanis** (The Angel Bear) - Inspired by angel investing wisdom
+- **Cheryl Sandbearg** (The Operations Bear) - Inspired by operational excellence
 - **Custom Advisors** - Create your own specialized advisors
 
 ### First-Time Setup
 
 1. **Create Your Account**
-   - Visit the Elite AI Advisory website
+   - Visit the Bearable AI Advisors website
    - Click "Sign Up"
    - Enter your email and password
    - Verify your email (check spam folder if needed)
@@ -29,10 +27,10 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
 
 3. **Take the Tour**
    - Click "Start Tour" for a guided walkthrough
-   - Learn about the 4 main modes
+   - Learn about the main modes
    - Explore the advisor board
 
-## 💡 Core Features
+## Core Features
 
 ### 1. Pitch Practice Mode
 
@@ -62,7 +60,7 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
 **Perfect for:** Strategic decisions, problem-solving, brainstorming
 
 **How to Use:**
-1. Click "Start Conversation"
+1. Click "Advisory Board"
 2. Select one or more advisors from your board
 3. Choose conversation settings:
    - **Debate Mode** - Advisors discuss different perspectives
@@ -131,7 +129,7 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
    - Success metrics
    - Timeline and milestones
 
-## 📄 Document Management
+## Document Management
 
 ### Supported File Types
 - **PDF** - Business plans, reports, contracts
@@ -163,11 +161,11 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
 3. Select from your uploaded documents
 4. Advisors will reference the document in their responses
 
-## 🎯 Custom Advisors
+## Custom Advisors
 
 ### Creating a Custom Advisor
 
-1. Click "Custom Advisors" in sidebar
+1. Click "Manage Advisors" in the header
 2. Click "Create New Advisor"
 3. Fill in details:
    - **Name** - Advisor's name
@@ -193,7 +191,7 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
 - Expertise: ["Cloud Infrastructure", "Security", "Scalability"]
 - Personality: "Pragmatic, detail-oriented, focused on best practices"
 
-## 💳 Subscription Tiers
+## Subscription Tiers
 
 ### Founder Tier ($97/month)
 - 10 AI advisor hours/month
@@ -223,11 +221,10 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
 - API access
 - Custom integrations
 
-## 🔐 Privacy & Security
+## Privacy & Security
 
 ### Your Data is Secure
 - All data encrypted in transit and at rest
-- SOC 2 Type II compliant
 - GDPR compliant
 - Regular security audits
 
@@ -247,7 +244,7 @@ Elite AI Advisory is an AI-powered platform that gives you access to a virtual b
 - Download conversations as PDF
 - Export document analyses
 
-## ❓ Frequently Asked Questions
+## Frequently Asked Questions
 
 ### General
 
@@ -282,7 +279,7 @@ A: You'll receive a notification and can upgrade or purchase additional credits.
 **Q: Is there a refund policy?**
 A: We offer a 14-day money-back guarantee for new subscribers.
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Voice Recording Issues
 - **Check microphone permissions** in browser settings
@@ -298,7 +295,7 @@ A: We offer a 14-day money-back guarantee for new subscribers.
 
 ### Slow Performance
 - **Close unnecessary browser tabs**
-- **Clear browser cache** (Settings → Privacy → Clear Data)
+- **Clear browser cache** (Settings > Privacy > Clear Data)
 - **Check internet speed** (need at least 5 Mbps)
 - **Try a different browser**
 
@@ -308,21 +305,18 @@ A: We offer a 14-day money-back guarantee for new subscribers.
 - **Check spam folder** for verification email
 - **Contact support** if issues persist
 
-## 📞 Getting Help
+## Getting Help
 
 ### Support Channels
-- **Email:** support@eliteaiadvisory.com
-- **Help Center:** help.eliteaiadvisory.com
-- **Live Chat:** Available in-app during business hours
-- **Community:** join.eliteaiadvisory.com
+- **Email:** jeff@bearableai.com
 
 ### Business Hours
 - Monday-Friday: 9 AM - 6 PM CT
 - Response time: < 4 hours for paid tiers
 
-## 🎓 Tips for Success
+## Tips for Success
 
-### Getting the Most Out of Elite AI Advisory
+### Getting the Most Out of Bearable AI Advisors
 
 1. **Be Specific** - Detailed questions get better answers
 2. **Provide Context** - Upload relevant documents
@@ -345,16 +339,6 @@ A: We offer a 14-day money-back guarantee for new subscribers.
 
 ---
 
-## 📚 Additional Resources
+**Need More Help?** Contact us at jeff@bearableai.com
 
-- [Video Tutorials](https://learn.eliteaiadvisory.com/videos)
-- [Webinars](https://learn.eliteaiadvisory.com/webinars)
-- [Blog](https://blog.eliteaiadvisory.com)
-- [Case Studies](https://eliteaiadvisory.com/case-studies)
-- [API Documentation](https://api.eliteaiadvisory.com/docs)
-
----
-
-**Need More Help?** Contact us at support@eliteaiadvisory.com
-
-**Last Updated:** November 2024
+**Last Updated:** December 2024

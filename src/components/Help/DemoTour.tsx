@@ -144,9 +144,9 @@ const TOUR_STEPS: TourStep[] = [
     ),
   },
   {
-    id: 'celebrity-advisors',
-    title: 'Celebrity Advisors',
-    description: 'World-class entrepreneurs at your fingertips',
+    id: 'bear-advisors',
+    title: 'AI Bear Advisors',
+    description: 'AI advisors inspired by legendary business minds',
     target: '.available-advisors',
     position: 'left',
     action: 'hover',
@@ -155,24 +155,24 @@ const TOUR_STEPS: TourStep[] = [
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">Meet Your Advisory Board</h3>
         <p className="text-gray-600 mb-4">
-          Get advice from AI versions of legendary entrepreneurs:
+          Get advice from AI bear advisors inspired by legendary entrepreneurs:
         </p>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="p-2 bg-gray-50 rounded text-center">
-            <div className="font-medium text-sm">Mark Cuban</div>
-            <div className="text-xs text-gray-500">Shark Tank Investor</div>
+            <div className="font-medium text-sm">Reed Pawffman</div>
+            <div className="text-xs text-gray-500">The Network Bear</div>
           </div>
           <div className="p-2 bg-gray-50 rounded text-center">
-            <div className="font-medium text-sm">Reid Hoffman</div>
-            <div className="text-xs text-gray-500">LinkedIn Founder</div>
+            <div className="font-medium text-sm">Jason Clawcanis</div>
+            <div className="text-xs text-gray-500">The Angel Bear</div>
           </div>
           <div className="p-2 bg-gray-50 rounded text-center">
-            <div className="font-medium text-sm">Barbara Corcoran</div>
-            <div className="text-xs text-gray-500">Real Estate Mogul</div>
+            <div className="font-medium text-sm">Cheryl Sandbearg</div>
+            <div className="text-xs text-gray-500">The Operations Bear</div>
           </div>
           <div className="p-2 bg-gray-50 rounded text-center">
-            <div className="font-medium text-sm">Daymond John</div>
-            <div className="text-xs text-gray-500">FUBU Founder</div>
+            <div className="font-medium text-sm">Fei-Fei Pawli</div>
+            <div className="text-xs text-gray-500">The AI Bear</div>
           </div>
         </div>
         <p className="text-sm text-blue-600">
@@ -245,7 +245,7 @@ const TOUR_STEPS: TourStep[] = [
           <div className="p-3 bg-blue-50 rounded-lg">
             <strong className="text-blue-700">1. Start an Advisory Conversation</strong>
             <p className="text-sm text-blue-600">
-              Click "Advisory Board" and ask Mark Cuban about scaling your business
+              Click "Advisory Board" and ask Reed Pawffman about scaling your business
             </p>
           </div>
           <div className="p-3 bg-purple-50 rounded-lg">

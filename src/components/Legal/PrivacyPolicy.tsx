@@ -244,7 +244,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <h3 className="text-lg font-bold mb-2">12. CONTACT US</h3>
               <p className="mb-2">For privacy-related questions or requests:</p>
               <p className="mb-1">
-                <strong>Email:</strong> hello@bearableai.com
+                <strong>Email:</strong> jeff@bearableai.com
               </p>
               <p className="mb-1">
                 <strong>Subject Line:</strong> Privacy Request

@@ -20,6 +20,7 @@ interface HelpModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialSection?: string;
+  onStartDemoTour?: () => void;
 }
 
 interface FAQItem {
@@ -55,7 +56,7 @@ const HELP_SECTIONS: HelpSection[] = [
         id: 'first-conversation',
         question: 'How do I start my first advisory conversation?',
         answer:
-          'From the dashboard, click "Advisory Board" to enter conversation mode. Select from our AI bear advisors like Marcus Clawban (The Shark Bear), Reed Pawffman (The Network Bear), or create a custom advisor. Choose your consultation type (Strategic Planning, Due Diligence, Quick Consultation) and start asking questions.',
+          'From the dashboard, click "Advisory Board" to enter conversation mode. Select from our AI bear advisors like Reed Pawffman (The Network Bear), Jason Clawcanis (The Angel Bear), or create a custom advisor. Choose your consultation type (Strategic Planning, Due Diligence, Quick Consultation) and start asking questions.',
         tags: ['conversation', 'advisors', 'first-time'],
       },
       {
@@ -260,6 +261,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
   isOpen,
   onClose,
   initialSection = 'getting-started',
+  onStartDemoTour,
 }) => {
   const [selectedSection, setSelectedSection] = useState(initialSection);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
@@ -457,17 +459,20 @@ export const HelpModal: React.FC<HelpModalProps> = ({
               <div className="text-sm text-gray-600">
                 Need more help? Contact our support team at{' '}
                 <a
-                  href="mailto:support@bearableadvisors.com"
+                  href="mailto:jeff@bearableai.com"
                   className="text-blue-600 hover:underline"
                 >
-                  support@bearableadvisors.com
+                  jeff@bearableai.com
                 </a>
               </div>
               <div className="flex space-x-3">
                 <button
                   onClick={() => {
                     onClose();
-                    // Demo tour will be triggered from Dashboard
+                    if (onStartDemoTour) {
+                      // Small delay to allow modal to close first
+                      setTimeout(() => onStartDemoTour(), 100);
+                    }
                   }}
                   className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200"
                 >

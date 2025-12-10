@@ -196,7 +196,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ isOpen, onClose }) => {
                 For questions about these Terms (though we assume no obligation to respond):
               </p>
               <p className="mb-1">
-                <strong>Email:</strong> hello@bearableai.com
+                <strong>Email:</strong> jeff@bearableai.com
               </p>
               <p>
                 <strong>Response Time:</strong> If we feel like it

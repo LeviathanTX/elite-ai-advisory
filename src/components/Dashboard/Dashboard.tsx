@@ -176,6 +176,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
                 Quick Start
               </button>
               <button
+                onClick={() => setShowDemoTour(true)}
+                className="text-green-600 hover:text-green-700 font-medium"
+                title="Take a guided tour of the platform"
+                data-tour="demo-tour-button"
+              >
+                Demo Tour
+              </button>
+              <button
                 onClick={() => setShowHelpModal(true)}
                 className="text-gray-500 hover:text-gray-700 font-medium"
                 title="Help & Support"
@@ -569,6 +577,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onModeSelect }) => {
         isOpen={showHelpModal}
         onClose={() => setShowHelpModal(false)}
         initialSection={helpSection}
+        onStartDemoTour={() => setShowDemoTour(true)}
       />
 
       <OnboardingFlow
