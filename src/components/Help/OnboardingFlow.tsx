@@ -99,25 +99,11 @@ const INDUSTRY_FOCUS = [
 
 const CELEBRITY_ADVISORS = [
   {
-    id: 'mark-cuban',
-    name: 'Marcus Clawban',
-    title: 'The Shark Bear',
-    expertise: 'Revenue growth, sales strategy, cost management',
-    bestFor: 'Closing deals, managing burn rate, scaling revenue',
-  },
-  {
     id: 'reid-hoffman',
     name: 'Reed Pawffman',
     title: 'The Network Bear',
     expertise: 'Network effects, platform strategy, scaling',
     bestFor: 'Building viral products, hiring strategy, global expansion',
-  },
-  {
-    id: 'barbara-corcoran',
-    name: 'Bearbara Coralclaw',
-    title: 'The Real Estate Bear',
-    expertise: 'Sales, marketing, people assessment',
-    bestFor: 'Building sales teams, marketing campaigns, hiring founders',
   },
   {
     id: 'daymond-john',
