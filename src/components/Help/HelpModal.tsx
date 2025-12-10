@@ -84,7 +84,7 @@ const HELP_SECTIONS: HelpSection[] = [
         id: 'celebrity-advisors',
         question: 'What AI bear advisors are available?',
         answer:
-          'Our platform features AI bear advisors inspired by legendary business minds. These include Reed Pawffman (The Network Bear), Jason Clawcanis (The Angel Bear), Daymond Fawn (The Brand Bear), Cheryl Sandbearg (The Operations Bear), and many more specialists. Each advisor has their unique personality, expertise, and communication style.',
+          'Our platform features AI bear advisors inspired by legendary business minds. These include Reed Pawffman (The Network Bear), Jason Clawcanis (The Angel Bear), Cheryl Sandbearg (The Operations Bear), and many more specialists. Each advisor has their unique personality, expertise, and communication style.',
         tags: ['bear', 'advisors', 'personalities'],
       },
       {

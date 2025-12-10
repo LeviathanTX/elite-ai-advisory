@@ -10,16 +10,9 @@ DELETE FROM celebrity_advisors WHERE id IN (
   'kendra-scott',
   'daniel-lubetzky',
   'mark-cuban',
-  'barbara-corcoran'
+  'barbara-corcoran',
+  'daymond-john'
 );
-
--- Update remaining Shark Tank advisor (Daymond John)
-UPDATE celebrity_advisors SET
-  name = 'Daymond Fawn',
-  title = 'The Brand Bear',
-  company = 'FurBear Brands',
-  bio = 'Daymond Fawn channels the wisdom of legendary lifestyle brand builders. He embodies the entrepreneurial spirit of founders who turned cultural authenticity into global brand empires.'
-WHERE id = 'daymond-john';
 
 -- Add comment explaining the naming convention
 COMMENT ON TABLE celebrity_advisors IS 'AI bear advisors inspired by legendary business minds. These are original characters, not the actual celebrities.';

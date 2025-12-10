@@ -106,13 +106,6 @@ const CELEBRITY_ADVISORS = [
     bestFor: 'Building viral products, hiring strategy, global expansion',
   },
   {
-    id: 'daymond-john',
-    name: 'Daymond Fawn',
-    title: 'The Brand Bear',
-    expertise: 'Branding, lifestyle marketing, cultural connection',
-    bestFor: 'Brand building, influencer strategy, retail partnerships',
-  },
-  {
     id: 'jason-calacanis',
     name: 'Jason Clawcanis',
     title: 'The Angel Bear',
