@@ -11,6 +11,7 @@ import { PasswordResetConfirmation } from './components/Auth/PasswordResetConfir
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { ConversationManager } from './components/Conversations/ConversationManager';
 import { AdvisorManagement } from './components/Advisory/AdvisorManagement';
+import { PitchPracticeMode } from './components/Modes/PitchPracticeMode';
 import TermsOfService from './components/Legal/TermsOfService';
 import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import { ApplicationMode } from './types';
@@ -253,6 +254,12 @@ function AuthenticatedApp() {
                   case 'advisory_conversation':
                     return (
                       <ConversationManager
+                        onBack={handleBackToHome}
+                      />
+                    );
+                  case 'pitch_practice':
+                    return (
+                      <PitchPracticeMode
                         onBack={handleBackToHome}
                       />
                     );
