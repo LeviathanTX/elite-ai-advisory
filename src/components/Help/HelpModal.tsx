@@ -55,7 +55,7 @@ const HELP_SECTIONS: HelpSection[] = [
         id: 'first-conversation',
         question: 'How do I start my first advisory conversation?',
         answer:
-          'From the dashboard, click "Advisory Board" to enter conversation mode. Select from our celebrity advisors like Mark Cuban, Reid Hoffman, or create a custom advisor. Choose your consultation type (Strategic Planning, Due Diligence, Quick Consultation) and start asking questions.',
+          'From the dashboard, click "Advisory Board" to enter conversation mode. Select from our AI bear advisors like Marcus Clawban (The Shark Bear), Reed Pawffman (The Network Bear), or create a custom advisor. Choose your consultation type (Strategic Planning, Due Diligence, Quick Consultation) and start asking questions.',
         tags: ['conversation', 'advisors', 'first-time'],
       },
       {
@@ -82,10 +82,10 @@ const HELP_SECTIONS: HelpSection[] = [
     items: [
       {
         id: 'celebrity-advisors',
-        question: 'What celebrity advisors are available?',
+        question: 'What AI bear advisors are available?',
         answer:
-          'Our platform features AI versions of world-class entrepreneurs and investors including Mark Cuban, Reid Hoffman, Jason Calacanis, Barbara Corcoran, Daymond John, and Sheryl Sandberg. Each advisor has their unique personality, expertise, and communication style.',
-        tags: ['celebrity', 'advisors', 'personalities'],
+          'Our platform features AI bear advisors inspired by legendary business minds. These include Marcus Clawban (The Shark Bear), Reed Pawffman (The Network Bear), Jason Clawcanis (The Angel Bear), Bearbara Coralclaw (The Real Estate Bear), Daymond Fawn (The Brand Bear), and Cheryl Sandbearg (The Operations Bear). Each advisor has their unique personality, expertise, and communication style.',
+        tags: ['bear', 'advisors', 'personalities'],
       },
       {
         id: 'custom-advisors',

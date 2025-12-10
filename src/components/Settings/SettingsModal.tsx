@@ -771,14 +771,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 )}
               </div>
 
-              {/* Celebrity Advisors - Editable */}
+              {/* Bear Persona Advisors - Editable */}
               <div>
                 <h4 className="text-lg font-medium text-gray-900 mb-3">
-                  Celebrity Advisors ({celebrityAdvisors.length} available)
+                  Bear Persona Advisors ({celebrityAdvisors.length} available)
                 </h4>
                 <p className="text-sm text-gray-600 mb-3">
-                  Customize AI service and system prompts for celebrity advisors.
+                  Customize AI service and system prompts for bear persona advisors.
                 </p>
+                {/* Disclaimer */}
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-xs text-amber-800">
+                    <strong>Note:</strong> Our AI advisors are original bear characters inspired by legendary business minds.
+                    They are not the actual celebrities and are not endorsed by or affiliated with any real individuals.
+                  </p>
+                </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {celebrityAdvisors.map(advisor => (
                     <div key={advisor.id} className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
