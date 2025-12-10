@@ -121,7 +121,7 @@ function LandingPage({
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3 text-center">
-                  Pre-loaded with sample conversations
+                  Almost fully functional
                 </p>
               </div>
 
