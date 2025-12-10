@@ -109,6 +109,21 @@ Fix in this order to avoid cascade failures:
 - Verify deployment: check bundle hash changed
 - Test live URL before marking complete
 
+**CRITICAL: Vercel Alias Issue (December 2025)**
+The `ai-bod.vercel.app` alias does NOT auto-update with new deployments. After each deployment:
+```bash
+# After vercel --prod --force, run:
+vercel alias set <deployment-url> ai-bod.vercel.app
+```
+The default auto-aliases are `ai-bod-ochre.vercel.app` and `ai-bod-jeff-levines-projects.vercel.app`.
+Always manually alias to `ai-bod.vercel.app` after production deploys.
+
+**Verify deployment:**
+```bash
+curl -s "https://ai-bod.vercel.app" | grep -o 'main\.[a-f0-9]*\.js'
+```
+Compare this hash to your local build in `build/static/js/main.*.js`.
+
 ### Document Processing
 - PDF.js worker must be in public/
 - Test with actual file uploads
@@ -214,35 +229,86 @@ This enables automated PR creation, merging, and status checks throughout the se
 
 ---
 
-## Current State (Updated: 2025-12-02)
+## Current State (Updated: 2025-12-10)
 
 ### Recent Achievements
-- **UX Redesign - Advisory Board as Landing Page**: Major UX improvements (PR #12)
-  - Advisory Board is now the default post-login landing page
-  - Pitch Practice integrated as conversation mode (voice-only, same advisors as chat)
-  - Added "Manage Advisors" tab to Settings modal with celebrity advisor editing
-  - Removed duplicate mode buttons, streamlined navigation
-  - VoicePitchRecorder component for embedded voice recording
+- **Bear Persona Advisors**: All celebrity advisors renamed to bear personas to avoid trademark issues
+  - Examples: Reed Pawffman (The Network Bear), Jason Clawcanis (The Angel Bear)
+  - 9 advisors removed from roster
+  - Database migrations applied to Supabase
+- **Demo Tour Button Fix**: Added Demo Tour button to AdvisoryConversation header
+  - Demo Tour button now appears in the main UI (not just Dashboard)
+  - Help modal's "Start Demo Tour" button now works properly
+- **Email Updates**: All contact emails updated to jeff@bearableai.com
+- **Pitch Practice Mode**: Fixed - now properly renders PitchPracticeMode component
+- **Vercel Alias**: Documented critical alias issue (ai-bod.vercel.app requires manual aliasing)
 
 ### Active Features
-- Celebrity advisor selection and customization with visual avatars
+- Bear persona advisors with customization and visual avatars
 - Document upload and analysis (PDF, Word, Excel)
 - Integrated Pitch Practice mode (voice recording → AI feedback → text follow-up)
-- Manage Advisors in Settings (create custom, edit celebrity advisors)
+- Manage Advisors in Settings (create custom, edit bear persona advisors)
+- Demo Tour with guided walkthrough
 - Supabase authentication and data persistence
-- Vercel auto-deployment on push to main
-- Consistent avatar display across all modes and components
 
 ### Known Issues
-- None currently blocking
+- Vercel's `ai-bod.vercel.app` alias doesn't auto-update (see Deployment section)
 
 ### Next Steps
-- Merge PR #12 after review
+- Research MCP approach for keeping advisors updated with current industry news
 - Continue feature development as requested
 
 ---
 
 ## Session Log
+
+### 2025-12-10: Bear Personas, Demo Tour Fix, Email Updates, Vercel Alias Issue
+**Commits**: `1190d67`, `78d9d29`, `941d6a5`, `ef0e559`, `9880c71`, `7985cb2`, `a3bb821`, `789f3e9`, `f6b0481`
+**Deployed**: ✅ Production (https://ai-bod.vercel.app)
+
+**Work Completed**:
+
+1. **Bear Persona Advisors** (avoid trademark issues):
+   - Renamed all celebrity advisors to bear-themed personas
+   - Examples: Reed Pawffman, Jason Clawcanis, Cheryl Sandbearg, Fei-Fei Pawli
+   - Removed 9 advisors from roster (Shark Tank cast, Gordon Daugherty)
+   - Created database migrations to sync with Supabase
+   - Updated all references in AdvisorContext, OnboardingFlow, QuickStartGuide, HelpModal, DemoTour
+
+2. **Demo Tour Button Fix**:
+   - **Root Cause**: Demo Tour button was only in Dashboard.tsx, but users land on AdvisoryConversation
+   - **Fix**: Added Demo Tour button to AdvisoryConversation header
+   - Added DemoTour component import and state management
+   - HelpModal's "Start Demo Tour" button now works (passes onStartDemoTour prop)
+
+3. **Email Updates**: All emails changed to jeff@bearableai.com
+   - HelpModal.tsx, TermsOfService.tsx, PrivacyPolicy.tsx, docs/USER_GUIDE.md
+
+4. **Pitch Practice Mode Fix**:
+   - Added `pitch_practice` case to App.tsx switch statement
+   - Was falling through to default "under development" message
+
+5. **Vercel Alias Issue Documented**:
+   - **Critical**: `ai-bod.vercel.app` does NOT auto-update with deployments
+   - Must manually run: `vercel alias set <deployment-url> ai-bod.vercel.app`
+   - Default aliases are `ai-bod-ochre.vercel.app` variants
+
+**Files Modified**:
+- `src/App.tsx` - Added PitchPracticeMode import and case, landing page text update
+- `src/components/Conversations/AdvisoryConversation.tsx` - Added Demo Tour button and component
+- `src/components/Dashboard/Dashboard.tsx` - Demo Tour button (users rarely see this)
+- `src/components/Help/HelpModal.tsx` - onStartDemoTour prop, email update
+- `src/components/Help/DemoTour.tsx` - Bear persona names
+- `src/contexts/AdvisorContext.tsx` - Bear persona names and system prompts
+- `supabase/migrations/20251210000001_update_advisor_bear_personas.sql`
+- `supabase/migrations/20251210000002_remove_gordon_daugherty.sql`
+
+**Key Technical Details**:
+- App defaults to `advisory_conversation` mode (line 214 in App.tsx)
+- Dashboard component is rarely rendered - users go straight to ConversationManager → AdvisoryConversation
+- Vercel CLI: `vercel --prod --force` uploads local files, but alias must be set manually
+
+---
 
 ### 2025-11-27: Avatar Display Consistency Across All Pages
 **Commits**: `03a86d5`, `c36d9d7`
