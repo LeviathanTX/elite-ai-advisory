@@ -1,17 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(done)",
-      "Bash(for img in adam-grant.jpg barbara-corcoran.jpg daniel-lubetzky.jpg david-kim.jpg daymond-john.jpg dj-patil.jpg elon-musk.jpg fei-fei-li.jpg)",
-      "Bash(do echo \"$img\")",
-      "Bash(DIR=\"/Users/jeffl/vibe-workspace/ai-bod/public/images/advisors\")",
-      "Bash(for img in barbara-corcoran.jpg daniel-lubetzky.jpg david-kim.jpg daymond-john.jpg dj-patil.jpg elon-musk.jpg fei-fei-li.jpg gordon-daugherty.jpg)",
-      "Bash(do echo \"Processing $img...\")",
-      "Bash(for img in james-wilson.jpg jamie-dimon.jpg jason-calacanis.jpg jeff-levine.jpg jennifer-doudna.jpg jensen-huang.jpg kendra-scott.jpg kevin-oleary.jpg)",
-      "Bash(for img in lori-greiner.jpg marc-benioff.jpg mark-cuban.jpg mary-barra.jpg masayoshi-son.jpg michael-porter.jpg patricia-williams.jpg rebecca-goldman.jpg)",
-      "Bash(for img in reid-hoffman.jpg robert-herjavec.jpg sarah-chen.jpg satya-nadella.jpg sheryl-sandberg.jpg tim-cook.jpg whitney-wolfe-herd.jpg)",
-      "Bash(for advisor in mark-cuban gordon-daugherty jeff-levine barbara-corcoran)",
-      "Bash(do echo \"Checking $advisor...\")"
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(supabase --version:*)",
+      "Bash(supabase status:*)",
+      "Bash(cat:*)",
+      "Bash(supabase projects list:*)",
+      "Bash(supabase db push:*)",
+      "Bash(gh api:*)",
+      "Bash(vercel:*)"
     ],
     "deny": [],
     "ask": []

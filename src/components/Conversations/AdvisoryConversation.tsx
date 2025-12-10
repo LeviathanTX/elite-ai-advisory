@@ -26,6 +26,8 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import { SettingsModal } from '../Settings/SettingsModal';
 import { HelpModal } from '../Help/HelpModal';
+import { DemoTour } from '../Help/DemoTour';
+import { useHelp } from '../../contexts/HelpContext';
 import { useDocumentContext } from '../../hooks/useDocumentContext';
 import { createAdvisorAI } from '../../services/advisorAI';
 import {
@@ -145,7 +147,9 @@ export function AdvisoryConversation({
   // Header modal states
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showDemoTour, setShowDemoTour] = useState(false);
   const { settings, isConfigured } = useSettings();
+  const { markDemoTourComplete } = useHelp();
   const {
     getDocumentContext,
     parseDocumentReferences,
@@ -1797,6 +1801,14 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
                 <Download className="w-4 h-4" />
               </button>
               <div className="h-6 border-l border-gray-300"></div>
+              {/* Demo Tour button */}
+              <button
+                onClick={() => setShowDemoTour(true)}
+                className="px-3 py-1.5 rounded-lg hover:bg-green-50 text-green-600 hover:text-green-700 text-sm font-medium"
+                title="Take a guided tour of the platform"
+              >
+                Demo Tour
+              </button>
               {/* Help button */}
               <button
                 onClick={() => setShowHelpModal(true)}
@@ -2242,6 +2254,17 @@ ${messages.map(m => `${m.type === 'user' ? 'You' : 'Advisor'}: ${m.content}`).jo
       <HelpModal
         isOpen={showHelpModal}
         onClose={() => setShowHelpModal(false)}
+        onStartDemoTour={() => setShowDemoTour(true)}
+      />
+
+      {/* Demo Tour */}
+      <DemoTour
+        isOpen={showDemoTour}
+        onClose={() => setShowDemoTour(false)}
+        onComplete={() => {
+          markDemoTourComplete();
+          setShowDemoTour(false);
+        }}
       />
     </div>
   );
