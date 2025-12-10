@@ -14,7 +14,7 @@ const QUICK_START_STEPS = [
     id: 'start-conversation',
     title: 'Start Your First Advisory Conversation',
     description:
-      'Talk to Mark Cuban about your sales strategy. Founders average 3 actionable insights per conversation.',
+      'Talk to The Angel Bear about your fundraising strategy. Founders average 3 actionable insights per conversation.',
     examples: [
       'How do I close my first 5 enterprise customers?',
       "What's a realistic revenue goal for my first year?",

@@ -53,12 +53,11 @@ function LandingPage({
             Bearable AI Advisors
           </h1>
           <p className="text-2xl md:text-3xl font-bold text-blue-600 mb-6">
-            Get advice from AI versions of leading investors and business legends
+            Get advice from AI bear advisors inspired by legendary business minds
           </p>
           <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-            Practice your pitch with AI advisors trained on insights from Mark Cuban, Reid Hoffman,
-            and other business legends. Transform how you prepare for investors and make strategic
-            decisions.
+            Practice your pitch and get strategic advice from our unique AI bear advisors.
+            Transform how you prepare for investors and make business decisions.
           </p>
 
           {/* Key Features */}
