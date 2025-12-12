@@ -19,6 +19,8 @@ interface TourStep {
   highlight?: boolean;
 }
 
+// Simplified tour that works on AdvisoryConversation page (where users actually land)
+// All steps use position: 'center' to avoid targeting non-existent elements
 const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
@@ -29,16 +31,16 @@ const TOUR_STEPS: TourStep[] = [
     content: (
       <div className="text-center">
         <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl">🚀</span>
+          <span className="text-3xl">🐻</span>
         </div>
         <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to Bearable Advisors!</h3>
         <p className="text-gray-600 mb-6">
-          Let's take a quick tour of your new AI-powered advisory board. You'll learn how to:
+          Let's take a quick tour of your AI-powered advisory board. You'll learn how to:
         </p>
         <ul className="text-left text-gray-700 space-y-2 mb-6">
           <li className="flex items-center">
             <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-            Start conversations with world-class advisors
+            Chat with AI advisors inspired by business legends
           </li>
           <li className="flex items-center">
             <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
@@ -50,219 +52,190 @@ const TOUR_STEPS: TourStep[] = [
           </li>
           <li className="flex items-center">
             <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-            Manage your custom advisors
+            Create custom advisors
           </li>
         </ul>
-        <p className="text-sm text-gray-500">This tour takes about 2 minutes to complete.</p>
-      </div>
-    ),
-  },
-  {
-    id: 'dashboard-overview',
-    title: 'Your Dashboard',
-    description: 'Central hub for all your advisory activities',
-    target: '.dashboard-main',
-    position: 'center',
-    action: 'none',
-    content: (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">Your Advisory Dashboard</h3>
-        <p className="text-gray-600 mb-4">This is your command center. From here you can:</p>
-        <ul className="text-gray-700 space-y-2">
-          <li>• View your usage statistics and subscription limits</li>
-          <li>• Access different advisory modes</li>
-          <li>• See recent conversations and activity</li>
-          <li>• Manage your advisor team</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    id: 'usage-stats',
-    title: 'Usage Statistics',
-    description: 'Track your monthly usage across all features',
-    target: '.usage-stats',
-    position: 'bottom',
-    action: 'hover',
-    highlight: true,
-    content: (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">Monitor Your Usage</h3>
-        <p className="text-gray-600 mb-4">Keep track of your monthly consumption:</p>
-        <ul className="text-gray-700 space-y-2">
-          <li>
-            • <strong>AI Advisor Hours:</strong> Time spent in advisory conversations
-          </li>
-          <li>
-            • <strong>Document Analyses:</strong> Number of documents processed
-          </li>
-          <li>
-            • <strong>Pitch Sessions:</strong> Practice sessions completed
-          </li>
-          <li>
-            • <strong>Custom Advisors:</strong> Your personalized advisor count
-          </li>
-        </ul>
-        <p className="text-sm text-blue-600 mt-3">
-          💡 Tip: Enterprise users get unlimited access to most features!
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 'advisory-modes',
-    title: 'Advisory Modes',
-    description: 'Choose the right mode for your needs',
-    target: '.advisory-modes',
-    position: 'top',
-    action: 'hover',
-    highlight: true,
-    content: (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">Choose Your Advisory Mode</h3>
-        <div className="space-y-3">
-          <div className="p-3 bg-purple-50 rounded-lg">
-            <div className="flex items-center mb-2">
-              <span className="text-lg mr-2">🎤</span>
-              <strong className="text-purple-700">Pitch Practice</strong>
-            </div>
-            <p className="text-sm text-purple-600">
-              Record, analyze, and improve your pitches with AI feedback
-            </p>
-          </div>
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <div className="flex items-center mb-2">
-              <span className="text-lg mr-2">💼</span>
-              <strong className="text-blue-700">Advisory Board</strong>
-            </div>
-            <p className="text-sm text-blue-600">
-              Strategic planning, due diligence, and document analysis
-            </p>
-          </div>
-        </div>
+        <p className="text-sm text-gray-500">This tour takes about 1 minute.</p>
       </div>
     ),
   },
   {
     id: 'bear-advisors',
-    title: 'AI Bear Advisors',
+    title: 'Meet Your AI Bear Advisors',
     description: 'AI advisors inspired by legendary business minds',
-    target: '.available-advisors',
-    position: 'left',
-    action: 'hover',
-    highlight: true,
+    position: 'center',
+    action: 'none',
     content: (
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">Meet Your Advisory Board</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">Your Advisory Board</h3>
         <p className="text-gray-600 mb-4">
-          Get advice from AI bear advisors inspired by legendary entrepreneurs:
+          Select advisors from the left panel. Each has unique expertise:
         </p>
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-2 bg-gray-50 rounded text-center">
+          <div className="p-2 bg-blue-50 rounded text-center">
             <div className="font-medium text-sm">Reed Pawffman</div>
             <div className="text-xs text-gray-500">The Network Bear</div>
           </div>
-          <div className="p-2 bg-gray-50 rounded text-center">
+          <div className="p-2 bg-green-50 rounded text-center">
             <div className="font-medium text-sm">Jason Clawcanis</div>
             <div className="text-xs text-gray-500">The Angel Bear</div>
           </div>
-          <div className="p-2 bg-gray-50 rounded text-center">
+          <div className="p-2 bg-purple-50 rounded text-center">
             <div className="font-medium text-sm">Cheryl Sandbearg</div>
             <div className="text-xs text-gray-500">The Operations Bear</div>
           </div>
-          <div className="p-2 bg-gray-50 rounded text-center">
+          <div className="p-2 bg-orange-50 rounded text-center">
             <div className="font-medium text-sm">Fei-Fei Pawli</div>
             <div className="text-xs text-gray-500">The AI Bear</div>
           </div>
         </div>
         <p className="text-sm text-blue-600">
-          💡 Each advisor has their unique personality and expertise!
+          💡 Select multiple advisors for a panel discussion!
         </p>
       </div>
     ),
   },
   {
-    id: 'advisor-management',
-    title: 'Advisor Management',
-    description: 'Create and customize your advisory team',
-    target: '[data-tour="advisor-management"]',
-    position: 'bottom',
-    action: 'hover',
-    highlight: true,
-    content: (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">Manage Your Advisors</h3>
-        <p className="text-gray-600 mb-4">Click here to:</p>
-        <ul className="text-gray-700 space-y-2">
-          <li>• Create custom advisors with specific expertise</li>
-          <li>• Customize celebrity advisor personalities</li>
-          <li>• Assign different AI services to advisors</li>
-          <li>• Upload custom avatar images</li>
-          <li>• Set up advisor-specific document folders</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    id: 'settings',
-    title: 'Settings & Configuration',
-    description: 'Configure AI services and preferences',
-    target: '[data-tour="settings"]',
-    position: 'bottom',
-    action: 'hover',
-    highlight: true,
-    content: (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">Platform Settings</h3>
-        <p className="text-gray-600 mb-4">Configure your platform:</p>
-        <ul className="text-gray-700 space-y-2">
-          <li>• Add API keys for Claude, GPT, Gemini, and more</li>
-          <li>• Set default AI services</li>
-          <li>• Test service connections</li>
-          <li>• Manage account preferences</li>
-        </ul>
-        <p className="text-sm text-green-600 mt-3">
-          ✅ Demo mode includes pre-configured services for testing!
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 'start-conversation',
-    title: 'Start Your First Conversation',
-    description: 'Ready to get strategic advice?',
-    target: '.advisory-modes',
+    id: 'conversation-modes',
+    title: 'Conversation Modes',
+    description: 'Choose the right mode for your needs',
     position: 'center',
-    action: 'click',
-    highlight: true,
+    action: 'none',
     content: (
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">You're All Set!</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">Choose Your Mode</h3>
         <p className="text-gray-600 mb-4">
-          Now you're ready to start getting world-class advice. Here's what to try first:
+          After selecting advisors, pick a conversation mode:
         </p>
-        <div className="space-y-3 mb-4">
+        <div className="space-y-2">
+          <div className="p-2 bg-blue-50 rounded-lg flex items-center">
+            <span className="text-lg mr-2">🧠</span>
+            <div>
+              <strong className="text-blue-700 text-sm">Strategic Planning</strong>
+              <p className="text-xs text-gray-500">Long-term strategy and planning</p>
+            </div>
+          </div>
+          <div className="p-2 bg-green-50 rounded-lg flex items-center">
+            <span className="text-lg mr-2">📄</span>
+            <div>
+              <strong className="text-green-700 text-sm">Due Diligence</strong>
+              <p className="text-xs text-gray-500">Investment analysis and document review</p>
+            </div>
+          </div>
+          <div className="p-2 bg-orange-50 rounded-lg flex items-center">
+            <span className="text-lg mr-2">⚡</span>
+            <div>
+              <strong className="text-orange-700 text-sm">Quick Consultation</strong>
+              <p className="text-xs text-gray-500">Fast answers to specific questions</p>
+            </div>
+          </div>
+          <div className="p-2 bg-purple-50 rounded-lg flex items-center">
+            <span className="text-lg mr-2">🎤</span>
+            <div>
+              <strong className="text-purple-700 text-sm">Pitch Practice</strong>
+              <p className="text-xs text-gray-500">Record and get feedback on your pitch</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'documents',
+    title: 'Document Analysis',
+    description: 'Upload documents for AI analysis',
+    position: 'center',
+    action: 'none',
+    content: (
+      <div>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">Upload Documents</h3>
+        <p className="text-gray-600 mb-4">
+          Get expert analysis on your business documents:
+        </p>
+        <ul className="text-gray-700 space-y-2 mb-4">
+          <li className="flex items-center">
+            <span className="text-blue-500 mr-2">📄</span>
+            Business plans and pitch decks (PDF, Word)
+          </li>
+          <li className="flex items-center">
+            <span className="text-green-500 mr-2">📊</span>
+            Financial models and projections (Excel)
+          </li>
+          <li className="flex items-center">
+            <span className="text-purple-500 mr-2">📑</span>
+            Term sheets and contracts
+          </li>
+        </ul>
+        <p className="text-sm text-blue-600">
+          📎 Use the paperclip icon in the chat to attach documents
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'header-buttons',
+    title: 'Quick Access',
+    description: 'Important buttons in the header',
+    position: 'center',
+    action: 'none',
+    content: (
+      <div>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">Header Navigation</h3>
+        <p className="text-gray-600 mb-4">
+          Find these helpful buttons in the top-right corner:
+        </p>
+        <div className="space-y-3">
+          <div className="flex items-center p-2 bg-gray-50 rounded">
+            <span className="text-green-600 font-medium mr-3">Demo Tour</span>
+            <span className="text-sm text-gray-500">← You're here! Restart anytime</span>
+          </div>
+          <div className="flex items-center p-2 bg-gray-50 rounded">
+            <span className="text-gray-600 font-medium mr-3">Help</span>
+            <span className="text-sm text-gray-500">FAQs and documentation</span>
+          </div>
+          <div className="flex items-center p-2 bg-gray-50 rounded">
+            <span className="text-gray-600 font-medium mr-3">Settings</span>
+            <span className="text-sm text-gray-500">API keys, preferences, manage advisors</span>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'get-started',
+    title: "You're Ready!",
+    description: 'Start your first conversation',
+    position: 'center',
+    action: 'none',
+    content: (
+      <div className="text-center">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-2xl">✅</span>
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">You're All Set!</h3>
+        <p className="text-gray-600 mb-4">Here's how to get started:</p>
+        <div className="text-left space-y-3 mb-4">
           <div className="p-3 bg-blue-50 rounded-lg">
-            <strong className="text-blue-700">1. Start an Advisory Conversation</strong>
+            <strong className="text-blue-700">1. Select an Advisor</strong>
             <p className="text-sm text-blue-600">
-              Click "Advisory Board" and ask Reed Pawffman about scaling your business
+              Click on an advisor from the left panel
             </p>
           </div>
           <div className="p-3 bg-purple-50 rounded-lg">
-            <strong className="text-purple-700">2. Practice Your Pitch</strong>
+            <strong className="text-purple-700">2. Choose a Mode</strong>
             <p className="text-sm text-purple-600">
-              Record a 60-second pitch and get detailed AI feedback
+              Pick Strategic Planning, Due Diligence, or Quick Consultation
             </p>
           </div>
           <div className="p-3 bg-green-50 rounded-lg">
-            <strong className="text-green-700">3. Upload a Document</strong>
+            <strong className="text-green-700">3. Start Chatting!</strong>
             <p className="text-sm text-green-600">
-              Get expert analysis on your business plan or financial model
+              Ask your business questions and get expert advice
             </p>
           </div>
         </div>
         <p className="text-sm text-gray-500">
-          Remember: You can access this tour anytime from the Help menu!
+          Click "Complete Tour" to close and start exploring!
         </p>
       </div>
     ),
@@ -372,7 +345,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
       {/* Tooltip */}
       <div
         className={cn(
-          'absolute z-52 w-96 max-w-sm',
+          'absolute z-52 w-[420px] max-w-[90vw]',
           step.position === 'center' ? 'fixed' : 'absolute',
           getTooltipPosition()
         )}
@@ -441,27 +414,27 @@ export const DemoTour: React.FC<DemoTourProps> = ({ isOpen, onClose, onComplete 
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               <button
                 onClick={handleSkip}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 whitespace-nowrap"
               >
-                Skip Tour
+                Skip
               </button>
               {!isFirstStep && (
                 <button
                   onClick={handlePrevious}
-                  className="px-4 py-2 text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg flex items-center"
+                  className="px-3 py-2 text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg flex items-center whitespace-nowrap"
                 >
-                  <ChevronLeft className="w-4 h-4 mr-1" />
-                  Previous
+                  <ChevronLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline ml-1">Previous</span>
                 </button>
               )}
               <button
                 onClick={isLastStep ? handleComplete : handleNext}
-                className="px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg flex items-center"
+                className="px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg flex items-center whitespace-nowrap"
               >
-                {isLastStep ? 'Complete Tour' : 'Next'}
+                {isLastStep ? 'Complete' : 'Next'}
                 {!isLastStep && <ChevronRight className="w-4 h-4 ml-1" />}
               </button>
             </div>

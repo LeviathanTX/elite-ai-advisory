@@ -229,38 +229,109 @@ This enables automated PR creation, merging, and status checks throughout the se
 
 ---
 
-## Current State (Updated: 2025-12-10)
+## Current State (Updated: 2025-12-11)
 
 ### Recent Achievements
-- **Bear Persona Advisors**: All celebrity advisors renamed to bear personas to avoid trademark issues
-  - Examples: Reed Pawffman (The Network Bear), Jason Clawcanis (The Angel Bear)
-  - 9 advisors removed from roster
-  - Database migrations applied to Supabase
-- **Demo Tour Button Fix**: Added Demo Tour button to AdvisoryConversation header
-  - Demo Tour button now appears in the main UI (not just Dashboard)
-  - Help modal's "Start Demo Tour" button now works properly
-- **Email Updates**: All contact emails updated to jeff@bearableai.com
-- **Pitch Practice Mode**: Fixed - now properly renders PitchPracticeMode component
-- **Vercel Alias**: Documented critical alias issue (ai-bod.vercel.app requires manual aliasing)
+- **Landing Page Redesign**: Major overhaul with "AI Disciples" theme
+  - Dark gradient design (slate-900 → blue-900 → indigo-900)
+  - "Get billion-dollar advice without the billion-dollar connections" headline
+  - Testimonial quotes from AI advisors (Reed Pawffman, Jason Clawcanis, Satya Nadellaw, etc.)
+  - Problem/Solution/Proof teaser structure
+  - Featured founder quote: "I wanted to make world-class advisory expertise available to everyone."
+- **Marc Beardreessen Advisor**: New "Software Bear" advisor inspired by legendary tech investor
+  - "Software is eating the world" philosophy
+  - Deep expertise in platform economics, network effects, Web3, AI/ML
+  - Custom teddy bear avatar (black sweater, white collar)
+- **Advisor Tile Redesign**: Large square avatars on left side of each tile card
+  - 80x80px images instead of small circles
+  - Better visual hierarchy with name, role, and edit button
+- **Demo Tour Fix**: Wider tooltip (420px), better button spacing
+  - Tour no longer locks up after first few steps
+- **Pitch Practice UX**: Added guidance screen when Pitch Practice selected without advisors
+- **New Avatars**: Updated Jeff Levine and Marc Beardreessen avatars
+
+### Advisor Update Research (TODO - Come Back To This)
+User wants to implement advisor updates for current industry news. Three approaches researched:
+1. **RAG (Retrieval Augmented Generation)**: Index news/market data in vector DB, retrieve at query time
+2. **Periodic Updates**: Scheduled cron job to regenerate advisor prompts weekly/monthly
+3. **MCP Integration**: Real-time data access via Model Context Protocol servers
+
+**Recommended hybrid approach**:
+- Start with Periodic Updates (simplest with Supabase/Vercel)
+- Add RAG for document/news context
+- Future: MCP for real-time data (when mature)
 
 ### Active Features
-- Bear persona advisors with customization and visual avatars
+- Bear persona advisors with large square avatar tiles
 - Document upload and analysis (PDF, Word, Excel)
 - Integrated Pitch Practice mode (voice recording → AI feedback → text follow-up)
 - Manage Advisors in Settings (create custom, edit bear persona advisors)
 - Demo Tour with guided walkthrough
 - Supabase authentication and data persistence
+- New landing page with disciple quotes and dark theme
 
 ### Known Issues
 - Vercel's `ai-bod.vercel.app` alias doesn't auto-update (see Deployment section)
 
 ### Next Steps
-- Research MCP approach for keeping advisors updated with current industry news
+- Implement advisor update mechanism (RAG/periodic/MCP)
 - Continue feature development as requested
 
 ---
 
 ## Session Log
+
+### 2025-12-11: Landing Page Redesign, Marc Beardreessen, Advisor Tile UI
+**Deployed**: ✅ Production (https://ai-bod.vercel.app)
+
+**Work Completed**:
+
+1. **Landing Page Complete Redesign**:
+   - Dark gradient theme (slate-900 → blue-900 → indigo-900)
+   - "AI Disciples of the World's Best Entrepreneurs & Investors" tagline
+   - Hero: "Get billion-dollar advice without the billion-dollar connections"
+   - Problem/Solution/Proof teaser cards
+   - Testimonial quotes from bear advisors:
+     - Reed Pawffman: "Entrepreneurs waste months trying to get 15 minutes..."
+     - Jason Clawcanis: "What if you could get board-level advice... on demand, 24/7..."
+     - Satya Nadellaw: "Now every entrepreneur can get a board meeting..."
+     - Jamie Diamondpaw: "Get a board meeting... without writing a single check..."
+     - Whitney Wolfbear Herd: "Get mentored by the world's most successful..."
+   - Featured quote: "Get million-dollar advice without the million-dollar meeting."
+   - Founder quote: "I wanted to make world-class advisory expertise available to everyone." — Jeff Levine
+
+2. **Marc Beardreessen Advisor** (new):
+   - "The Software Bear" at Andrebearn Pawrowitz
+   - "Software is eating the world" philosophy
+   - Expertise: Platform economics, network effects, Web3, AI/ML, consumer internet, enterprise SaaS
+   - Contrarian, visionary, technical communication style
+   - Custom teddy bear avatar (black sweater, white collar)
+
+3. **Advisor Tile UI Redesign**:
+   - Large 80x80px square avatars on left side of each tile
+   - Name, role, star badge, and checkmark on right
+   - Edit button appears on hover
+   - Purple ring highlight when selected
+   - Better visual presentation of advisor images
+
+4. **Demo Tour Formatting Fix**:
+   - Widened tooltip from 384px to 420px
+   - Fixed "Next" button cutoff issue
+   - Shortened button labels for better fit
+
+5. **Avatar Updates**:
+   - New Jeff Levine avatar (optimized to 512x512)
+   - New Marc Beardreessen avatar (optimized to 512x512)
+
+**Files Modified**:
+- `src/App.tsx` - Complete landing page redesign with testimonials
+- `src/contexts/AdvisorContext.tsx` - Added Marc Beardreessen advisor
+- `src/components/Conversations/AdvisoryConversation.tsx` - Large square avatar tiles
+- `src/components/Help/DemoTour.tsx` - Wider tooltip, better button spacing
+- `public/images/advisors/marc-andreessen.jpg` - New avatar
+- `public/images/advisors/jeff-levine.jpg` - Updated avatar
+
+---
 
 ### 2025-12-10: Bear Personas, Demo Tour Fix, Email Updates, Vercel Alias Issue
 **Commits**: `1190d67`, `78d9d29`, `941d6a5`, `ef0e559`, `9880c71`, `7985cb2`, `a3bb821`, `789f3e9`, `f6b0481`
