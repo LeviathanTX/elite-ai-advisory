@@ -35,7 +35,7 @@ const AI_SERVICE_OPTIONS = [
     id: 'chatgpt' as AIService,
     name: 'ChatGPT (OpenAI)',
     baseUrl: 'https://api.openai.com',
-    model: 'gpt-4',
+    model: 'gpt-5.2',
     placeholder: 'sk-...',
   },
   {
@@ -175,7 +175,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             Authorization: `Bearer ${service.apiKey}`,
           };
           body = {
-            model: service.model || 'gpt-4',
+            model: service.model || 'gpt-5.2',
             messages: [testMessage],
             max_tokens: 50,
           };

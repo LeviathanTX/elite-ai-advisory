@@ -488,7 +488,7 @@ export const initializeEnhancedAnalyzer = async (
     aiServiceConfig: {
       provider: 'openai',
       apiKey: openaiApiKey || process.env.REACT_APP_OPENAI_API_KEY || '',
-      model: 'gpt-4',
+      model: 'gpt-5.2',
       backendUrl: '/api/generate',
     },
   };

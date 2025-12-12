@@ -34,7 +34,7 @@ const DEFAULT_SETTINGS: AppSettings = {
       name: 'ChatGPT (OpenAI)',
       apiKey: '',
       baseUrl: 'https://api.openai.com',
-      model: 'gpt-4',
+      model: 'gpt-5.2',
     },
     deepseek: {
       id: 'deepseek',

@@ -388,7 +388,7 @@ export class AIServiceClient {
         Authorization: `Bearer ${this.config.apiKey}`,
       },
       body: JSON.stringify({
-        model: this.config.model || 'gpt-4',
+        model: this.config.model || 'gpt-5.2',
         messages: messages,
         temperature: options?.temperature || 0.7,
         max_tokens: options?.maxTokens || 2000,
