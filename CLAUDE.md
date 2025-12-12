@@ -229,9 +229,13 @@ This enables automated PR creation, merging, and status checks throughout the se
 
 ---
 
-## Current State (Updated: 2025-12-11)
+## Current State (Updated: 2025-12-12)
 
 ### Recent Achievements
+- **GPT-5.2 Integration**: Updated OpenAI model from gpt-4 to gpt-5.2 (released Dec 11, 2025)
+  - 400K token context window (vs ~128K for GPT-4)
+  - Knowledge cutoff: August 31, 2025
+  - Updated in SettingsContext, SettingsModal, aiService, EnhancedDocumentAnalyzer
 - **Landing Page Redesign**: Major overhaul with "AI Disciples" theme
   - Dark gradient design (slate-900 → blue-900 → indigo-900)
   - "Get billion-dollar advice without the billion-dollar connections" headline
@@ -245,10 +249,6 @@ This enables automated PR creation, merging, and status checks throughout the se
 - **Advisor Tile Redesign**: Large square avatars on left side of each tile card
   - 80x80px images instead of small circles
   - Better visual hierarchy with name, role, and edit button
-- **Demo Tour Fix**: Wider tooltip (420px), better button spacing
-  - Tour no longer locks up after first few steps
-- **Pitch Practice UX**: Added guidance screen when Pitch Practice selected without advisors
-- **New Avatars**: Updated Jeff Levine and Marc Beardreessen avatars
 
 ### Advisor Update Research (TODO - Come Back To This)
 User wants to implement advisor updates for current industry news. Three approaches researched:

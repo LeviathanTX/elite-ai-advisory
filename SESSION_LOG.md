@@ -43,6 +43,36 @@
 
 <!-- New sessions go here, most recent first -->
 
+## 2025-12-12 - GPT-5.2 API Update + Dec 11 Commits - CLI
+
+**Branch:** `main`
+**Commits:** `37186d8`, `c2b9ab1`
+
+### Accomplished
+- [x] Committed Dec 11 landing page redesign work (was uncommitted)
+- [x] Updated OpenAI model from gpt-4 to gpt-5.2 (released Dec 11, 2025)
+- [x] Deployed to production and set Vercel alias
+
+### Files Modified
+- `src/contexts/SettingsContext.tsx` - Default OpenAI model → gpt-5.2
+- `src/components/Settings/SettingsModal.tsx` - Service option + fallback → gpt-5.2
+- `src/services/aiService.ts` - API fallback → gpt-5.2
+- `src/services/EnhancedDocumentAnalyzer.ts` - Document analyzer → gpt-5.2
+
+### Tests/Verification
+- [x] TypeScript compilation passed
+- [x] Deployed to production (https://ai-bod.vercel.app)
+- [x] Vercel alias set manually (ai-bod.vercel.app)
+- [x] Bundle hash verified: main.8adcda8a.js
+
+### Notes
+- GPT-5.2 has 400K token context window (vs ~128K for GPT-4)
+- Knowledge cutoff: August 31, 2025
+- Three variants available: gpt-5.2, gpt-5.2-chat-latest, gpt-5.2-pro
+- Using base gpt-5.2 as default
+
+---
+
 ## 2025-12-02 - UX Redesign: Advisory Board as Landing Page - CLI
 
 **Branch:** `main` (PR #12)
